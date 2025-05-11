@@ -132,7 +132,7 @@ export default function About() {
             }`}
             data-strength="0.1"
           >
-            <div className="stat-number text-2xl font-bold text-primary-color mb-1">10+</div>
+            <div className="stat-number text-2xl font-bold text-primary-color mb-1">5+</div>
             <div className="text-sm text-text-secondary">Courses Completed</div>
           </div>
 
