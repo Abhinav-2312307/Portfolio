@@ -1,0 +1,63 @@
+/* Advanced cursor effects - you can include this as a separate CSS file */
+
+/* Base cursor styles */
+.cursor-pointer {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s ease-out;
+}
+
+.cursor-pointer svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 5px var(--primary-color)) drop-shadow(0 0 10px var(--primary-color));
+}
+
+.cursor-trail {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 0.5s;
+  filter: blur(2px);
+  mix-blend-mode: screen;
+}
+
+.cursor-text {
+  position: fixed;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 3px 8px;
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+}
+
+/* Hide custom cursor on mobile */
+@media (max-width: 768px) {
+  .cursor-pointer,
+  .cursor-trail,
+  .cursor-text {
+    display: none;
+  }
+
+  body {
+    cursor: auto;
+  }
+}

@@ -1,0 +1,121 @@
+/* Additional styles that can be imported separately */
+
+/* Custom Animations */
+@keyframes float-shadow {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 0 30px var(--primary-color);
+  }
+  50% {
+    transform: translateY(-20px);
+    box-shadow: 0 20px 40px rgba(0, 255, 136, 0.3);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px var(--primary-color));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px var(--primary-color));
+  }
+}
+
+@keyframes border-glow {
+  0%,
+  100% {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+  }
+  50% {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 20px var(--accent-color);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: var(--border-radius-md);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+/* Custom Selection */
+::selection {
+  background-color: var(--primary-color);
+  color: var(--dark-color);
+}
+
+/* Custom Focus Styles */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Accessibility Improvements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background-color: white;
+    color: black;
+  }
+
+  .navbar,
+  .footer,
+  .back-to-top,
+  .cursor-pointer,
+  .cursor-trail,
+  .cursor-text {
+    display: none;
+  }
+
+  section {
+    page-break-inside: avoid;
+    margin: 20px 0;
+    padding: 10px 0;
+  }
+
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+
+  .profile-img {
+    border: 2px solid black;
+    box-shadow: none;
+  }
+
+  .hero-text h1 {
+    color: black;
+    -webkit-text-fill-color: black;
+  }
+}
+body {
+  cursor: none;
+}
+
