@@ -23,8 +23,8 @@ const projects: Project[] = [
     description: "A modern portfolio website built with Next.js and Tailwind CSS.",
     image: "/portf.png?height=300&width=500",
     technologies: ["Next.js", "React", "Tailwind CSS", "Framer Motion"],
-    github: "https://github.com/username/portfolio",
-    live: "https://portfolio.example.com",
+    github: "https://github.com/Abhinav-2312307/Portfolio",
+    live: "https://portfolio-abhinavsahu.vercel.app/",
     category: "web",
   },
   // {
@@ -43,7 +43,8 @@ const projects: Project[] = [
     description: "A web application that provides legal information and resources.",
     image: "/justiceAlly.png?height=300&width=500",
     technologies: ["Python", "NLP", "OpenAI API", "React", "MySQL", "Tailwind CSS", "Next.js", "Node.js"],
-    github: "https://justice-ally.vercel.app/",
+    github:"https://github.com/Abhinav-2312307/JusticeAlly",
+    live: "https://justice-ally.vercel.app/",
     category: "ai",
   },
   {
@@ -52,7 +53,8 @@ const projects: Project[] = [
     description: "A web application for encrypting and decrypting images.",
     image: "/imgEnc.png?height=300&width=500",
     technologies: ["React", "Next.js", "tailwind css", "typescript"],
-    github: "https://github.com/username/ai-image-generator",
+    github:"https://github.com/Abhinav-2312307/Image-Encryption",
+    live :"https://github.com/username/ai-image-generator",
     category: "mobile",
   },
   // {
@@ -84,6 +86,17 @@ const projects: Project[] = [
     category: "web",
   },
   {
+    id: 8,
+    title: "Tic Tac Toe",
+    description: "Tic Tac Toe game multiplayer and with computer ",
+    image: "/tictactoe.png?height=300&width=500",
+    technologies: ["HTML", "CSS", "JavaScript"],
+    github: "https://github.com/Abhinav-2312307/TicTacToe",
+    live:"https://tictactoe-psit.vercel.app/",
+
+    category: "ai",
+  },
+  {
     id: 6,
     title: "Travel AI(Coming Soon)",
     description:
@@ -103,6 +116,7 @@ const projects: Project[] = [
 
     category: "ai",
   },
+  
 ]
 
 export default function Projects() {
