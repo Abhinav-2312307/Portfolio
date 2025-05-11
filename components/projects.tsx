@@ -73,7 +73,8 @@ const projects: Project[] = [
     description: "A web application for printing pages from PSIT.",
     image: "/printmypsit.png?height=300&width=500",
     technologies: ["DBMS", "React", "Tailwind CSS", "Next.js", "Node.js"],
-    github: "https://print-my-page-psit.vercel.app/",
+    github:"https://github.com/Abhinav-2312307/PrintMyPagePSIT",
+    live: "https://print-my-page-psit.vercel.app/",
     category: "web",
   },
   {
@@ -82,7 +83,8 @@ const projects: Project[] = [
     description: "A web application for navigating the PSIT campus.",
     image: "/mapmypsit.png?height=300&width=500",
     technologies: ["DBMS", "React", "Tailwind CSS", "Next.js", "Node.js"],
-    github: "https://map-my-psit.vercel.app/#",
+    github:"https://github.com/Abhinav-2312307/Map-MY-PSIT",
+    live: "https://map-my-psit.vercel.app/#",
     category: "web",
   },
   {
@@ -103,7 +105,8 @@ const projects: Project[] = [
       "A travel planning application that uses AI to suggest itineraries and chatbot based ticket booking system.",
     image: "/travelAI.png?height=300&width=500",
     technologies: ["DBMS", "React", "Tailwind CSS", "Next.js", "Node.js", "OpenAI API", "IRCTC API", "NLP"],
-    github: "https://travel-ai-red.vercel.app/",
+    github:"https://github.com/Abhinav-2312307/TravelAI",
+    live: "https://travel-ai-red.vercel.app/",
     category: "ai",
   },
   {
