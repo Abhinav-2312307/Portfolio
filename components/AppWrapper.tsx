@@ -8,7 +8,7 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      {showPreloader && <Preloader />}
+      {showPreloader && <Preloader onFinish={() => setShowPreloader(false)} />}
       {!showPreloader && children}
     </>
   )
