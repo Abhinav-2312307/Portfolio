@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-export default function Preloader() {
+export default function Preloader({ onFinish }: { onFinish: () => void }) {
   const fullCode = `import { Developer } from 'Earth';
 
 const Abhinav = new Developer({
@@ -17,7 +17,6 @@ await Abhinav.initialize();`
 
   const typingSpeed = 15
   const [typedCode, setTypedCode] = useState("")
-  const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
     let i = 0
@@ -27,14 +26,12 @@ await Abhinav.initialize();`
         i++
       } else {
         clearInterval(interval)
-        setTimeout(() => setIsVisible(false), 500) // slight pause after finish
+        setTimeout(onFinish, 500)
       }
     }, typingSpeed)
 
     return () => clearInterval(interval)
-  }, [])
-
-  if (!isVisible) return null
+  }, [onFinish])
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-dark-color flex justify-center items-center z-[9999] transition-opacity duration-500">
