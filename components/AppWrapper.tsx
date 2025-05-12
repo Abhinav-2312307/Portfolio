@@ -9,7 +9,7 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowContent(true)
-    }, 4000)
+    }, 1000)
 
     return () => clearTimeout(timer)
   }, [])
