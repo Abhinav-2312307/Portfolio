@@ -43,7 +43,7 @@ await Abhinav.initialize();`
       setProgress((prev) => {
         if (current >= totalSteps) {
           clearInterval(interval)
-          setTimeout(() => setIsVisible(false), 800) // final pause
+          setTimeout(() => setIsVisible(false), 500) // final pause
           return 100
         }
         current++
