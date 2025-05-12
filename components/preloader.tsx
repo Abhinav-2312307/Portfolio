@@ -21,7 +21,7 @@ await Abhinav.initialize();`
 
   useEffect(() => {
     let i = 0
-    const typingSpeed = 10 // ms per character
+    const typingSpeed = 50 // ms per character
     const typingInterval = setInterval(() => {
       if (i < fullCode.length) {
         setTypedCode((prev) => prev + fullCode[i])
@@ -39,12 +39,12 @@ await Abhinav.initialize();`
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
-          setTimeout(() => setIsVisible(false), 500)
+          setTimeout(() => setIsVisible(false), 1000)
           return 100
         }
         return prev + 1 // Slower for sync with typing
       })
-    }, 120)
+    }, 100)
 
     return () => clearInterval(interval)
   }, [])
