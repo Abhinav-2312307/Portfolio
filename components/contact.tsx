@@ -90,7 +90,7 @@ export default function Contact() {
     },
     {
       icon: "fas fa-envelope",
-      text: "2k23.cs2312307@gmail.com",
+      text: "abhinavrishi32@gmail.com",
     },
     {
       icon: "fas fa-graduation-cap",
