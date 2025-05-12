@@ -338,7 +338,7 @@ body {
   background-color: var(--primary-color);
 }
 
-/* Media queries */
+/* Media queries - IMPROVED MOBILE STYLES */
 @media (max-width: 1200px) {
   :root {
     --font-size-4xl: 2.8rem;
@@ -352,6 +352,11 @@ body {
     --font-size-3xl: 2rem;
     --font-size-2xl: 1.8rem;
   }
+
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
 @media (max-width: 768px) {
@@ -360,6 +365,12 @@ body {
     --font-size-3xl: 1.8rem;
     --font-size-2xl: 1.5rem;
     --font-size-xl: 1.2rem;
+    --spacing-4xl: 3.5rem;
+    --spacing-3xl: 2.5rem;
+  }
+
+  html {
+    scroll-padding-top: 70px;
   }
 
   .cursor,
@@ -370,14 +381,75 @@ body {
   body {
     cursor: auto;
   }
+
+  /* Improved mobile spacing */
+  section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .container {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
 }
 
 @media (max-width: 576px) {
   :root {
-    --spacing-4xl: 3rem;
-    --spacing-3xl: 2.5rem;
-    --spacing-2xl: 2rem;
+    --spacing-4xl: 2.5rem;
+    --spacing-3xl: 2rem;
+    --spacing-2xl: 1.5rem;
     --font-size-4xl: 2rem;
     --font-size-3xl: 1.6rem;
+  }
+
+  html {
+    scroll-padding-top: 60px;
+  }
+
+  /* Improved mobile spacing */
+  section {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Better touch targets for mobile */
+  button,
+  a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Improved form elements for mobile */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+}
+
+/* Additional mobile improvements */
+@media (max-width: 480px) {
+  :root {
+    --font-size-4xl: 1.8rem;
+    --font-size-3xl: 1.5rem;
+    --font-size-2xl: 1.3rem;
+  }
+
+  /* Improved card layouts for small screens */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Better spacing for small screens */
+  .space-y-8 {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 }
