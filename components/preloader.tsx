@@ -16,11 +16,13 @@ const Abhinav = new Developer({
 await Abhinav.initialize();`
 
   const typingSpeed = 15
+  const totalTypingTime = fullCode.length * typingSpeed
   const [typedCode, setTypedCode] = useState("")
-  const hasTyped = useRef(false) // ❗ Prevents repeating
+  const [progress, setProgress] = useState(0)
+  const hasTyped = useRef(false)
 
   useEffect(() => {
-    if (hasTyped.current) return // 🛑 Already typed, don't start again
+    if (hasTyped.current) return
     hasTyped.current = true
 
     let i = 0
@@ -30,14 +32,29 @@ await Abhinav.initialize();`
         i++
       } else {
         clearInterval(interval)
-        setTimeout(() => {
-          onFinish() // ✅ Done typing, trigger app load
-        }, 500)
+        setTimeout(() => onFinish(), 500)
       }
     }, typingSpeed)
 
     return () => clearInterval(interval)
   }, [onFinish])
+
+  useEffect(() => {
+    const steps = 100
+    const intervalTime = totalTypingTime / steps
+    let current = 0
+
+    const interval = setInterval(() => {
+      if (current >= steps) {
+        clearInterval(interval)
+      } else {
+        setProgress(current)
+        current++
+      }
+    }, intervalTime)
+
+    return () => clearInterval(interval)
+  }, [totalTypingTime])
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-dark-color flex justify-center items-center z-[9999] transition-opacity duration-500">
@@ -45,6 +62,14 @@ await Abhinav.initialize();`
         <pre className="text-left text-sm md:text-base font-mono mb-6 overflow-x-auto whitespace-pre-wrap text-white">
           {typedCode}
         </pre>
+        <div className="relative w-full h-1 bg-secondary-color/30 rounded-full overflow-hidden">
+          <div className="absolute left-1/2 top-0 h-full bg-primary-color rounded-full origin-center transition-all duration-100"
+               style={{
+                 transform: `translateX(-50%)`,
+                 width: `${progress}%`
+               }}
+          />
+        </div>
       </div>
     </div>
   )
