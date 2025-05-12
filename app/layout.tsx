@@ -1,3 +1,4 @@
+import AppWrapper from "@/components/AppWrapper"
 import type React from "react"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
@@ -58,7 +59,9 @@ export default function RootLayout({
       </head>
       <body className={`${poppins.variable} ${inter.variable} font-poppins`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
+          <AppWrapper> {/* 👈 Wrap your app in it */}
+            {children}
+          </AppWrapper>
           <Toaster />
         </ThemeProvider>
       </body>
