@@ -59,7 +59,9 @@ export default function Home() {
           <BackToTop />
           <Navbar />
 
-          <Hero />
+          <section id="hero" className="pt-16 md:pt-20">
+            <Hero />
+          </section>
 
           <ScrollReveal id="about">
             <About />
