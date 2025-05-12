@@ -44,7 +44,7 @@ await Abhinav.initialize();`
         }
         return prev + 1 // Slower for sync with typing
       })
-    }, 100)
+    }, 120)
 
     return () => clearInterval(interval)
   }, [])
