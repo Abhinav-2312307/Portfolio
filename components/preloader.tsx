@@ -15,39 +15,44 @@ const Abhinav = new Developer({
 
 await Abhinav.initialize();`
 
+  const typingSpeed = 30 // ms per character
+  const totalTypingTime = fullCode.length * typingSpeed // total ms
+  const [typedCode, setTypedCode] = useState("")
   const [progress, setProgress] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
-  const [typedCode, setTypedCode] = useState("")
 
   useEffect(() => {
     let i = 0
-    const typingSpeed = 30 // ms per character
-    const typingInterval = setInterval(() => {
+    const interval = setInterval(() => {
       if (i < fullCode.length) {
         setTypedCode((prev) => prev + fullCode[i])
         i++
       } else {
-        clearInterval(typingInterval)
+        clearInterval(interval)
       }
     }, typingSpeed)
 
-    return () => clearInterval(typingInterval)
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
+    const totalSteps = 100
+    const progressInterval = totalTypingTime / totalSteps // e.g., ~180ms
+    let current = 0
     const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
+        if (current >= totalSteps) {
           clearInterval(interval)
-          setTimeout(() => setIsVisible(false), 1000)
+          setTimeout(() => setIsVisible(false), 800) // final pause
           return 100
         }
-        return prev + 1 // Slower for sync with typing
+        current++
+        return current
       })
-    }, 180)
+    }, progressInterval)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [totalTypingTime])
 
   return (
     <div
