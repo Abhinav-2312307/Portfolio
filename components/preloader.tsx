@@ -15,7 +15,7 @@ const Abhinav = new Developer({
 
 await Abhinav.initialize();`
 
-  const typingSpeed = 20 // ms per character
+  const typingSpeed = 15 // ms per character
   const totalTypingTime = fullCode.length * typingSpeed // total ms
   const [typedCode, setTypedCode] = useState("")
   const [progress, setProgress] = useState(0)
