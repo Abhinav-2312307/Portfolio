@@ -1,19 +1,13 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import Preloader from "./preloader"
 
 export default function AppWrapper({ children }: { children: React.ReactNode }) {
   const [showPreloader, setShowPreloader] = useState(false)
-  const [hydrated, setHydrated] = useState(false) // wait for client load
+  const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
     const hasSeenPreloader = sessionStorage.getItem("preloader-done") === "true"
-    if (hasSeenPreloader) {
-      setShowPreloader(false)
-    } else {
-      setShowPreloader(true)
-    }
+    setShowPreloader(!hasSeenPreloader)
     setHydrated(true)
   }, [])
 
@@ -22,7 +16,7 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
     setShowPreloader(false)
   }
 
-  if (!hydrated) return null // prevents hydration mismatch
+  if (!hydrated) return null
 
   return (
     <>
