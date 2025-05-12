@@ -42,7 +42,7 @@ await Abhinav.initialize();`
           setTimeout(() => setIsVisible(false), 500)
           return 100
         }
-        return prev + 2 // Slower for sync with typing
+        return prev + 1 // Slower for sync with typing
       })
     }, 100)
 
