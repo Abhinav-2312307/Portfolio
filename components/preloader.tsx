@@ -3,20 +3,46 @@
 import { useEffect, useState } from "react"
 
 export default function Preloader() {
+  const fullCode = `import { Developer } from 'Earth';
+
+const Abhinav = new Developer({
+  name: 'Abhinav Sahu',
+  role: 'Full Stack Developer & Innovator',
+  stack: ['C++', 'Next.js', 'NLP', 'AWS', 'Python'],
+  poweredBy: [anime('Eren Yeager'), code(), curiosity(), vision()],
+  status: 'Crafting innovation... please wait ⏳'
+});
+
+await Abhinav.initialize();`
+
   const [progress, setProgress] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
+  const [typedCode, setTypedCode] = useState("")
+
+  useEffect(() => {
+    let i = 0
+    const typingSpeed = 10 // ms per character
+    const typingInterval = setInterval(() => {
+      if (i < fullCode.length) {
+        setTypedCode((prev) => prev + fullCode[i])
+        i++
+      } else {
+        clearInterval(typingInterval)
+      }
+    }, typingSpeed)
+
+    return () => clearInterval(typingInterval)
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
-          setTimeout(() => {
-            setIsVisible(false)
-          }, 500)
+          setTimeout(() => setIsVisible(false), 500)
           return 100
         }
-        return prev + 5
+        return prev + 2 // Slower for sync with typing
       })
     }, 100)
 
@@ -31,52 +57,8 @@ export default function Preloader() {
       style={{ display: isVisible ? "flex" : "none" }}
     >
       <div className="text-center max-w-md w-full px-6">
-        <pre className="text-left text-sm md:text-base font-mono mb-6 overflow-x-auto whitespace-pre-wrap">
-          <code className="text-primary-color">import</code> <code className="text-accent-color">{"{"}</code>{" "}
-          <code className="text-warning-color">Developer</code> <code className="text-accent-color">{"}"}</code>{" "}
-          <code className="text-primary-color">from</code> <code className="text-success-color">'Earth'</code>;
-          <br />
-          <br />
-          <code className="text-primary-color">const</code> <code className="text-warning-color">Abhinav</code>{" "}
-          <code>=</code> <code className="text-primary-color">new</code>{" "}
-          <code className="text-warning-color">Developer</code>
-          <code className="text-accent-color">({"{"}</code>
-          <br />
-          {"  "}
-          <code className="text-text-secondary">name:</code> <code className="text-success-color">'Abhinav Sahu'</code>,
-          <br />
-          {"  "}
-          <code className="text-text-secondary">role:</code>{" "}
-          <code className="text-success-color">'Full Stack Developer & Innovator'</code>,
-          <br />
-          {"  "}
-          <code className="text-text-secondary">stack:</code> <code className="text-accent-color">[</code>
-          <code className="text-success-color">'C++'</code>, <code className="text-success-color">'Next.js'</code>,{" "}
-          <code className="text-success-color">'NLP'</code>, <code className="text-success-color">'AWS'</code>,{" "}
-          <code className="text-success-color">'Python'</code>
-          <code className="text-accent-color">]</code>,
-          <br />
-          {"  "}
-          <code className="text-text-secondary">poweredBy:</code> <code className="text-accent-color">[</code>
-          <code className="text-warning-color">anime</code>
-          <code className="text-accent-color">(</code>
-          <code className="text-success-color">'Eren Yeager'</code>
-          <code className="text-accent-color">)</code>, <code className="text-warning-color">code</code>
-          <code className="text-accent-color">()</code>, <code className="text-warning-color">curiosity</code>
-          <code className="text-accent-color">()</code>, <code className="text-warning-color">vision</code>
-          <code className="text-accent-color">()</code>
-          <code className="text-accent-color">]</code>,
-          <br />
-          {"  "}
-          <code className="text-text-secondary">status:</code>{" "}
-          <code className="text-success-color">'Crafting innovation... please wait ⏳'</code>
-          <br />
-          <code className="text-accent-color">{"}"});</code>
-          <br />
-          <br />
-          <code className="text-primary-color">await</code> <code className="text-warning-color">Abhinav</code>.
-          <code className="text-primary-color">initialize</code>
-          <code className="text-accent-color">();</code>
+        <pre className="text-left text-sm md:text-base font-mono mb-6 overflow-x-auto whitespace-pre-wrap text-white">
+          {typedCode}
         </pre>
         <div className="w-full bg-secondary-color/30 h-1 rounded-full overflow-hidden">
           <div
