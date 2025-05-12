@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Preloader from "./Preloader"
+import Preloader from "./preloader/Preloader"
+
 
 export default function AppWrapper({ children }: { children: React.ReactNode }) {
   const [showContent, setShowContent] = useState(false)
