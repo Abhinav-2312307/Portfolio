@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 export default function Preloader({ onFinish }: { onFinish: () => void }) {
   const fullCode = `import { Developer } from 'Earth';
@@ -17,8 +17,12 @@ await Abhinav.initialize();`
 
   const typingSpeed = 15
   const [typedCode, setTypedCode] = useState("")
+  const hasTyped = useRef(false) // ❗ Prevents repeating
 
   useEffect(() => {
+    if (hasTyped.current) return // 🛑 Already typed, don't start again
+    hasTyped.current = true
+
     let i = 0
     const interval = setInterval(() => {
       if (i < fullCode.length) {
@@ -26,7 +30,9 @@ await Abhinav.initialize();`
         i++
       } else {
         clearInterval(interval)
-        setTimeout(onFinish, 500)
+        setTimeout(() => {
+          onFinish() // ✅ Done typing, trigger app load
+        }, 500)
       }
     }, typingSpeed)
 
