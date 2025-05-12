@@ -1,12 +1,16 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export default function Education() {
   const leftRef = useRef<HTMLDivElement>(null)
   const rightRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
+    if (isMobile) return // Skip animation for mobile view
+
     const handleScroll = () => {
       const leftElement = leftRef.current
       const rightElement = rightRef.current
@@ -45,8 +49,54 @@ export default function Education() {
     return () => {
       window.removeEventListener("scroll", handleScroll)
     }
-  }, [])
+  }, [isMobile])
 
+  // Mobile view education cards
+  if (isMobile) {
+    return (
+      <section id="education" className="py-16 px-4 bg-dark-color">
+        <h2 className="text-center text-3xl mb-10 relative inline-block left-1/2 transform -translate-x-1/2 after:content-[''] after:absolute after:bottom-[-10px] after:left-1/2 after:transform after:-translate-x-1/2 after:w-20 after:h-1 after:bg-gradient-to-r after:from-primary-color after:to-accent-color after:rounded-sm">
+          Educational Journey 🎓
+        </h2>
+
+        <div className="max-w-[400px] mx-auto space-y-6">
+          {/* College Education Card */}
+          <div className="bg-secondary-color rounded-lg overflow-hidden shadow-md relative border-l-4 border-primary-color">
+            <div className="p-5">
+              <div className="flex items-start mb-3">
+                <div className="mr-4 text-primary-color">
+                  <i className="fas fa-university text-3xl"></i>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-1">Pranveer Singh Institute of Technology</h3>
+                  <p className="text-sm mb-1">B.Tech in Computer Science & Engineering</p>
+                  <p className="text-sm text-muted-foreground">AKTU University | 2023-2027 | CGPA: 8.07</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* School Education Card */}
+          <div className="bg-secondary-color rounded-lg overflow-hidden shadow-md relative border-l-4 border-primary-color">
+            <div className="p-5">
+              <div className="flex items-start mb-3">
+                <div className="mr-4 text-primary-color">
+                  <i className="fas fa-graduation-cap text-3xl"></i>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-1">Delhi Public School, Barra Kanpur</h3>
+                  <p className="text-sm mb-1">Intermediate (12th) - 86%</p>
+                  <p className="text-sm text-muted-foreground">High School (10th) - 93.4%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Desktop/Tablet view with timeline
   return (
     <section id="education" className="py-20 px-8 bg-dark-color">
       <h2 className="text-center text-3xl mb-12 relative inline-block left-1/2 transform -translate-x-1/2 after:content-[''] after:absolute after:bottom-[-10px] after:left-1/2 after:transform after:-translate-x-1/2 after:w-20 after:h-1 after:bg-gradient-to-r after:from-primary-color after:to-accent-color after:rounded-sm">
@@ -74,7 +124,7 @@ export default function Education() {
           style={{ opacity: 0, transform: "translateX(100px)" }}
         >
           <div className="absolute top-[-25px] left-0 bg-primary-color text-dark-color py-1 px-2.5 rounded-sm text-xs font-medium">
-            2020 - 2022
+            2021 - 2023
           </div>
           <i className="fas fa-graduation-cap text-2xl text-primary-color mr-4"></i>
           <h3 className="text-lg mb-2 text-text-color">Delhi Public School, Barra Kanpur</h3>
