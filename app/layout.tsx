@@ -59,11 +59,12 @@ export default function RootLayout({
       </head>
       <body className={`${poppins.variable} ${inter.variable} font-poppins`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <AppWrapper> {/* 👈 Wrap your app in it */}
+          <AppWrapper>
             {children}
           </AppWrapper>
           <Toaster />
         </ThemeProvider>
+
       </body>
     </html>
   )
