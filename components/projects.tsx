@@ -23,7 +23,7 @@ const projects: Project[] = [
     description: "A modern portfolio website built with Next.js and Tailwind CSS.",
     image: "/portf.png?height=300&width=500",
     technologies: ["Next.js", "React", "Tailwind CSS", "Framer Motion"],
-    github: "https://github.com/Abhinav-2312307/Portfolio",
+    // github: "https://github.com/Abhinav-2312307/Portfolio",
     live: "https://portfolio-abhinavsahu.vercel.app/",
     category: "web",
   },
