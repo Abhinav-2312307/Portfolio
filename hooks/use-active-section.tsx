@@ -6,6 +6,8 @@ export function useActiveSection(sections: string[], offset = 100) {
   const [activeSection, setActiveSection] = useState<string>("")
 
   useEffect(() => {
+    const sections = ["home", "about", "skills", "education", "projects", "achievements", "hobbies", "contact"]
+    
     const handleScroll = () => {
       const pageYOffset = window.scrollY
       let newActiveSection = ""
