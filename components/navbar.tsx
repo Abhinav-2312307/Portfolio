@@ -14,7 +14,7 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme()
 
   // Define all sections for the scroll spy
-  const sections = ["about", "education", "skills", "projects", "hobbies", "contact"]
+  const sections = ["about", "education", "skills", "projects", ,"achievements","hobbies", "contact"]
   const activeSection = useActiveSection(sections, 150)
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function Navbar() {
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold text-primary-color">
-          Portfolio
+          Abhinav
         </Link>
 
         {/* Desktop Menu */}
