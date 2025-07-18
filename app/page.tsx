@@ -97,7 +97,6 @@ export default function Home() {
           </ScrollReveal>
 
           <Footer />
-          <Footer />
           <AIChatbot />
           
         </>
