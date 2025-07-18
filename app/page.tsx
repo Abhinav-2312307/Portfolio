@@ -16,6 +16,11 @@ import Projects from "@/components/projects"
 import Skills from "@/components/skills"
 import { useMobile } from "@/hooks/use-mobile"
 import ScrollReveal from "@/components/scroll-reveal"
+import Achievements from "@/components/achievements" // ❗️Missing line
+import AIChatbot from "@/components/ai-chatbot"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { useTheme } from "next-themes"
+import { useActiveSection } from "@/hooks/use-active-section"
 
 export default function Home() {
   const [loading, setLoading] = useState(true)
@@ -79,6 +84,10 @@ export default function Home() {
             <Projects />
           </ScrollReveal>
 
+          <ScrollReveal id="achievements">
+            <Achievements />
+          </ScrollReveal>
+
           <ScrollReveal id="hobbies">
             <Hobbies />
           </ScrollReveal>
@@ -88,6 +97,9 @@ export default function Home() {
           </ScrollReveal>
 
           <Footer />
+          <Footer />
+          <AIChatbot />
+          
         </>
       )}
     </main>
