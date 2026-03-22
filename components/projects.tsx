@@ -71,7 +71,7 @@ const projects: Project[] = [
   id: 4,
   title: "PrintMyPagePSIT",
   description: "A full-stack SaaS-based web platform for seamless document printing at PSIT. Users can upload files, customize print settings, make payments, and track orders in real-time. Features include multi-portal architecture (User, Admin, Supplier), Firebase authentication, email notifications, and a scalable backend for global deployment.",
-  image: "/printmypsit.png",
+  image: "/printmypagepsit.png",
   technologies: [
     "Next.js",
     "React",
