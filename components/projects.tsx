@@ -68,15 +68,25 @@ const projects: Project[] = [
   // },
 
   {
-    id: 4,
-    title: "PrintMyPagePSIT",
-    description: "A web application for printing pages from PSIT.",
-    image: "/printmypsit.png?height=300&width=500",
-    technologies: ["DBMS", "React", "Tailwind CSS", "Next.js", "Node.js"],
-    github:"https://github.com/Abhinav-2312307/PrintMyPagePSIT",
-    live: "https://print-my-page-psit.vercel.app/",
-    category: "web",
-  },
+  id: 4,
+  title: "PrintMyPagePSIT",
+  description: "A full-stack SaaS-based web platform for seamless document printing at PSIT. Users can upload files, customize print settings, make payments, and track orders in real-time. Features include multi-portal architecture (User, Admin, Supplier), Firebase authentication, email notifications, and a scalable backend for global deployment.",
+  image: "/printmypsit.png",
+  technologies: [
+    "Next.js",
+    "React",
+    "Node.js",
+    "MongoDB",
+    "Firebase Authentication",
+    "Tailwind CSS",
+    "Cloud Storage",
+    "Payment Integration",
+    "REST APIs"
+  ],
+  github: "https://github.com/Abhinav-2312307/printmypagex",
+  live: "https://printmypagepsit.store/",
+  category: "full-stack"
+},
   {
     id: 5,
     title: "MapMyPSIT",
