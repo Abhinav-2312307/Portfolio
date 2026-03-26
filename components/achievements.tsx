@@ -36,11 +36,20 @@ export default function Achievements() {
       category: "Hackathon",
     },
     {
-      title: "LeetCode Expert",
-      subtitle: "400+ Problems Solved",
+      title: "Sunhacks Hackathon at Sandip University",
+      subtitle: "Finalist - Sandip University",
+      year: "2025",
+      description:
+        "Selected as finalist in Sunhacks Hackathon at Sandip University. Asia's largest hackathon, recognized for innovative solutions and technical excellence.",
+      icon: "💡",
+      category: "Hackathon",
+    },
+    {
+      title: "LeetCode Stats",
+      subtitle: "550+ Problems Solved",
       year: "Present",
       description:
-        "Solved 400+ coding problems across all difficulty levels, demonstrating strong problem-solving skills and algorithmic thinking.",
+        "Solved 550+ coding problems across all difficulty levels, demonstrating strong problem-solving skills and algorithmic thinking.",
       icon: "🧠",
       category: "Coding",
     },
@@ -102,11 +111,11 @@ export default function Achievements() {
             <div className="text-text-secondary text-sm">Competition Rank</div>
           </div>
           <div className="bg-secondary-color/50 rounded-lg p-4 border border-white/10">
-            <div className="text-2xl font-bold text-primary-color mb-1">3</div>
+            <div className="text-2xl font-bold text-primary-color mb-1">4</div>
             <div className="text-text-secondary text-sm">Hackathon Finals</div>
           </div>
           <div className="bg-secondary-color/50 rounded-lg p-4 border border-white/10">
-            <div className="text-2xl font-bold text-primary-color mb-1">400+</div>
+            <div className="text-2xl font-bold text-primary-color mb-1">550+</div>
             <div className="text-text-secondary text-sm">Problems Solved</div>
           </div>
           <div className="bg-secondary-color/50 rounded-lg p-4 border border-white/10">

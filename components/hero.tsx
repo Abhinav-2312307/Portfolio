@@ -4,141 +4,192 @@ import { useEffect, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
 
+const roles = ["AI Developer", "Machine Learning Builder", "Full-Stack Problem Solver", "C++ and Python Engineer"]
+
+const socialLinks = [
+  {
+    href: "https://github.com/Abhinav-2312307",
+    label: "GitHub",
+    icon: "fab fa-github",
+  },
+  {
+    href: "https://www.linkedin.com/in/abhinav-sahu-865a01297/",
+    label: "LinkedIn",
+    icon: "fab fa-linkedin",
+  },
+  {
+    href: "https://leetcode.com/u/lucifer_debug/",
+    label: "LeetCode",
+    icon: "fas fa-code",
+  },
+  {
+    href: "mailto:2k23.cs2312307@gmail.com",
+    label: "Email",
+    icon: "far fa-envelope",
+  },
+]
+
 export default function Hero() {
   const typingTextRef = useRef<HTMLDivElement>(null)
-  const texts = ["AI Developer", "Data Science Enthusiast", "C++ Programmer", "Python Developer"]
 
   useEffect(() => {
     let index = 0
     let charIndex = 0
     let isDeleting = false
-    let typingSpeed = 100
+    let timeoutId = 0
 
-    const type = () => {
-      const currentText = texts[index]
+    const updateText = () => {
+      const currentText = roles[index]
 
-      if (typingTextRef.current) {
-        if (isDeleting) {
-          // Deleting text
-          typingTextRef.current.textContent = currentText.substring(0, charIndex - 1)
-          charIndex--
-          typingSpeed = 50
-        } else {
-          // Typing text
-          typingTextRef.current.textContent = currentText.substring(0, charIndex + 1)
-          charIndex++
-          typingSpeed = 100
-        }
-
-        // If finished typing
-        if (!isDeleting && charIndex === currentText.length) {
-          isDeleting = true
-          typingSpeed = 2000 // Pause at the end
-        }
-
-        // If finished deleting
-        if (isDeleting && charIndex === 0) {
-          isDeleting = false
-          index = (index + 1) % texts.length
-          typingSpeed = 500 // Pause before typing next
-        }
+      if (!typingTextRef.current) {
+        return
       }
 
-      setTimeout(type, typingSpeed)
+      if (isDeleting) {
+        charIndex -= 1
+      } else {
+        charIndex += 1
+      }
+
+      typingTextRef.current.textContent = currentText.slice(0, charIndex)
+
+      let delay = isDeleting ? 45 : 80
+
+      if (!isDeleting && charIndex === currentText.length) {
+        isDeleting = true
+        delay = 1400
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false
+        index = (index + 1) % roles.length
+        delay = 260
+      }
+
+      timeoutId = window.setTimeout(updateText, delay)
     }
 
-    // Start the typing effect
-    setTimeout(type, 1000)
+    timeoutId = window.setTimeout(updateText, 350)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
   }, [])
 
   return (
     <section
       id="home"
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary-color to-dark-color p-8 relative overflow-hidden"
+      className="relative flex min-h-[calc(100vh-4rem)] items-center overflow-hidden px-6 py-16 md:px-10 lg:px-16"
     >
-      <div className="absolute top-0 left-0 w-full h-full bg-radial-gradient z-[-1]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,255,136,0.16),_transparent_36%),radial-gradient(circle_at_80%_20%,_rgba(0,204,255,0.18),_transparent_28%),linear-gradient(135deg,_rgba(18,18,18,0.96),_rgba(33,33,33,0.92))]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-color/50 to-transparent" />
 
-      <div className="flex flex-col md:flex-row md:gap-16 items-center text-center md:text-left max-w-6xl w-full z-10">
-        <div className="relative" data-scroll data-scroll-speed="0.3">
-          <div className="absolute top-1/2 left-1/2 w-[280px] h-[280px] rounded-full border-2 border-dashed border-primary-color animate-rotate"></div>
-          <Image
-            src="/profile.jpg"
-            alt="Abhinav Sahu"
-            width={250}
-            height={250}
-            className="rounded-full border-5 border-primary-color object-cover m-8 shadow-[0_0_30px_var(--primary-color)] animate-float relative z-10 magnetic-element"
-            data-strength="0.15"
-          />
-        </div>
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="space-y-8">
+          <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.28em] text-text-secondary shadow-[0_10px_30px_rgba(0,0,0,0.2)] backdrop-blur-md">
+            <span className="h-2 w-2 rounded-full bg-primary-color shadow-[0_0_14px_var(--primary-color)]" />
+            Available for impactful builds
+          </div>
 
-        <div className="max-w-[600px]" data-scroll data-scroll-speed="0.5">
-          <h1 className="text-4xl mb-4 bg-gradient-to-r from-primary-color to-accent-color bg-clip-text text-transparent inline-block relative">
-            Abhinav Sahu
-          </h1>
-          <div ref={typingTextRef} className="text-xl text-text-secondary mb-8 min-h-[2.5rem]"></div>
-          <p className="mb-8 text-text-secondary text-base leading-7">
-            Passionate AI and Data Science enthusiast with a strong foundation in C++ and Python programming. Currently
-            pursuing B.Tech in Computer Science & Engineering at Pranveer Singh Institute of Technology.
-          </p>
+          <div className="space-y-5">
+            <p className="text-sm font-medium uppercase tracking-[0.32em] text-primary-light">Abhinav Sahu</p>
+            <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-white md:text-6xl">
+              Building thoughtful AI experiences that feel fast, useful, and polished.
+            </h1>
+            <div className="flex min-h-[2rem] items-center gap-3 text-base text-text-secondary md:text-xl">
+              <span className="text-white">I am a</span>
+              <span
+                ref={typingTextRef}
+                className="font-medium text-primary-color"
+                aria-label="Animated role description"
+              />
+              <span className="hero-caret h-6 w-px bg-primary-color" />
+            </div>
+            <p className="max-w-2xl text-base leading-8 text-text-secondary md:text-lg">
+              Computer Science undergraduate focused on AI, data-driven products, and full-stack engineering. I turn
+              ideas into practical builds with clean interfaces, strong fundamentals, and real user value.
+            </p>
+          </div>
 
-          <div className="flex flex-wrap gap-4 md:justify-start justify-center">
+          <div className="flex flex-wrap gap-4">
             <Link
               href="#projects"
-              className="inline-block py-3 px-6 rounded-md font-medium no-underline transition-all duration-300 bg-primary-color text-dark-color shadow-primary hover:bg-primary-dark hover:translate-y-[-3px] hover:shadow-lg magnetic-element"
-              data-strength="0.2"
-              data-cursor-text="View Projects"
+              className="inline-flex items-center justify-center rounded-full bg-primary-color px-6 py-3 text-sm font-semibold text-dark-color transition-all duration-300 hover:-translate-y-1 hover:bg-primary-dark hover:shadow-[0_16px_36px_rgba(0,255,136,0.28)]"
             >
-              View Projects
+              Explore Projects
             </Link>
             <Link
               href="#contact"
-              className="inline-block py-3 px-6 rounded-md font-medium no-underline transition-all duration-300 bg-transparent text-primary-color border-2 border-primary-color hover:bg-primary-color hover:text-dark-color hover:translate-y-[-3px] hover:shadow-lg magnetic-element"
-              data-strength="0.2"
-              data-cursor-text="Contact Me"
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:border-primary-color/40 hover:bg-white/10"
             >
-              Contact Me
+              Let&apos;s Connect
             </Link>
           </div>
 
-          <div className="flex gap-6 mt-8 md:justify-start justify-center">
-            <a
-              href="https://github.com/Abhinav-2312307"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-cursor-text="GitHub"
-              className="text-xl text-text-color w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 transition-all duration-300 hover:text-primary-color hover:translate-y-[-5px] hover:bg-primary-color/10 magnetic-element"
-              data-strength="0.3"
-            >
-              <i className="fab fa-github"></i>
-            </a>
-            <a
-              href="https://www.linkedin.com/in/abhinav-sahu-865a01297/"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-cursor-text="LinkedIn"
-              className="text-xl text-text-color w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 transition-all duration-300 hover:text-primary-color hover:translate-y-[-5px] hover:bg-primary-color/10 magnetic-element"
-              data-strength="0.3"
-            >
-              <i className="fab fa-linkedin"></i>
-            </a>
-            <a
-              href="https://leetcode.com/u/lucifer_debug/"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-cursor-text="LeetCode"
-              className="text-xl text-text-color w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 transition-all duration-300 hover:text-primary-color hover:translate-y-[-5px] hover:bg-primary-color/10 magnetic-element"
-              data-strength="0.3"
-            >
-              <i className="fas fa-code"></i>
-            </a>
-            <a
-              href="mailto:2k23.cs2312307@gmail.com"
-              data-cursor-text="Email"
-              className="text-xl text-text-color w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 transition-all duration-300 hover:text-primary-color hover:translate-y-[-5px] hover:bg-primary-color/10 magnetic-element"
-              data-strength="0.3"
-            >
-              <i className="far fa-envelope"></i>
-            </a>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+              <p className="text-2xl font-semibold text-white">10+</p>
+              <p className="mt-1 text-sm text-text-secondary">Projects spanning AI, web apps, and problem-solving.</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+              <p className="text-2xl font-semibold text-white">3x</p>
+              <p className="mt-1 text-sm text-text-secondary">Core strengths in AI, data science, and engineering.</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+              <p className="text-2xl font-semibold text-white">24/7</p>
+              <p className="mt-1 text-sm text-text-secondary">Curiosity for building, iterating, and learning fast.</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {socialLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+                rel={link.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-lg text-white transition-all duration-300 hover:-translate-y-1 hover:border-primary-color/40 hover:text-primary-color"
+                aria-label={link.label}
+              >
+                <i className={link.icon} />
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative mx-auto w-full max-w-md">
+          <div className="absolute -left-6 top-10 h-24 w-24 rounded-full bg-primary-color/15 blur-3xl" />
+          <div className="absolute -right-4 bottom-8 h-28 w-28 rounded-full bg-accent-color/20 blur-3xl" />
+
+          <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/6 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <div className="absolute inset-0 bg-[linear-gradient(145deg,_rgba(255,255,255,0.1),_transparent_40%)]" />
+            <div className="relative space-y-5">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs uppercase tracking-[0.28em] text-text-secondary">
+                <span>Featured Profile</span>
+                <span className="text-primary-color">Online</span>
+              </div>
+
+              <div className="relative mx-auto aspect-square w-full max-w-[320px] overflow-hidden rounded-[28px] border border-white/10 bg-[#08110f]">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(0,255,136,0.18),_transparent_42%)]" />
+                <Image
+                  src="/profile.jpg"
+                  alt="Portrait of Abhinav Sahu"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 80vw, 320px"
+                  className="object-cover"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-text-secondary">Focus</p>
+                  <p className="mt-1 font-medium text-white">AI + Product Thinking</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-text-secondary">Stack</p>
+                  <p className="mt-1 font-medium text-white">Next.js, Python, C++</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

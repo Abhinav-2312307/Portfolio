@@ -115,7 +115,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="90"
                     ></div>
                   </div>
@@ -138,7 +138,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="85"
                     ></div>
                   </div>
@@ -161,7 +161,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="70"
                     ></div>
                   </div>
@@ -188,7 +188,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="75"
                     ></div>
                   </div>
@@ -211,7 +211,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="70"
                     ></div>
                   </div>
@@ -234,7 +234,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="65"
                     ></div>
                   </div>
@@ -261,7 +261,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="80"
                     ></div>
                   </div>
@@ -284,7 +284,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="85"
                     ></div>
                   </div>
@@ -307,7 +307,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="60"
                     ></div>
                   </div>
@@ -334,7 +334,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="85"
                     ></div>
                   </div>
@@ -357,7 +357,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="80"
                     ></div>
                   </div>
@@ -380,7 +380,7 @@ export default function Skills() {
                 <div className="mt-6">
                   <div className="h-2 bg-white/10 rounded-sm overflow-hidden mt-1">
                     <div
-                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1.5s] ease-in-out"
+                      className="progress-fill h-full bg-primary-color rounded-sm w-0 transition-all duration-[1500ms] ease-in-out"
                       data-progress="90"
                     ></div>
                   </div>

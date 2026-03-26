@@ -23,6 +23,7 @@ export const metadata = {
   description: "AI & Data Science Enthusiast, C++ & Python Developer. Explore my projects, skills, and experience.",
   keywords: "Abhinav Sahu, AI, Data Science, C++, Python, Developer, Portfolio",
   authors: [{ name: "Abhinav Sahu" }],
+  metadataBase: new URL("https://abhinav-sahu-portfolio.vercel.app"),
   openGraph: {
     title: "Abhinav Sahu | AI Enthusiast",
     description: "AI & Data Science Enthusiast, C++ & Python Developer",

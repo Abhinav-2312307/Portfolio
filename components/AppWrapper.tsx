@@ -3,11 +3,13 @@ import { useState, useEffect } from "react"
 import type React from "react"
 
 import Preloader from "./preloader"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export default function AppWrapper({ children }: { children: React.ReactNode }) {
   const [showPreloader, setShowPreloader] = useState(true)
   const [hydrated, setHydrated] = useState(false)
   const [contentVisible, setContentVisible] = useState(false)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     // Check if this is the first visit in this session
@@ -15,9 +17,10 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
 
     // Only run this after hydration to avoid SSR issues
     try {
-      setShowPreloader(!hasSeenPreloader)
+      const shouldShowPreloader = !hasSeenPreloader && !isMobile
+      setShowPreloader(shouldShowPreloader)
       // If we're not showing the preloader, make content visible immediately
-      if (hasSeenPreloader) {
+      if (!shouldShowPreloader) {
         setContentVisible(true)
       }
     } catch (error) {
@@ -28,7 +31,7 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
     }
 
     setHydrated(true)
-  }, [])
+  }, [isMobile])
 
   const handlePreloaderFinish = () => {
     try {
@@ -39,11 +42,7 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
     }
 
     setShowPreloader(false)
-
-    // Small delay before showing content for smooth transition
-    setTimeout(() => {
-      setContentVisible(true)
-    }, 100)
+    setContentVisible(true)
   }
 
   // Don't render anything until hydration is complete

@@ -106,7 +106,7 @@ const projects: Project[] = [
     github: "https://github.com/Abhinav-2312307/TicTacToe",
     live:"https://tictactoe-psit.vercel.app/",
 
-    category: "ai",
+    category: "web",
   },
   {
     id: 6,

@@ -69,6 +69,12 @@ body {
   cursor: none;
 }
 
+@media (max-width: 768px) {
+  body {
+    cursor: auto;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -244,6 +250,35 @@ body {
   100% {
     transform: rotate(45deg) translateX(100%);
   }
+}
+
+@keyframes preloaderProgress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes caretBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.preloader-progress {
+  transform: translateX(-100%);
+  animation: preloaderProgress 0.65s ease-out forwards;
+}
+
+.hero-caret {
+  animation: caretBlink 1s step-end infinite;
 }
 
 /* Utility classes */
