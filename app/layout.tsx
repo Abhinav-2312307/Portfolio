@@ -1,19 +1,18 @@
 import AppWrapper from "@/components/AppWrapper"
 import type React from "react"
+import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { Poppins, Inter } from "next/font/google"
+import { Manrope, Space_Grotesk } from "next/font/google"
 import "./globals.css"
 
-// Load Poppins with all the weights we need
-const poppins = Poppins({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-poppins",
 })
 
-// Keep Inter as a fallback
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-inter",
 })
@@ -45,21 +44,20 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/png" href="/profile.jpg" />
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-PNJBFZDLVM"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-PNJBFZDLVM');
-            `,
-          }}
-        />
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-PNJBFZDLVM" strategy="afterInteractive" />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-PNJBFZDLVM');
+          `}
+        </Script>
       </head>
-      <body className={`${poppins.variable} ${inter.variable} font-poppins`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+      <body className={`${spaceGrotesk.variable} ${manrope.variable} font-poppins`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <AppWrapper>
             {children}
           </AppWrapper>

@@ -1,29 +1,29 @@
 "use client"
 
 import type React from "react"
-import { useInView } from "react-intersection-observer"
+import { motion, useReducedMotion } from "framer-motion"
+
+import { cn } from "@/lib/utils"
 
 interface ScrollRevealProps {
   children: React.ReactNode
-  id?: string
   className?: string
 }
 
-export default function ScrollReveal({ children, id, className = "" }: ScrollRevealProps) {
-  const { ref, inView } = useInView({
-    threshold: 0.1,
-    triggerOnce: true,
-  })
+export default function ScrollReveal({ children, className = "" }: ScrollRevealProps) {
+  const prefersReducedMotion = useReducedMotion()
 
   return (
-    <div
-      id={id}
-      ref={ref}
-      className={`transition-all duration-700 ${
-        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"
-      } ${className}`}
+    <motion.div
+      data-scroll-section
+      className={cn("section-shell", className)}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 40 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.16 }}
+      transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
     >
-      {children}
-    </div>
+      <div className="section-sheen" />
+      <div className="scroll-frame">{children}</div>
+    </motion.div>
   )
 }

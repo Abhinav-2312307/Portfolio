@@ -165,7 +165,7 @@ export default function AIChatbot() {
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-14 h-14 rounded-full bg-gradient-to-r from-primary-color to-accent-color text-dark-color shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl flex items-center justify-center ${
+          className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-primary-color to-accent-color text-contrast-color shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl ${
             isMobile ? "cursor-pointer" : "cursor-none magnetic-element"
           }`}
           data-strength="0.2"
@@ -192,7 +192,7 @@ export default function AIChatbot() {
       {isOpen && (
         <div className="fixed bottom-24 right-6 w-80 h-96 bg-secondary-color rounded-xl shadow-2xl border border-white/10 z-40 flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary-color to-accent-color p-4 text-dark-color">
+          <div className="bg-gradient-to-r from-primary-color to-accent-color p-4 text-contrast-color">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -218,7 +218,7 @@ export default function AIChatbot() {
                 <div
                   className={`max-w-[85%] p-3 rounded-lg text-sm leading-relaxed ${
                     message.isUser
-                      ? "bg-primary-color text-dark-color ml-auto rounded-br-sm"
+                      ? "ml-auto rounded-br-sm bg-primary-color text-contrast-color"
                       : "bg-white/10 text-text-color rounded-bl-sm"
                   }`}
                 >
@@ -281,7 +281,7 @@ export default function AIChatbot() {
               <button
                 onClick={sendMessage}
                 disabled={isLoading || !inputValue.trim()}
-                className="bg-primary-color text-dark-color px-3 py-2 rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-lg bg-primary-color px-3 py-2 text-contrast-color transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path

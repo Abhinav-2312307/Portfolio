@@ -7,7 +7,7 @@ export function useIsMobile() {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768 || "ontouchstart" in window || navigator.maxTouchPoints > 0)
+      setIsMobile(window.innerWidth <= 900)
     }
 
     checkMobile()

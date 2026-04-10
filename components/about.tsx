@@ -1,149 +1,80 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import Link from "next/link"
-import { useMobile } from "@/hooks/use-mobile"
+import { ArrowUpRight } from "lucide-react"
+
+import { requestPortfolioScrollTo } from "@/lib/smooth-scroll"
+
+const storyPoints = [
+  "I approach projects like products, not isolated demos.",
+  "I care about visual hierarchy, clear interaction, and system-level structure together.",
+  "I learn fast, iterate hard, and keep refining until the experience feels intentional.",
+]
+
+const stats = [
+  { label: "Years Coding", value: "2+" },
+  { label: "Projects Built", value: "10+" },
+  { label: "Problems Solved", value: "550+" },
+  { label: "Focus Area", value: "AI + Full Stack" },
+]
 
 export default function About() {
-  const progressRef = useRef<HTMLDivElement>(null)
-  const countersRef = useRef<HTMLDivElement>(null)
-  const isMobile = useMobile()
-
-  useEffect(() => {
-    let animationStarted = false
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !animationStarted) {
-            animationStarted = true
-            animateCounters()
-          }
-        })
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -100px 0px" },
-    )
-
-    if (countersRef.current) {
-      observer.observe(countersRef.current)
-    }
-
-    return () => {
-      if (countersRef.current) {
-        observer.unobserve(countersRef.current)
-      }
-    }
-  }, [])
-
-  const animateCounters = () => {
-    const counters = document.querySelectorAll(".stat-number")
-
-    counters.forEach((counter) => {
-      const targetText = counter.textContent || "0+"
-      const target = Number.parseInt(targetText.replace(/\D/g, ""))
-      let count = 0
-      const duration = 2000 // 2 seconds
-      const frameDuration = 1000 / 60 // for 60fps
-      const totalFrames = Math.round(duration / frameDuration)
-      const increment = target / totalFrames
-
-      const timer = setInterval(() => {
-        count += increment
-
-        if (count >= target) {
-          counter.textContent = `${target}+`
-          clearInterval(timer)
-        } else {
-          counter.textContent = `${Math.floor(count)}+`
-        }
-      }, frameDuration)
-    })
-  }
-
   return (
-    <section id="about" className="py-20 px-8 bg-secondary-color">
-      <h2
-        className="text-center text-3xl mb-12 relative inline-block left-1/2 transform -translate-x-1/2 after:content-[''] after:absolute after:bottom-[-10px] after:left-1/2 after:transform after:-translate-x-1/2 after:w-20 after:h-1 after:bg-gradient-to-r after:from-primary-color after:to-accent-color after:rounded-sm"
-        data-scroll
-        data-scroll-speed="1"
-      >
-        About Me
-      </h2>
+    <section id="about" className="relative overflow-hidden px-6 py-20 md:px-10 md:py-24 lg:px-16 lg:py-28">
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,14,22,0.98),rgba(9,13,20,0.94))]" />
+      <div className="absolute inset-y-0 left-[8%] w-px bg-gradient-to-b from-transparent via-primary-color/20 to-transparent" />
+      <div className="absolute right-[10%] top-[18%] h-[15rem] w-[20rem] bg-[radial-gradient(circle,rgba(79,239,255,0.1),transparent_70%)] blur-3xl" />
 
-      <div className="flex flex-col md:flex-row gap-12 max-w-6xl mx-auto">
-        <div className="flex-1" data-scroll data-scroll-speed="0.5">
-          <h3 className="text-xl mb-4 text-primary-color">Hello, I'm Abhinav!</h3>
-          <p className="mb-6 text-text-secondary leading-7">
-            I am a passionate Computer Science student with a deep interest in Artificial Intelligence and Data Science.
-            My journey in technology began with a curiosity about how computers work and evolved into a passion for
-            creating innovative solutions using programming.
-          </p>
-          <p className="mb-6 text-text-secondary leading-7">
-            Currently pursuing my B.Tech in Computer Science & Engineering at Pranveer Singh Institute of Technology, I
-            focus on developing my skills in C++ and Python programming, as well as exploring the fascinating world of
-            AI and machine learning.
-          </p>
-          <p className="mb-6 text-text-secondary leading-7">
-            I believe in continuous learning and pushing the boundaries of what's possible with technology. When I'm not
-            coding, you can find me exploring the latest advancements in tech, watching anime, or delving into the
-            mysteries of the universe through astrophysics.
-          </p>
-          <Link
-            href="#contact"
-            className={`inline-block py-3 px-6 mt-4 rounded-md font-medium no-underline transition-all duration-300 bg-primary-color text-dark-color shadow-primary hover:bg-primary-dark hover:translate-y-[-3px] hover:shadow-lg ${
-              isMobile ? "cursor-pointer" : "cursor-none magnetic-element"
-            }`}
-            data-strength="0.2"
-            data-cursor-text="Let's Connect"
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm uppercase tracking-[0.34em] text-primary-light">About</p>
+            <h2 className="mt-3 text-[clamp(2.4rem,5vw,4.1rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-text-color">
+              Building with curiosity and product discipline.
+            </h2>
+          </div>
+
+          <div className="glass-panel-strong rounded-[30px] p-6">
+            <p className="text-base leading-8 text-text-color">
+              I&apos;m a Computer Science undergraduate who enjoys turning ambitious ideas into usable digital products.
+              My work sits at the intersection of AI, full-stack engineering, and interface design, with a strong bias
+              toward clarity over noise.
+            </p>
+            <p className="mt-4 text-sm leading-7 text-text-secondary">
+              What keeps me interested is the full journey: understanding the problem, shaping the experience, building
+              the system, and then refining the rough edges until the result feels solid.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => requestPortfolioScrollTo({ id: "contact", offset: -110 })}
+            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,rgb(var(--primary-color)_/_0.94),rgb(var(--accent-color)_/_0.84))] px-6 py-3.5 text-sm font-semibold text-contrast-color shadow-[0_14px_34px_rgb(var(--primary-color)_/_0.16)] transition-all duration-300 hover:-translate-y-0.5"
           >
-            Let's Connect
-          </Link>
+            Let&apos;s Work Together
+            <ArrowUpRight size={16} />
+          </button>
         </div>
 
-        <div
-          ref={countersRef}
-          className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6"
-          data-scroll
-          data-scroll-speed="0.8"
-        >
-          <div
-            className={`bg-dark-color p-6 rounded-md text-center shadow-md transition-transform duration-300 hover:translate-y-[-5px] hover:shadow-lg ${
-              isMobile ? "cursor-pointer" : "cursor-none magnetic-element"
-            }`}
-            data-strength="0.1"
-          >
-            <div className="stat-number text-2xl font-bold text-primary-color mb-1">2+</div>
-            <div className="text-sm text-text-secondary">Years of Coding</div>
+        <div className="space-y-5">
+          <div className="glass-panel rounded-[30px] p-6">
+            <p className="text-[0.68rem] uppercase tracking-[0.34em] text-text-secondary">How I work</p>
+            <div className="mt-5 space-y-4">
+              {storyPoints.map((point, index) => (
+                <div key={point} className="flex items-start gap-4">
+                  <span className="mt-1 text-xs text-primary-color">{String(index + 1).padStart(2, "0")}</span>
+                  <p className="text-sm leading-7 text-text-secondary">{point}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div
-            className={`bg-dark-color p-6 rounded-md text-center shadow-md transition-transform duration-300 hover:translate-y-[-5px] hover:shadow-lg ${
-              isMobile ? "cursor-pointer" : "cursor-none magnetic-element"
-            }`}
-            data-strength="0.1"
-          >
-            <div className="stat-number text-2xl font-bold text-primary-color mb-1">6+</div>
-            <div className="text-sm text-text-secondary">Projects Completed</div>
-          </div>
-
-          <div
-            className={`bg-dark-color p-6 rounded-md text-center shadow-md transition-transform duration-300 hover:translate-y-[-5px] hover:shadow-lg ${
-              isMobile ? "cursor-pointer" : "cursor-none magnetic-element"
-            }`}
-            data-strength="0.1"
-          >
-            <div className="stat-number text-2xl font-bold text-primary-color mb-1">5+</div>
-            <div className="text-sm text-text-secondary">Courses Completed</div>
-          </div>
-
-          <div
-            className={`bg-dark-color p-6 rounded-md text-center shadow-md transition-transform duration-300 hover:translate-y-[-5px] hover:shadow-lg ${
-              isMobile ? "cursor-pointer" : "cursor-none magnetic-element"
-            }`}
-            data-strength="0.1"
-          >
-            <div className="stat-number text-2xl font-bold text-primary-color mb-1">300+</div>
-            <div className="text-sm text-text-secondary">Coding Problems Solved</div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {stats.map((item) => (
+              <div key={item.label} className="glass-panel rounded-[24px] p-5">
+                <p className="text-[0.68rem] uppercase tracking-[0.28em] text-text-secondary">{item.label}</p>
+                <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-text-color">{item.value}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

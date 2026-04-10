@@ -5,7 +5,6 @@ import dynamic from "next/dynamic"
 import About from "@/components/about"
 import BackToTop from "@/components/back-to-top"
 import Contact from "@/components/contact"
-import CursorEffect from "@/components/cursor-effect"
 import Education from "@/components/education"
 import Footer from "@/components/footer"
 import Hero from "@/components/hero"
@@ -13,11 +12,12 @@ import Hobbies from "@/components/hobbies"
 import Navbar from "@/components/navbar"
 import Projects from "@/components/projects"
 import Skills from "@/components/skills"
-import { useMobile } from "@/hooks/use-mobile"
 import ScrollReveal from "@/components/scroll-reveal"
 import Achievements from "@/components/achievements"
+import ScrollLightBackdrop from "@/components/scroll-light-backdrop"
+import { requestPortfolioScrollTo } from "@/lib/smooth-scroll"
 
-const ParticleBackground = dynamic(() => import("@/components/particle-background"), {
+const SmoothScroll = dynamic(() => import("@/components/locomotive-scroll"), {
   ssr: false,
 })
 
@@ -26,69 +26,75 @@ const AIChatbot = dynamic(() => import("@/components/ai-chatbot"), {
 })
 
 export default function Home() {
-  const isMobile = useMobile()
-
   useEffect(() => {
     const handleHashNavigation = () => {
-      const hash = window.location.hash
-      if (hash) {
-        window.setTimeout(() => {
-          const element = document.querySelector(hash)
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "start" })
-          }
-        }, 100)
+      const sectionId = window.location.hash.replace("#", "")
+
+      if (!sectionId) {
+        return
       }
+
+      window.setTimeout(() => {
+        requestPortfolioScrollTo({
+          duration: 950,
+          id: sectionId,
+          offset: -100,
+        })
+      }, 120)
     }
 
     window.addEventListener("load", handleHashNavigation)
+    window.addEventListener("hashchange", handleHashNavigation)
 
     return () => {
       window.removeEventListener("load", handleHashNavigation)
+      window.removeEventListener("hashchange", handleHashNavigation)
     }
   }, [])
 
   return (
-    <main className="min-h-screen bg-dark-color text-text-color overflow-x-hidden">
-      {!isMobile && <CursorEffect key="cursor-effect" />}
-      {!isMobile && <ParticleBackground />}
+    <main className="page-ambient relative min-h-screen overflow-x-clip bg-dark-color text-text-color">
+      <ScrollLightBackdrop />
       <BackToTop />
       <Navbar />
 
-      <section id="hero" className="pt-16 md:pt-20">
-        <Hero />
-      </section>
+      <SmoothScroll>
+        <div className="relative z-10">
+          <Hero />
 
-      <ScrollReveal id="about">
-        <About />
-      </ScrollReveal>
+          <ScrollReveal>
+            <About />
+          </ScrollReveal>
 
-      <ScrollReveal id="education">
-        <Education />
-      </ScrollReveal>
+          <ScrollReveal>
+            <Education />
+          </ScrollReveal>
 
-      <ScrollReveal id="skills">
-        <Skills />
-      </ScrollReveal>
+          <Skills />
 
-      <ScrollReveal id="projects">
-        <Projects />
-      </ScrollReveal>
+          <Projects />
 
-      <ScrollReveal id="achievements">
-        <Achievements />
-      </ScrollReveal>
+          <ScrollReveal>
+            <Achievements />
+          </ScrollReveal>
 
-      <ScrollReveal id="hobbies">
-        <Hobbies />
-      </ScrollReveal>
+          <ScrollReveal>
+            <Hobbies />
+          </ScrollReveal>
 
-      <ScrollReveal id="contact">
-        <Contact />
-      </ScrollReveal>
+          <ScrollReveal>
+            <Contact />
+          </ScrollReveal>
 
-      <Footer />
-      <AIChatbot />
+          <div data-scroll-section>
+            <Footer />
+          </div>
+        </div>
+      </SmoothScroll>
+
+      <div className="relative z-20">
+        <AIChatbot />
+      </div>
     </main>
   )
 }

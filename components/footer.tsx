@@ -1,95 +1,80 @@
 import Link from "next/link"
 
+const links = ["home", "about", "education", "skills", "projects", "hobbies", "contact"]
+
+const socialLinks = [
+  {
+    href: "https://github.com/Abhinav-2312307",
+    icon: "fab fa-github",
+    label: "GitHub",
+  },
+  {
+    href: "https://www.linkedin.com/in/abhinav-sahu-865a01297/",
+    icon: "fab fa-linkedin",
+    label: "LinkedIn",
+  },
+  {
+    href: "https://leetcode.com/u/lucifer_debug/",
+    icon: "fas fa-code",
+    label: "LeetCode",
+  },
+  {
+    href: "mailto:2k23.cs2312307@gmail.com",
+    icon: "far fa-envelope",
+    label: "Email",
+  },
+]
+
 export default function Footer() {
   return (
-    <footer className="bg-secondary-color py-12 px-8 text-center relative">
-      <div className="max-w-6xl mx-auto">
-        <Link href="#home" className="text-xl font-bold text-primary-color mb-6 inline-block">
-          Abhinav Sahu
-        </Link>
+    <footer className="relative overflow-hidden px-8 py-12">
+      <div className="mx-auto max-w-6xl">
+        <div className="liquid-glass rounded-[2rem] border border-white/15 px-6 py-10 text-center shadow-liquid dark:border-white/10 md:px-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgb(var(--primary-color)_/_0.12),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgb(var(--accent-color)_/_0.1),_transparent_30%)]" />
 
-        <div className="flex justify-center gap-6 mb-6 flex-wrap">
-          <Link
-            href="#home"
-            className="text-text-secondary no-underline transition-colors duration-300 hover:text-primary-color"
-          >
-            Home
-          </Link>
-          <Link
-            href="#about"
-            className="text-text-secondary no-underline transition-colors duration-300 hover:text-primary-color"
-          >
-            About
-          </Link>
-          <Link
-            href="#education"
-            className="text-text-secondary no-underline transition-colors duration-300 hover:text-primary-color"
-          >
-            Education
-          </Link>
-          <Link
-            href="#skills"
-            className="text-text-secondary no-underline transition-colors duration-300 hover:text-primary-color"
-          >
-            Skills
-          </Link>
-          <Link
-            href="#projects"
-            className="text-text-secondary no-underline transition-colors duration-300 hover:text-primary-color"
-          >
-            Projects
-          </Link>
-          <Link
-            href="#hobbies"
-            className="text-text-secondary no-underline transition-colors duration-300 hover:text-primary-color"
-          >
-            Hobbies
-          </Link>
-          <Link
-            href="#contact"
-            className="text-text-secondary no-underline transition-colors duration-300 hover:text-primary-color"
-          >
-            Contact
-          </Link>
-        </div>
+          <div className="relative z-10">
+            <Link href="#home" className="inline-flex items-center gap-3 rounded-full px-4 py-2">
+              <span className="glass-pill inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 font-semibold text-primary-color dark:border-white/10">
+                AS
+              </span>
+              <span className="text-xl font-semibold text-text-color">Abhinav Sahu</span>
+            </Link>
 
-        <div className="flex justify-center gap-4 mb-6">
-          <a
-            href="https://github.com/Abhinav-2312307"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-text-secondary text-lg transition-colors duration-300 hover:text-primary-color"
-          >
-            <i className="fab fa-github"></i>
-          </a>
-          <a
-            href="https://www.linkedin.com/in/abhinav-sahu-865a01297/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-text-secondary text-lg transition-colors duration-300 hover:text-primary-color"
-          >
-            <i className="fab fa-linkedin"></i>
-          </a>
-          <a
-            href="https://leetcode.com/u/lucifer_debug/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-text-secondary text-lg transition-colors duration-300 hover:text-primary-color"
-          >
-            <i className="fas fa-code"></i>
-          </a>
-          <a
-            href="mailto:2k23.cs2312307@gmail.com"
-            className="text-text-secondary text-lg transition-colors duration-300 hover:text-primary-color"
-          >
-            <i className="far fa-envelope"></i>
-          </a>
-        </div>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-text-secondary md:text-base">
+              Designing AI-first products and polished interfaces with the same focus on usefulness, speed, and craft.
+            </p>
 
-        <div className="pt-6 border-t border-white/10">
-          <p className="text-text-secondary text-sm">
-            &copy; {new Date().getFullYear()} Abhinav Sahu. All rights reserved.
-          </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              {links.map((link) => (
+                <Link
+                  key={link}
+                  href={`#${link}`}
+                  className="glass-pill rounded-full border border-white/12 px-4 py-2 text-sm capitalize text-text-secondary transition-colors hover:text-primary-color dark:border-white/10"
+                >
+                  {link}
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-center gap-3">
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+                  rel={link.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                  className="glass-pill inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 text-text-secondary transition-colors hover:text-primary-color dark:border-white/10"
+                  aria-label={link.label}
+                >
+                  <i className={link.icon}></i>
+                </a>
+              ))}
+            </div>
+
+            <div className="mt-8 border-t border-white/10 pt-6 text-sm text-text-secondary">
+              &copy; {new Date().getFullYear()} Abhinav Sahu. All rights reserved.
+            </div>
+          </div>
         </div>
       </div>
     </footer>

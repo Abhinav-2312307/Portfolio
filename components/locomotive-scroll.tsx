@@ -2,31 +2,57 @@
 
 import type React from "react"
 import { useEffect, useRef } from "react"
-import LocomotiveScroll from "locomotive-scroll"
+import { useReducedMotion } from "framer-motion"
 import "locomotive-scroll/dist/locomotive-scroll.css"
 
-export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+import { useIsMobile } from "@/hooks/use-mobile"
+import {
+  PORTFOLIO_SCROLL_TO_EVENT,
+  PORTFOLIO_SCROLL_UPDATE_EVENT,
+  dispatchPortfolioScrollState,
+  type PortfolioScrollToOptions,
+} from "@/lib/smooth-scroll"
+
+type SmoothScrollProps = {
+  children: React.ReactNode
+}
+
+type LocomotiveScrollInstance = {
+  destroy: () => void
+  on: (event: string, callback: (args: any) => void) => void
+  scrollTo: (target: HTMLElement | string | number, options?: Record<string, unknown>) => void
+  update: () => void
+}
+
+export default function SmoothScroll({ children }: SmoothScrollProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const locomotiveScrollRef = useRef<LocomotiveScroll | null>(null)
+  const locomotiveScrollRef = useRef<LocomotiveScrollInstance | null>(null)
+  const isMobile = useIsMobile()
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
-    if (!scrollRef.current) return
+    if (!scrollRef.current || isMobile || prefersReducedMotion) {
+      return
+    }
 
-    // Wait for DOM to be fully loaded
-    const initScroll = () => {
-      // Destroy existing instance if it exists
-      if (locomotiveScrollRef.current) {
-        locomotiveScrollRef.current.destroy()
+    let cleanup: (() => void) | undefined
+    let cancelled = false
+
+    const initialize = async () => {
+      const { default: LocomotiveScroll } = await import("locomotive-scroll")
+
+      if (cancelled || !scrollRef.current) {
+        return
       }
 
-      // Initialize locomotive scroll with improved settings
-      locomotiveScrollRef.current = new LocomotiveScroll({
-        el: scrollRef.current as HTMLElement,
+      const instance = new LocomotiveScroll({
+        el: scrollRef.current,
         smooth: true,
-        smoothMobile: false,
+        lerp: 0.14,
         multiplier: 1,
-        lerp: 0.07,
+        touchMultiplier: 1.05,
         class: "is-revealed",
+        getDirection: true,
         reloadOnContextChange: true,
         smartphone: {
           smooth: false,
@@ -35,83 +61,131 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
           smooth: false,
           breakpoint: 1024,
         },
-      })
+      }) as unknown as LocomotiveScrollInstance
 
-      // Handle anchor links properly
-      const handleAnchorLinks = () => {
-        const anchorLinks = document.querySelectorAll('a[href^="#"]')
+      locomotiveScrollRef.current = instance
 
-        anchorLinks.forEach((anchor) => {
-          anchor.addEventListener("click", (e) => {
-            e.preventDefault()
+      const emitNativeState = () => {
+        const limit = Math.max(document.body.scrollHeight - window.innerHeight, 1)
+        const y = window.scrollY
 
-            const targetId = anchor.getAttribute("href")
-            if (!targetId || targetId === "#") return
-
-            const targetElement = document.querySelector(targetId)
-            if (!targetElement) return
-
-            // Use locomotive scroll to scroll to the target
-            locomotiveScrollRef.current?.scrollTo(targetElement, {
-              offset: -100,
-              duration: 1000,
-              disableLerp: false,
-            })
-          })
+        dispatchPortfolioScrollState({
+          direction: 1,
+          limit,
+          progress: Math.min(y / limit, 1),
+          y,
         })
       }
 
-      // Update scroll after images and other resources are loaded
-      window.addEventListener("load", () => {
-        setTimeout(() => {
-          locomotiveScrollRef.current?.update()
-        }, 500)
-      })
+      const emitLocomotiveState = (args: {
+        currentElements?: unknown
+        direction?: "up" | "down"
+        limit?: { x: number; y: number }
+        scroll?: { x: number; y: number }
+      }) => {
+        const limit = Math.max(args.limit?.y ?? 0, 1)
+        const y = args.scroll?.y ?? 0
 
-      // Handle hash links on page load
-      setTimeout(() => {
-        const hash = window.location.hash
-        if (hash) {
-          const targetElement = document.querySelector(hash)
-          if (targetElement) {
-            locomotiveScrollRef.current?.scrollTo(targetElement, {
-              offset: -100,
-              duration: 1000,
-              disableLerp: false,
-            })
-          }
+        dispatchPortfolioScrollState({
+          direction: args.direction === "up" ? -1 : 1,
+          limit,
+          progress: Math.min(y / limit, 1),
+          y,
+        })
+      }
+
+      const handleScrollTo = (event: Event) => {
+        const { detail } = event as CustomEvent<PortfolioScrollToOptions>
+
+        if (!detail) {
+          return
         }
 
-        // Setup anchor link handling
-        handleAnchorLinks()
+        const target = typeof detail.id === "string" ? document.getElementById(detail.id) : null
 
-        // Force update after everything is set up
-        locomotiveScrollRef.current?.update()
-      }, 1000)
+        if (target) {
+          instance.scrollTo(target, {
+            duration: detail.duration ?? 1100,
+            disableLerp: false,
+            offset: detail.offset ?? -100,
+          })
+          return
+        }
+
+        if (typeof detail.top === "number") {
+          instance.scrollTo(detail.top, {
+            duration: detail.duration ?? 900,
+            disableLerp: false,
+          })
+        }
+      }
+
+      const updateScroll = () => {
+        window.requestAnimationFrame(() => {
+          instance.update()
+        })
+      }
+
+      const resizeObserver =
+        typeof ResizeObserver === "undefined"
+          ? null
+          : new ResizeObserver(() => {
+              updateScroll()
+            })
+
+      const handleInitialHash = () => {
+        if (!window.location.hash) {
+          return
+        }
+
+        const targetId = window.location.hash.replace("#", "")
+        const target = document.getElementById(targetId)
+
+        if (!target) {
+          return
+        }
+
+        window.setTimeout(() => {
+          instance.scrollTo(target, {
+            duration: 1000,
+            disableLerp: false,
+            offset: -100,
+          })
+        }, 180)
+      }
+
+      instance.on("scroll", emitLocomotiveState)
+      window.addEventListener(PORTFOLIO_SCROLL_TO_EVENT, handleScrollTo as EventListener)
+      window.addEventListener(PORTFOLIO_SCROLL_UPDATE_EVENT, updateScroll as EventListener)
+      window.addEventListener("resize", updateScroll, { passive: true })
+      window.addEventListener("load", updateScroll)
+      resizeObserver?.observe(scrollRef.current)
+
+      window.setTimeout(updateScroll, 320)
+      window.setTimeout(handleInitialHash, 380)
+      emitNativeState()
+
+      cleanup = () => {
+        window.removeEventListener(PORTFOLIO_SCROLL_TO_EVENT, handleScrollTo as EventListener)
+        window.removeEventListener(PORTFOLIO_SCROLL_UPDATE_EVENT, updateScroll as EventListener)
+        window.removeEventListener("resize", updateScroll)
+        window.removeEventListener("load", updateScroll)
+        resizeObserver?.disconnect()
+        instance.destroy()
+        locomotiveScrollRef.current = null
+      }
     }
 
-    // Initialize scroll
-    initScroll()
+    initialize()
 
-    // Update scroll on window resize
-    const handleResize = () => {
-      setTimeout(() => {
-        locomotiveScrollRef.current?.update()
-      }, 200)
-    }
-
-    window.addEventListener("resize", handleResize)
-
-    // Cleanup
     return () => {
-      window.removeEventListener("resize", handleResize)
-      window.removeEventListener("load", () => {})
-      locomotiveScrollRef.current?.destroy()
+      cancelled = true
+      cleanup?.()
     }
-  }, [])
+  }, [isMobile, prefersReducedMotion])
 
   return (
-    <div data-scroll-container ref={scrollRef}>
+    <div ref={scrollRef} data-scroll-container>
       {children}
     </div>
   )

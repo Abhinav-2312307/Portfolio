@@ -2,121 +2,109 @@
 
 import { useEffect, useRef } from "react"
 
+const interactiveSelector = [
+  "a",
+  "button",
+  "input",
+  "textarea",
+  "[role='button']",
+  ".project-card",
+  "[data-cursor-text]",
+].join(",")
+
 export default function CursorEffect() {
   const cursorRef = useRef<HTMLDivElement>(null)
   const cursorTextRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Hide default cursor
-    document.body.style.cursor = "none"
+    const supportsFinePointer = window.matchMedia("(pointer: fine)").matches
+
+    if (!supportsFinePointer) {
+      return
+    }
 
     const cursor = cursorRef.current
     const cursorText = cursorTextRef.current
 
-    if (!cursor || !cursorText) return
-
-    // Add SVG to cursor
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-    svg.setAttribute("viewBox", "0 0 24 24")
-    svg.setAttribute("fill", "none")
-    svg.innerHTML = `
-      <circle cx="12" cy="12" r="8" stroke="#00ff88" strokeWidth="2" />
-      <circle cx="12" cy="12" r="3" fill="#00ff88" />
-    `
-    cursor.appendChild(svg)
-
-    // Mouse move handler with requestAnimationFrame for smoother performance
-    let mouseX = 0
-    let mouseY = 0
-
-    const onMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX
-      mouseY = e.clientY
+    if (!cursor || !cursorText) {
+      return
     }
 
-    // Update cursor position with RAF for better performance
-    const updateCursorPosition = () => {
-      if (cursor && cursorText) {
-        cursor.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`
-        cursorText.style.transform = `translate(${mouseX}px, ${mouseY - 30}px) translate(-50%, -50%)`
+    document.body.style.cursor = "none"
+
+    let frameId = 0
+    let mouseX = window.innerWidth / 2
+    let mouseY = window.innerHeight / 2
+    let currentX = mouseX
+    let currentY = mouseY
+    let isHovering = false
+
+    const updateCursor = () => {
+      const dx = mouseX - currentX
+      const dy = mouseY - currentY
+
+      // Only update transforms when cursor has moved meaningfully
+      if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+        currentX += dx * 0.22
+        currentY += dy * 0.22
+
+        cursor.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`
+        cursorText.style.transform = `translate3d(${currentX}px, ${currentY - 28}px, 0) translate(-50%, -50%)`
       }
-      requestAnimationFrame(updateCursorPosition)
+
+      frameId = window.requestAnimationFrame(updateCursor)
     }
 
-    // Handle cursor hover states
-    const handleCursorHover = () => {
-      const hoverElements = document.querySelectorAll(
-        "a, button, .skill-card, .hobby-card, .project-card, .education-card, .magnetic-element, input, textarea",
-      )
+    const handlePointerMove = (event: PointerEvent) => {
+      mouseX = event.clientX
+      mouseY = event.clientY
 
-      hoverElements.forEach((element) => {
-        element.addEventListener("mouseenter", () => {
-          cursor.classList.add("cursor-hover")
+      const target = (event.target as Element | null)?.closest(interactiveSelector)
+      const nextText = target?.getAttribute("data-cursor-text") ?? ""
 
-          // Show cursor text if available
-          const cursorTextContent = element.getAttribute("data-cursor-text")
-          if (cursorTextContent) {
-            cursorText.textContent = cursorTextContent
-            cursorText.style.opacity = "1"
-          }
-        })
+      if (target && !isHovering) {
+        cursor.classList.add("cursor-hover")
+        isHovering = true
+      } else if (!target && isHovering) {
+        cursor.classList.remove("cursor-hover")
+        isHovering = false
+      }
 
-        element.addEventListener("mouseleave", () => {
-          cursor.classList.remove("cursor-hover")
-          cursorText.style.opacity = "0"
-        })
-      })
+      cursorText.textContent = nextText
+      cursorText.style.opacity = nextText ? "1" : "0"
     }
 
-    // Magnetic effect for elements (optimized)
-    const handleMagneticElements = () => {
-      const magneticElements = document.querySelectorAll(".magnetic-element")
-
-      magneticElements.forEach((element) => {
-        const strength = Number.parseFloat(element.getAttribute("data-strength") || "0.1")
-
-        element.addEventListener("mousemove", (e) => {
-          const rect = element.getBoundingClientRect()
-          const centerX = rect.left + rect.width / 2
-          const centerY = rect.top + rect.height / 2
-
-          const distanceX = e.clientX - centerX
-          const distanceY = e.clientY - centerY
-
-          const translateX = distanceX * strength
-          const translateY = distanceY * strength
-
-          requestAnimationFrame(() => {
-            ;(element as HTMLElement).style.transform = `translate(${translateX}px, ${translateY}px)`
-          })
-        })
-
-        element.addEventListener("mouseleave", () => {
-          requestAnimationFrame(() => {
-            ;(element as HTMLElement).style.transform = "translate(0, 0)"
-            ;(element as HTMLElement).style.transition = "transform 0.5s ease-out"
-          })
-        })
-      })
+    const handlePointerLeave = () => {
+      cursor.classList.remove("cursor-hover")
+      cursorText.style.opacity = "0"
+      isHovering = false
     }
 
-    // Initialize
-    document.addEventListener("mousemove", onMouseMove)
-    requestAnimationFrame(updateCursorPosition)
-    handleCursorHover()
-    handleMagneticElements()
+    frameId = window.requestAnimationFrame(updateCursor)
+    window.addEventListener("pointermove", handlePointerMove, { passive: true })
+    window.addEventListener("pointerleave", handlePointerLeave)
 
-    // Add cleanup to restore default cursor when component unmounts
     return () => {
-      document.removeEventListener("mousemove", onMouseMove)
-      document.body.style.cursor = "auto"
+      window.cancelAnimationFrame(frameId)
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerleave", handlePointerLeave)
+      document.body.style.cursor = ""
     }
   }, [])
 
   return (
     <>
-      <div ref={cursorRef} className="cursor"></div>
-      <div ref={cursorTextRef} className="cursor-text"></div>
+      <div ref={cursorRef} className="cursor">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M12 2 L12 7" stroke="#4ff0ff" strokeWidth="2" strokeLinecap="round" />
+          <path d="M12 17 L12 22" stroke="#4ff0ff" strokeWidth="2" strokeLinecap="round" />
+          <path d="M2 12 L7 12" stroke="#4ff0ff" strokeWidth="2" strokeLinecap="round" />
+          <path d="M17 12 L22 12" stroke="#4ff0ff" strokeWidth="2" strokeLinecap="round" />
+          <path d="M12 7 L17 12 L12 17 L7 12 Z" stroke="#4ff0ff" strokeWidth="1.7" fill="rgba(79,240,255,0.12)" />
+          <path d="M12 9.5 L14.5 12 L12 14.5 L9.5 12 Z" fill="#4ff0ff" />
+        </svg>
+      </div>
+      <div ref={cursorTextRef} className="cursor-text" />
     </>
   )
 }
