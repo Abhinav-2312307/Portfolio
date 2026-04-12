@@ -514,6 +514,28 @@ section[id] {
   position: relative;
 }
 
+.project-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--primary-color) / 0.38) transparent;
+}
+
+.project-sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.project-sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.project-sidebar-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgb(var(--primary-color) / 0.34);
+}
+
+.project-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary-color) / 0.48);
+}
+
 .candle-toggle {
   overflow: visible;
   transform-style: preserve-3d;

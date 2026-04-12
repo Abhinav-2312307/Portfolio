@@ -189,8 +189,8 @@ function getCategoryLabel(category: Project["category"]) {
 }
 
 function StickyProjectPanel({ children }: { children: React.ReactNode }) {
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const panelRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const shellRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     let frameId = 0
@@ -198,35 +198,55 @@ function StickyProjectPanel({ children }: { children: React.ReactNode }) {
     const updatePosition = () => {
       frameId = 0
 
-      const wrapper = wrapperRef.current
-      const panel = panelRef.current
+      const track = trackRef.current
+      const shell = shellRef.current
 
-      if (!wrapper || !panel) {
+      if (!track || !shell) {
         return
       }
 
       if (window.innerWidth < 1024) {
-        panel.style.transform = "translate3d(0, 0, 0)"
+        shell.style.position = "relative"
+        shell.style.top = "0px"
+        shell.style.left = "0px"
+        shell.style.width = "100%"
+        shell.style.transform = "translate3d(0, 0, 0)"
         return
       }
 
-      const wrapperRect = wrapper.getBoundingClientRect()
-      const wrapperHeight = wrapper.offsetHeight
-      const panelHeight = panel.offsetHeight
-      const maxTranslate = Math.max(0, wrapperHeight - panelHeight)
+      const trackRect = track.getBoundingClientRect()
+      const shellHeight = shell.offsetHeight
+      const maxTranslate = Math.max(0, track.offsetHeight - shellHeight)
+      const startTop = 110
+      const endTop = Math.max(startTop, window.innerHeight - shellHeight - 28)
+      const progress = Math.min(Math.max((startTop - trackRect.top) / Math.max(1, maxTranslate), 0), 1)
+      const desiredTop = startTop + (endTop - startTop) * progress
 
-      if (maxTranslate === 0) {
-        panel.style.transform = "translate3d(0, 0, 0)"
+      if (trackRect.top > startTop) {
+        shell.style.position = "absolute"
+        shell.style.top = "0px"
+        shell.style.left = "0px"
+        shell.style.width = "100%"
+        shell.style.transform = "translate3d(0, 0, 0)"
         return
       }
 
-      const minViewportTop = 152
-      const maxViewportTop = Math.max(minViewportTop, window.innerHeight - panelHeight - 28)
-      const travelDistance = Math.max(1, maxTranslate - (maxViewportTop - minViewportTop))
-      const progress = Math.min(Math.max((minViewportTop - wrapperRect.top) / travelDistance, 0), 1)
-      const translate = progress * maxTranslate
+      const bottomLocked = trackRect.bottom <= desiredTop + shellHeight
 
-      panel.style.transform = `translate3d(0, ${translate}px, 0)`
+      if (bottomLocked) {
+        shell.style.position = "absolute"
+        shell.style.top = `${maxTranslate}px`
+        shell.style.left = "0px"
+        shell.style.width = "100%"
+        shell.style.transform = "translate3d(0, 0, 0)"
+        return
+      }
+
+      shell.style.position = "fixed"
+      shell.style.top = `${desiredTop}px`
+      shell.style.left = `${trackRect.left}px`
+      shell.style.width = `${trackRect.width}px`
+      shell.style.transform = "translate3d(0, 0, 0)"
     }
 
     const scheduleUpdate = () => {
@@ -244,12 +264,12 @@ function StickyProjectPanel({ children }: { children: React.ReactNode }) {
             scheduleUpdate()
           })
 
-    if (wrapperRef.current) {
-      resizeObserver?.observe(wrapperRef.current)
+    if (trackRef.current) {
+      resizeObserver?.observe(trackRef.current)
     }
 
-    if (panelRef.current) {
-      resizeObserver?.observe(panelRef.current)
+    if (shellRef.current) {
+      resizeObserver?.observe(shellRef.current)
     }
 
     window.addEventListener("scroll", scheduleUpdate, { passive: true })
@@ -270,11 +290,19 @@ function StickyProjectPanel({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <div ref={wrapperRef} className="hidden lg:block lg:h-full">
-      <div ref={panelRef} className="space-y-4 will-change-transform">
-        {children}
+    <aside ref={trackRef} className="relative hidden lg:block lg:h-full lg:self-stretch">
+      <div ref={shellRef} className="w-full will-change-transform">
+        <div className="relative overflow-hidden rounded-[30px] border border-white/8 bg-[linear-gradient(180deg,rgba(9,12,20,0.96),rgba(12,17,27,0.92))] shadow-[0_24px_56px_rgba(0,0,0,0.22)]">
+          <div className="absolute inset-x-0 top-0 h-28 bg-[linear-gradient(180deg,rgba(79,239,255,0.06),transparent)]" />
+          <div className="absolute bottom-0 left-0 right-0 h-28 bg-[linear-gradient(180deg,transparent,rgba(90,121,255,0.06))]" />
+          <div className="absolute bottom-5 right-4 top-5 w-px bg-gradient-to-b from-transparent via-white/8 to-transparent" />
+
+          <div className="relative z-20 px-4 py-3">
+            {children}
+          </div>
+        </div>
       </div>
-    </div>
+    </aside>
   )
 }
 
@@ -288,6 +316,7 @@ export default function Projects() {
   }, [filter])
 
   const activeProject = filteredProjects.find((p) => p.title === selectedTitle) ?? filteredProjects[0] ?? projects[0]
+  const activeProjectIndex = Math.max(0, filteredProjects.findIndex((project) => project.title === activeProject?.title))
 
   useEffect(() => {
     if (!filteredProjects.some((p) => p.title === selectedTitle)) {
@@ -299,7 +328,7 @@ export default function Projects() {
     <section
       id="projects"
       data-scroll-section
-      className="relative overflow-hidden px-6 py-20 md:px-10 md:py-24 lg:px-16 lg:py-28"
+      className="relative overflow-hidden px-6 pb-20 pt-10 md:px-10 md:pb-24 md:pt-12 lg:px-16 lg:pb-28 lg:pt-14"
     >
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(var(--dark-color)_/_0.98),rgb(var(--secondary-color)_/_0.94))]" />
       <div className="absolute inset-0 opacity-14 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:94px_94px]" />
@@ -307,7 +336,7 @@ export default function Projects() {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Header + Filters */}
-        <div className="mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="mb-5 flex flex-col gap-5 md:mb-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.34em] text-primary-light">Selected Work</p>
             <h2 className="mt-3 text-[clamp(2.4rem,5vw,4.2rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-text-color">
@@ -338,75 +367,104 @@ export default function Projects() {
         </div>
 
         {/* Main layout: sticky panel + 2-col grid */}
-        <div id="projects-grid-wrap" className="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-stretch">
+        <div id="projects-grid-wrap" className="grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-stretch">
           {/* Sticky detail panel */}
           <StickyProjectPanel>
-            <div className="glass-panel-strong rounded-[28px] p-5">
-              <AnimatePresence mode="wait">
+            <div className="glass-panel-strong overflow-hidden rounded-[26px] border-white/10 bg-[linear-gradient(180deg,rgba(6,10,18,0.96),rgba(10,16,26,0.88))] px-3.5 py-3.5 shadow-[0_18px_40px_rgba(0,0,0,0.2)]">
+              <AnimatePresence initial={false} mode="wait">
                 <motion.div
                   key={activeProject?.title}
-                  initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
-                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  exit={prefersReducedMotion ? undefined : { opacity: 0, y: -4 }}
+                  transition={{ duration: 0.14, ease: [0.22, 1, 0.36, 1] }}
+                  className="project-sidebar-scroll flex max-h-[calc(100vh-10.25rem)] flex-col gap-2.5 overflow-y-auto pr-1"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-[0.62rem] uppercase tracking-[0.34em] text-text-secondary">Active Project</p>
-                      <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-text-color">
+                      <p className="text-[0.56rem] uppercase tracking-[0.3em] text-primary-light">Selected Project</p>
+                      <h3 className="mt-2 max-w-[11rem] text-[1.18rem] font-semibold leading-[1.06] tracking-[-0.05em] text-white">
                         {activeProject?.title}
                       </h3>
                     </div>
+                    <div className="shrink-0 rounded-full border border-white/12 bg-black/25 px-3 py-1.5 text-[0.56rem] uppercase tracking-[0.24em] text-white/72">
+                      {String(activeProjectIndex + 1).padStart(2, "0")} / {String(filteredProjects.length).padStart(2, "0")}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <span className="glass-pill border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.22em] text-white/88">
+                      {getCategoryLabel(activeProject?.category ?? "web")}
+                    </span>
                     {activeProject?.status ? (
-                      <span className="glass-pill shrink-0 border-primary-color/28 bg-primary-color/10 px-2.5 py-1 text-[0.58rem] uppercase tracking-[0.24em] text-primary-color">
+                      <span className="glass-pill border-primary-color/28 bg-primary-color/12 px-2.5 py-1 text-[0.56rem] uppercase tracking-[0.22em] text-primary-color">
                         {activeProject.status}
+                      </span>
+                    ) : null}
+                    {activeProject?.period ? (
+                      <span className="glass-pill border-white/10 bg-white/[0.02] px-2.5 py-1 text-[0.6rem] text-text-color">
+                        {activeProject.period}
                       </span>
                     ) : null}
                   </div>
 
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="glass-pill px-2.5 py-1 text-[0.68rem] uppercase tracking-[0.24em] text-text-color">
-                      {getCategoryLabel(activeProject?.category ?? "web")}
-                    </span>
-                    {activeProject?.period ? (
-                      <span className="glass-pill px-2.5 py-1 text-[0.68rem] text-text-color">{activeProject.period}</span>
-                    ) : null}
-                  </div>
+                  <p className="text-[0.8rem] leading-6 text-text-secondary">{activeProject?.description}</p>
 
-                  <p className="mt-4 text-sm leading-7 text-text-color">{activeProject?.summary}</p>
+                  <div className="rounded-[22px] border border-white/8 bg-[linear-gradient(180deg,rgba(10,14,24,0.88),rgba(12,18,28,0.74))] p-3.5">
+                    <p className="text-[0.54rem] uppercase tracking-[0.3em] text-text-secondary">Highlights</p>
 
-                  <div className="mt-3 space-y-2">
-                    {activeProject?.highlights.map((item) => (
-                      <div key={item} className="flex items-start gap-2.5">
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary-color" />
-                        <p className="text-[0.82rem] leading-6 text-text-secondary">{item}</p>
+                    <div className="mt-3 space-y-2.5">
+                      {activeProject?.highlights.slice(0, 2).map((item) => (
+                        <div key={item} className="flex items-start gap-3">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary-color shadow-[0_0_10px_rgb(var(--primary-color)/0.42)]" />
+                          <p className="text-[0.79rem] leading-6 text-text-secondary">{item}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-4">
+                      <p className="text-[0.54rem] uppercase tracking-[0.3em] text-text-secondary">Tech Stack</p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {activeProject?.stack.slice(0, 4).map((tech) => (
+                          <span
+                            key={tech}
+                            className="glass-pill border-white/10 bg-white/[0.02] px-2 py-0.5 text-[0.62rem] text-text-color"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                        {activeProject && activeProject.stack.length > 4 ? (
+                          <span className="glass-pill border-white/10 bg-white/[0.02] px-2 py-0.5 text-[0.62rem] text-text-color">
+                            +{activeProject.stack.length - 4}
+                          </span>
+                        ) : null}
                       </div>
-                    ))}
-                  </div>
+                    </div>
 
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {activeProject?.github ? (
-                      <a
-                        href={activeProject.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="glass-pill inline-flex items-center gap-2 px-3.5 py-2 text-sm text-text-color transition-all duration-200 hover:border-primary-color/35 hover:text-primary-color"
-                      >
-                        <Github size={15} />
-                        GitHub
-                      </a>
-                    ) : null}
-                    {activeProject?.live ? (
-                      <a
-                        href={activeProject.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,rgb(var(--primary-color)_/_0.94),rgb(var(--accent-color)_/_0.84))] px-3.5 py-2 text-sm font-semibold text-contrast-color shadow-[0_10px_24px_rgb(var(--primary-color)_/_0.16)] transition-all duration-200 hover:-translate-y-0.5"
-                      >
-                        View Live
-                        <ArrowUpRight size={14} />
-                      </a>
-                    ) : null}
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {activeProject?.github ? (
+                        <a
+                          href={activeProject.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="glass-pill inline-flex items-center gap-2 px-3 py-2 text-[0.78rem] text-text-color transition-all duration-200 hover:border-primary-color/35 hover:text-primary-color"
+                        >
+                          <Github size={15} />
+                          GitHub
+                        </a>
+                      ) : null}
+                      {activeProject?.live ? (
+                        <a
+                          href={activeProject.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,rgb(var(--primary-color)_/_0.94),rgb(var(--accent-color)_/_0.84))] px-3 py-2 text-[0.78rem] font-semibold text-contrast-color shadow-[0_10px_24px_rgb(var(--primary-color)_/_0.16)] transition-all duration-200 hover:-translate-y-0.5"
+                        >
+                          View Live
+                          <ArrowUpRight size={14} />
+                        </a>
+                      ) : null}
+                    </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -419,12 +477,8 @@ export default function Projects() {
               const isSelected = activeProject?.title === project.title
 
               return (
-                <motion.article
+                <article
                   key={project.title}
-                  initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-                  whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.1 }}
-                  transition={{ duration: 0.4, delay: index % 2 === 1 ? 0.08 : 0, ease: [0.22, 1, 0.36, 1] }}
                   onClick={() => setSelectedTitle(project.title)}
                   role="button"
                   tabIndex={0}
@@ -525,7 +579,7 @@ export default function Projects() {
                       )}
                     </div>
                   </div>
-                </motion.article>
+                </article>
               )
             })}
           </div>
