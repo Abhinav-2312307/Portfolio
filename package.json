@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "admin:hash": "node --import tsx scripts/generate-admin-hash.ts",
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
+    "seed:portfolio": "node --import tsx scripts/seed-portfolio.ts",
     "start": "next start",
     "lint": "next lint"
   },
@@ -40,6 +42,7 @@
     "@radix-ui/react-tooltip": "latest",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "cmdk": "latest",
     "cursor-effects": "^1.0.17",
@@ -49,8 +52,10 @@
     "input-otp": "latest",
     "locomotive-scroll": "latest",
     "lucide-react": "^0.454.0",
+    "mongodb": "^7.1.1",
     "next": "^16.2.1",
     "next-themes": "latest",
+    "pdf-parse": "^2.4.5",
     "react": "^19",
     "react-day-picker": "latest",
     "react-dom": "^19",
@@ -72,6 +77,7 @@
     "@types/react-dom": "^19",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

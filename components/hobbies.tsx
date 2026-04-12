@@ -3,30 +3,21 @@
 import { motion, useReducedMotion } from "framer-motion"
 import { Film, Laptop, Rocket, Wrench } from "lucide-react"
 
-const hobbies = [
-  {
-    icon: Laptop,
-    title: "Code Crafting",
-    description: "Solving complex problems and building thoughtful software with strong foundations.",
-  },
-  {
-    icon: Film,
-    title: "Anime Exploration",
-    description: "Enjoying cinematic storytelling, character arcs, and imaginative world building.",
-  },
-  {
-    icon: Rocket,
-    title: "Cosmic Curiosity",
-    description: "Following astrophysics, space discoveries, and the deeper questions behind them.",
-  },
-  {
-    icon: Wrench,
-    title: "Code Archaeology",
-    description: "Tracing through systems, debugging edge cases, and refining existing codebases.",
-  },
-]
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { HobbiesContent } from "@/lib/portfolio/schema"
 
-export default function Hobbies() {
+const hobbyIconMap = {
+  film: Film,
+  laptop: Laptop,
+  rocket: Rocket,
+  wrench: Wrench,
+}
+
+type HobbiesProps = {
+  hobbies?: HobbiesContent
+}
+
+export default function Hobbies({ hobbies = defaultPortfolioContent.hobbies }: HobbiesProps) {
   const shouldReduceMotion = useReducedMotion()
 
   return (
@@ -38,19 +29,16 @@ export default function Hobbies() {
 
       <div className="relative mx-auto max-w-6xl">
         <div className="mx-auto mb-14 max-w-3xl text-center">
-          <p className="mb-3 text-sm font-medium uppercase tracking-[0.32em] text-primary-color">Beyond the build</p>
+          <p className="mb-3 text-sm font-medium uppercase tracking-[0.32em] text-primary-color">{hobbies.sectionLabel}</p>
           <h2 className="text-4xl font-semibold text-text-color md:text-5xl">
-            Passions & Interests <span className="text-primary-color">shape the work too.</span>
+            {hobbies.title} <span className="text-primary-color">{hobbies.highlight}</span>
           </h2>
-          <p className="mt-5 text-base leading-8 text-text-secondary md:text-lg">
-            The same curiosity that drives the product work also shows up in storytelling, systems thinking, and an
-            obsession with understanding how things really work.
-          </p>
+          <p className="mt-5 text-base leading-8 text-text-secondary md:text-lg">{hobbies.description}</p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {hobbies.map((hobby, index) => {
-            const Icon = hobby.icon
+          {hobbies.items.map((hobby, index) => {
+            const Icon = hobbyIconMap[hobby.iconName as keyof typeof hobbyIconMap] ?? Laptop
 
             return (
               <motion.div
@@ -75,7 +63,7 @@ export default function Hobbies() {
 
                   <div className="mt-6 flex items-center gap-2 text-xs uppercase tracking-[0.28em] text-primary-color">
                     <span className="h-1.5 w-1.5 rounded-full bg-primary-color" />
-                    Personal energy source
+                    {hobby.eyebrow}
                   </div>
                 </div>
               </motion.div>

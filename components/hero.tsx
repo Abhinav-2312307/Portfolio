@@ -1,50 +1,25 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
-import Image from "next/image"
 import { ArrowRight, Sparkles } from "lucide-react"
+import Image from "next/image"
 import { useEffect, useRef } from "react"
 
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { HeroContent, Identity, SocialLink } from "@/lib/portfolio/schema"
 import { requestPortfolioScrollTo } from "@/lib/smooth-scroll"
 
-const roles = ["AI Developer", "Machine Learning Builder", "Full-Stack Problem Solver", "Systems-Minded Engineer"]
+type HeroProps = {
+  hero?: HeroContent
+  identity?: Identity
+  socialLinks?: SocialLink[]
+}
 
-const socialLinks = [
-  {
-    href: "https://github.com/Abhinav-2312307",
-    label: "GitHub",
-    icon: "fab fa-github",
-  },
-  {
-    href: "https://www.linkedin.com/in/abhinav-sahu-865a01297/",
-    label: "LinkedIn",
-    icon: "fab fa-linkedin-in",
-  },
-  {
-    href: "https://leetcode.com/u/lucifer_debug/",
-    label: "LeetCode",
-    icon: "fas fa-code",
-  },
-  {
-    href: "mailto:2k23.cs2312307@gmail.com",
-    label: "Email",
-    icon: "far fa-envelope",
-  },
-]
-
-const capabilityRows = [
-  "AI products with clearer UX and stronger execution",
-  "Full-stack builds shaped like real product systems",
-  "Fast iteration without losing structure underneath",
-]
-
-const heroStats = [
-  { label: "Projects", value: "10+" },
-  { label: "Focus", value: "AI x Product" },
-  { label: "Mindset", value: "Ship, refine, repeat" },
-]
-
-export default function Hero() {
+export default function Hero({
+  hero = defaultPortfolioContent.hero,
+  identity = defaultPortfolioContent.identity,
+  socialLinks = defaultPortfolioContent.socialLinks,
+}: HeroProps) {
   const typingTextRef = useRef<HTMLSpanElement>(null)
   const prefersReducedMotion = useReducedMotion()
 
@@ -54,7 +29,7 @@ export default function Hero() {
     }
 
     if (prefersReducedMotion) {
-      typingTextRef.current.textContent = roles[0]
+      typingTextRef.current.textContent = hero.roles[0] ?? ""
       return
     }
 
@@ -64,7 +39,7 @@ export default function Hero() {
     let timeoutId = 0
 
     const updateText = () => {
-      const currentText = roles[index]
+      const currentText = hero.roles[index] ?? ""
 
       if (!typingTextRef.current) {
         return
@@ -80,7 +55,7 @@ export default function Hero() {
         delay = 1200
       } else if (isDeleting && charIndex === 0) {
         isDeleting = false
-        index = (index + 1) % roles.length
+        index = (index + 1) % hero.roles.length
         delay = 220
       }
 
@@ -93,7 +68,7 @@ export default function Hero() {
     return () => {
       window.clearTimeout(timeoutId)
     }
-  }, [prefersReducedMotion])
+  }, [hero.roles, prefersReducedMotion])
 
   return (
     <section
@@ -112,7 +87,7 @@ export default function Hero() {
         data-scroll-speed="-0.28"
         className="pointer-events-none absolute right-[2%] top-[7rem] hidden text-[clamp(4.5rem,11vw,9rem)] font-semibold uppercase tracking-[-0.08em] text-[rgb(var(--overlay-color)_/_0.08)] xl:block"
       >
-        Intelligence
+        {hero.backgroundWord}
       </div>
 
       <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
@@ -130,7 +105,7 @@ export default function Hero() {
               transition={{ delay: 0.06, duration: 0.44 }}
             >
               <span className="h-2 w-2 rounded-full bg-primary-color shadow-[0_0_12px_rgb(var(--primary-color)/0.45)]" />
-              Modern Portfolio Systems
+              {hero.badge}
             </motion.div>
 
             <div className="space-y-5">
@@ -140,7 +115,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.44 }}
               >
-                Abhinav Sahu
+                {hero.eyebrow}
               </motion.p>
 
               <motion.h1
@@ -149,7 +124,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.16, duration: 0.68 }}
               >
-                Building AI products with sharper visuals and stronger systems.
+                {hero.headline}
               </motion.h1>
 
               <motion.p
@@ -158,9 +133,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.24, duration: 0.5 }}
               >
-                Computer Science undergraduate focused on AI, full-stack product engineering, and system-minded
-                execution. I like interfaces that feel intentional, code that stays readable, and products that solve
-                something real.
+                {hero.intro}
               </motion.p>
 
               <motion.div
@@ -169,7 +142,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.48 }}
               >
-                <span className="text-text-color">I design and ship as a</span>
+                <span className="text-text-color">{hero.typingPrefix}</span>
                 <span ref={typingTextRef} className="font-medium text-primary-color" aria-label="Animated role description" />
                 <span className="hero-caret h-5 w-px bg-primary-color" />
               </motion.div>
@@ -186,7 +159,7 @@ export default function Hero() {
                 onClick={() => requestPortfolioScrollTo({ id: "projects", offset: -110 })}
                 className="group inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,rgb(var(--primary-color)_/_0.96),rgb(var(--accent-color)_/_0.82))] px-6 py-3.5 text-sm font-semibold text-contrast-color shadow-[0_16px_36px_rgb(var(--primary-color)_/_0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_44px_rgb(var(--primary-color)_/_0.22)]"
               >
-                Explore Projects
+                {hero.primaryCtaLabel}
                 <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
               </button>
 
@@ -195,7 +168,7 @@ export default function Hero() {
                 onClick={() => requestPortfolioScrollTo({ id: "contact", offset: -110 })}
                 className="glass-pill inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-text-color transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-color/40 hover:text-primary-color"
               >
-                Let&apos;s Connect
+                {hero.secondaryCtaLabel}
               </button>
             </motion.div>
 
@@ -206,9 +179,9 @@ export default function Hero() {
               transition={{ delay: 0.42, duration: 0.54 }}
             >
               <div className="glass-panel-strong rounded-[28px] p-5">
-                <p className="text-[0.64rem] uppercase tracking-[0.34em] text-text-secondary">What I build</p>
+                <p className="text-[0.64rem] uppercase tracking-[0.34em] text-text-secondary">{hero.capabilitySectionTitle}</p>
                 <div className="mt-5 grid gap-3">
-                  {capabilityRows.map((row, index) => (
+                  {hero.capabilityRows.map((row, index) => (
                     <div key={row} className="flex items-start gap-3">
                       <span className="mt-1 text-xs text-primary-color">{String(index + 1).padStart(2, "0")}</span>
                       <p className="text-sm leading-7 text-text-color">{row}</p>
@@ -229,7 +202,7 @@ export default function Hero() {
                       className="glass-pill inline-flex h-11 w-11 items-center justify-center text-base text-text-color transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-color/36 hover:text-primary-color"
                       aria-label={link.label}
                     >
-                      <i className={link.icon} />
+                      <i className={link.iconClass} />
                     </a>
                   ))}
                 </div>
@@ -255,22 +228,21 @@ export default function Hero() {
                 <div className="flex items-center justify-between gap-4">
                   <div className="glass-pill inline-flex items-center gap-2 px-4 py-2 text-[0.64rem] uppercase tracking-[0.3em] text-text-secondary">
                     <span className="h-2 w-2 rounded-full bg-primary-color" />
-                    Featured Profile
+                    {hero.featuredProfileLabel}
                   </div>
                   <div className="inline-flex items-center gap-2 text-sm text-primary-color">
                     <Sparkles size={15} />
-                    Online
+                    {hero.availabilityText}
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-[0.88fr_1fr]">
-                  {/* Image — stretches to match right column height */}
                   <div className="glass-panel relative self-stretch overflow-hidden rounded-[24px] border border-[rgb(var(--glass-border)_/_0.14)] bg-[linear-gradient(160deg,rgb(var(--glass-bg-strong)_/_0.92),rgb(var(--glass-bg)_/_0.58))] p-2.5">
                     <div className="absolute inset-x-0 top-0 h-16 bg-[linear-gradient(180deg,rgba(79,239,255,0.12),transparent)]" />
                     <div className="relative h-full min-h-[16rem] overflow-hidden rounded-[18px]">
                       <Image
-                        src="/profile.jpg"
-                        alt="Portrait of Abhinav Sahu"
+                        src={identity.profileImageUrl}
+                        alt={`Portrait of ${identity.fullName}`}
                         fill
                         priority
                         sizes="(max-width: 768px) 80vw, 320px"
@@ -279,19 +251,16 @@ export default function Hero() {
                     </div>
                   </div>
 
-                  {/* Info cards — these define the row height */}
                   <div className="flex flex-col gap-3">
                     <div className="glass-panel rounded-[20px] p-4">
-                      <p className="text-[0.64rem] uppercase tracking-[0.3em] text-text-secondary">Current focus</p>
-                      <p className="mt-2 text-base font-medium leading-7 text-text-color">
-                        AI interfaces, shipping-focused UX, and clean product systems.
-                      </p>
+                      <p className="text-[0.64rem] uppercase tracking-[0.3em] text-text-secondary">{hero.currentFocusLabel}</p>
+                      <p className="mt-2 text-base font-medium leading-7 text-text-color">{hero.currentFocusText}</p>
                     </div>
 
                     <div className="glass-panel rounded-[20px] p-4">
-                      <p className="text-[0.64rem] uppercase tracking-[0.3em] text-text-secondary">Primary stack</p>
+                      <p className="text-[0.64rem] uppercase tracking-[0.3em] text-text-secondary">{hero.primaryStackLabel}</p>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {["Next.js", "TypeScript", "Python", "C++", "MongoDB"].map((item) => (
+                        {hero.primaryStack.map((item) => (
                           <span key={item} className="glass-pill px-3 py-1.5 text-xs text-text-color">
                             {item}
                           </span>
@@ -300,16 +269,14 @@ export default function Hero() {
                     </div>
 
                     <div className="glass-panel flex-1 rounded-[20px] p-4">
-                      <p className="text-[0.64rem] uppercase tracking-[0.3em] text-text-secondary">Currently building</p>
-                      <p className="mt-2 text-sm leading-7 text-text-secondary">
-                        SaaS tooling, AI-assisted workflows, and a tighter portfolio experience.
-                      </p>
+                      <p className="text-[0.64rem] uppercase tracking-[0.3em] text-text-secondary">{hero.buildingLabel}</p>
+                      <p className="mt-2 text-sm leading-7 text-text-secondary">{hero.buildingText}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-3">
-                  {heroStats.map((item) => (
+                  {hero.stats.map((item) => (
                     <div key={item.label} className="glass-panel rounded-[18px] px-4 py-3">
                       <p className="text-[0.64rem] uppercase tracking-[0.26em] text-text-secondary">{item.label}</p>
                       <p className="mt-2 text-sm font-medium text-text-color">{item.value}</p>

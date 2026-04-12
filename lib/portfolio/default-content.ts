@@ -1,0 +1,459 @@
+import type { PortfolioContent } from "@/lib/portfolio/schema"
+
+export const defaultPortfolioContent: PortfolioContent = {
+  identity: {
+    fullName: "Abhinav Sahu",
+    shortName: "Abhinav Sahu",
+    initials: "AS",
+    roleTagline: "AI Product Engineer",
+    currentRole: "B.Tech CSE student building AI and product-focused systems",
+    location: "Kanpur, Uttar Pradesh, India",
+    primaryEmail: "abhinavrishi32@gmail.com",
+    profileImageUrl: "/profile.jpg",
+    resumeUrl: "/resume.pdf",
+  },
+  navigation: {
+    items: [
+      { id: "home", label: "Home" },
+      { id: "about", label: "About" },
+      { id: "education", label: "Education" },
+      { id: "skills", label: "Skills" },
+      { id: "projects", label: "Projects" },
+      { id: "achievements", label: "Wins" },
+      { id: "hobbies", label: "Beyond" },
+      { id: "contact", label: "Contact" },
+    ],
+  },
+  socialLinks: [
+    {
+      href: "https://github.com/Abhinav-2312307",
+      label: "GitHub",
+      iconClass: "fab fa-github",
+    },
+    {
+      href: "https://www.linkedin.com/in/abhinav-sahu-865a01297/",
+      label: "LinkedIn",
+      iconClass: "fab fa-linkedin-in",
+    },
+    {
+      href: "https://leetcode.com/u/lucifer_debug/",
+      label: "LeetCode",
+      iconClass: "fas fa-code",
+    },
+    {
+      href: "mailto:2k23.cs2312307@gmail.com",
+      label: "Email",
+      iconClass: "far fa-envelope",
+    },
+  ],
+  hero: {
+    badge: "Modern Portfolio Systems",
+    backgroundWord: "Intelligence",
+    eyebrow: "Abhinav Sahu",
+    headline: "Building AI products with sharper visuals and stronger systems.",
+    intro:
+      "Computer Science undergraduate focused on AI, full-stack product engineering, and system-minded execution. I like interfaces that feel intentional, code that stays readable, and products that solve something real.",
+    typingPrefix: "I design and ship as a",
+    roles: [
+      "AI Developer",
+      "Machine Learning Builder",
+      "Full-Stack Problem Solver",
+      "Systems-Minded Engineer",
+    ],
+    primaryCtaLabel: "Explore Projects",
+    secondaryCtaLabel: "Let's Connect",
+    capabilitySectionTitle: "What I build",
+    capabilityRows: [
+      "AI products with clearer UX and stronger execution",
+      "Full-stack builds shaped like real product systems",
+      "Fast iteration without losing structure underneath",
+    ],
+    featuredProfileLabel: "Featured Profile",
+    availabilityText: "Online",
+    currentFocusLabel: "Current focus",
+    currentFocusText: "AI interfaces, shipping-focused UX, and clean product systems.",
+    primaryStackLabel: "Primary stack",
+    primaryStack: ["Next.js", "TypeScript", "Python", "C++", "MongoDB"],
+    buildingLabel: "Currently building",
+    buildingText: "SaaS tooling, AI-assisted workflows, and a tighter portfolio experience.",
+    stats: [
+      { label: "Projects", value: "10+" },
+      { label: "Focus", value: "AI x Product" },
+      { label: "Mindset", value: "Ship, refine, repeat" },
+    ],
+  },
+  about: {
+    sectionLabel: "About",
+    title: "Building with curiosity and product discipline.",
+    primaryParagraph:
+      "I'm a Computer Science undergraduate who enjoys turning ambitious ideas into usable digital products. My work sits at the intersection of AI, full-stack engineering, and interface design, with a strong bias toward clarity over noise.",
+    secondaryParagraph:
+      "What keeps me interested is the full journey: understanding the problem, shaping the experience, building the system, and then refining the rough edges until the result feels solid.",
+    storySectionTitle: "How I work",
+    storyPoints: [
+      "I approach projects like products, not isolated demos.",
+      "I care about visual hierarchy, clear interaction, and system-level structure together.",
+      "I learn fast, iterate hard, and keep refining until the experience feels intentional.",
+    ],
+    stats: [
+      { label: "Years Coding", value: "2+" },
+      { label: "Projects Built", value: "10+" },
+      { label: "Problems Solved", value: "550+" },
+      { label: "Focus Area", value: "AI + Full Stack" },
+    ],
+    ctaLabel: "Let's Work Together",
+  },
+  education: {
+    sectionLabel: "Education",
+    title: "Journey",
+    taglineBadge: "Foundations that shape the builds",
+    items: [
+      {
+        title: "Pranveer Singh Institute of Technology",
+        meta: "2023 - 2027",
+        points: ["B.Tech in Computer Science & Engineering", "AKTU University", "CGPA: 8.07"],
+        iconName: "university",
+      },
+      {
+        title: "Delhi Public School, Barra Kanpur",
+        meta: "2021 - 2023",
+        points: ["Intermediate (12th) - 86%", "High School (10th) - 93.4%"],
+        iconName: "school",
+      },
+    ],
+  },
+  skills: {
+    sectionLabel: "Skills",
+    title: "Core Stack",
+    categories: ["Languages", "Frontend", "Backend", "Databases", "Tooling"],
+    cards: [
+      { accent: "#4fd9ff", category: "Languages", iconName: "cplusplus", name: "C++", order: "01" },
+      { accent: "#ff8a55", category: "Languages", iconName: "java", name: "Java", order: "02" },
+      { accent: "#ffd35f", category: "Languages", iconName: "python", name: "Python", order: "03" },
+      { accent: "#ffe15f", category: "Frontend", iconName: "javascript", name: "JavaScript", order: "04" },
+      { accent: "#59d4ff", category: "Frontend", iconName: "typescript", name: "TypeScript", order: "05" },
+      { accent: "#6ce8ff", category: "Frontend", iconName: "react", name: "React.js", order: "06" },
+      { accent: "#e7edf5", category: "Frameworks", iconName: "nextjs", name: "Next.js", order: "07" },
+      { accent: "#7de27f", category: "Backend", iconName: "nodejs", name: "Node.js", order: "08" },
+      { accent: "#c7d1dd", category: "Backend", iconName: "express", name: "Express.js", order: "09" },
+      { accent: "#48d08a", category: "Databases", iconName: "mongodb", name: "MongoDB", order: "10" },
+      { accent: "#7fb2ff", category: "Databases", iconName: "postgresql", name: "PostgreSQL", order: "11" },
+      { accent: "#ff8f6d", category: "Tooling", iconName: "git", name: "Git", order: "12" },
+    ],
+    rails: [
+      "Tailwind CSS",
+      "Bootstrap",
+      "REST APIs",
+      "JWT",
+      "Firebase",
+      "GitHub",
+      "Postman",
+      "Cloudinary",
+      "Expo",
+      "Vercel",
+      "DBMS",
+      "OOP",
+      "System Design",
+    ],
+  },
+  projects: {
+    sectionLabel: "Selected Work",
+    title: "Projects",
+    filters: [
+      { label: "All Work", value: "all" },
+      { label: "AI", value: "ai" },
+      { label: "Full Stack", value: "full-stack" },
+      { label: "Web", value: "web" },
+      { label: "Utility", value: "utility" },
+    ],
+    items: [
+      {
+        category: "full-stack",
+        description: "A SaaS-oriented multi-portal printing platform for students, admins, and order workflows.",
+        details:
+          "Built as a production-style printing system with student ordering, admin visibility, supplier handling, and payment-aware flows so the full document journey feels reliable instead of pieced together.",
+        github: "https://github.com/Abhinav-2312307/printmypagex",
+        highlights: [
+          "Designed a student-to-admin order flow with clearer operational states.",
+          "Connected payment, fulfillment, and status visibility into one product surface.",
+        ],
+        image: "/printmypagepsit.png",
+        live: "https://printmypagepsit.store/",
+        stack: ["Next.js", "React", "Node.js", "MongoDB", "Firebase", "REST APIs"],
+        summary: "Production-style platform for seamless document printing and order flows.",
+        title: "PrintMyPagePSIT",
+      },
+      {
+        category: "ai",
+        description: "Legal information experience shaped around AI-assisted support and accessible resource discovery.",
+        details:
+          "JusticeAlly is centered on making legal help feel easier to navigate through cleaner information architecture, guided support, and AI-assisted discovery across complex topics.",
+        github: "https://github.com/Abhinav-2312307/JusticeAlly",
+        highlights: [
+          "Focused the product on legal information clarity and discoverability.",
+          "Used AI support to make interaction more direct and useful.",
+        ],
+        image: "/justiceAlly.png",
+        live: "https://justice-ally.vercel.app/",
+        stack: ["Next.js", "React", "OpenAI API", "Python", "MySQL"],
+        summary: "AI-powered legal helper focused on clarity, accessibility, and real utility.",
+        title: "JusticeAlly",
+      },
+      {
+        category: "full-stack",
+        description: "Geospatial civic issue reporting platform with AQI comparison and authority routing.",
+        details:
+          "Built around map-based complaint reporting, regional comparison, and smarter routing so infrastructure issues become visible, comparable, and easier to direct to the right department.",
+        highlights: [
+          "Architected a geospatial civic issue reporting flow with public complaint visibility.",
+          "Built an Area Quality Index across 10+ infrastructure parameters.",
+        ],
+        image: "/placeholder.jpg",
+        period: "Apr 2026 - Present",
+        stack: ["React.js", "Node.js", "PostgreSQL", "PostGIS", "Leaflet.js"],
+        status: "In Progress",
+        summary: "Civic reporting system combining live maps, AQI-style comparison, and smarter complaint routing.",
+        title: "Civic Intelligence Platform",
+      },
+      {
+        category: "utility",
+        description: "Encryption-focused interface for image security workflows with a clean, task-first shell.",
+        details:
+          "The image encryption tool keeps the interface direct so secure image handling stays simple, fast, and focused on the core task.",
+        github: "https://github.com/Abhinav-2312307/Image-Encryption",
+        highlights: [
+          "Built a direct interface for image security-oriented tasks.",
+          "Kept the product shell simple so the main action stays obvious.",
+        ],
+        image: "/imgEnc.png",
+        stack: ["React", "Next.js", "TypeScript", "Tailwind CSS"],
+        summary: "Secure image transformation utility with emphasis on direct user actions.",
+        title: "Image Encryption Tool",
+      },
+      {
+        category: "web",
+        description: "Directional product site for mapping PSIT campus routes with stronger navigation context.",
+        details:
+          "MapMyPSIT turns campus navigation into a clearer experience with route-oriented interaction, location context, and better discoverability.",
+        github: "https://github.com/Abhinav-2312307/Map-MY-PSIT",
+        highlights: [
+          "Built around campus-specific route discovery rather than a generic site shell.",
+          "Made navigation easier for students with clearer location context.",
+        ],
+        image: "/mapmypsit.png",
+        live: "https://map-my-psit.vercel.app/#",
+        stack: ["Next.js", "React", "Node.js", "DBMS", "Tailwind CSS"],
+        summary: "Campus navigation project built around discoverability and student convenience.",
+        title: "MapMyPSIT",
+      },
+      {
+        category: "web",
+        description: "Classic game interaction rebuilt with cleaner frontend flow and browser-friendly polish.",
+        details:
+          "This Tic Tac Toe project reworks a familiar interaction into a sharper browser experience with quicker feedback and replay flow.",
+        github: "https://github.com/Abhinav-2312307/TicTacToe",
+        highlights: [
+          "Rebuilt the game loop with smoother browser interaction.",
+          "Focused on fast feedback and replayability in the UI.",
+        ],
+        image: "/tictactoe.png",
+        live: "https://tictactoe-psit.vercel.app/",
+        stack: ["HTML", "CSS", "JavaScript"],
+        summary: "Fast browser game experiment focused on interaction and replayability.",
+        title: "Tic Tac Toe",
+      },
+      {
+        category: "ai",
+        description: "Upcoming trip-planning system shaped around itinerary generation and assistive booking flows.",
+        details:
+          "Travel AI explores how itinerary generation, NLP, and travel support can come together in one system that helps users move from idea to plan with less friction.",
+        github: "https://github.com/Abhinav-2312307/TravelAI",
+        highlights: [
+          "Combined itinerary thinking with conversational travel assistance.",
+          "Explored NLP-driven planning and support experiences.",
+        ],
+        image: "/travelAI.png",
+        live: "https://travel-ai-red.vercel.app/",
+        stack: ["Next.js", "React", "OpenAI API", "Node.js", "NLP"],
+        status: "In Progress",
+        summary: "AI-assisted travel concept combining planning, automation, and conversational support.",
+        title: "Travel AI",
+      },
+      {
+        category: "ai",
+        description: "Sign-language communication concept built around interpretation and expressive accessibility.",
+        details:
+          "A Silent Voice focuses on communication accessibility by translating user input into sign-oriented guidance.",
+        highlights: [
+          "Built around accessibility and communication support as the main outcome.",
+          "Combined input interpretation with sign-language-oriented responses.",
+        ],
+        image: "/silentvoice.png",
+        stack: ["Next.js", "React", "OpenAI API", "NLP", "DBMS"],
+        status: "In Progress",
+        summary: "Accessibility-first concept for converting input into hand-sign communication cues.",
+        title: "A Silent Voice",
+      },
+      {
+        category: "web",
+        description: "The portfolio itself, rebuilt as a sharper product experience rather than a flat resume page.",
+        details:
+          "This portfolio pushes toward stronger interaction hierarchy, more intentional motion, and cleaner section behavior.",
+        highlights: [
+          "Reworked the layout toward editorial structure instead of flat cards.",
+          "Focused on stronger section transitions and scroll behavior.",
+        ],
+        image: "/portf.png",
+        live: "https://portfolio-abhinavsahu.vercel.app/",
+        stack: ["Next.js", "Framer Motion", "Tailwind CSS", "Locomotive Scroll"],
+        summary: "This site, now treated like a product experience rather than a static resume page.",
+        title: "Portfolio Experience",
+      },
+    ],
+  },
+  achievements: {
+    sectionLabel: "Achievements",
+    title: "Wins that came from shipping, competing, and staying consistent.",
+    description:
+      "Recognition matters most when it reflects real execution. These milestones came from building under pressure, iterating quickly, and keeping quality high enough to stand out.",
+    items: [
+      {
+        iconName: "trophy",
+        title: "GDGoC Challenge Winner",
+        subtitle: "Rank 1 in full-stack development",
+        year: "2025",
+        category: "Competition",
+        description:
+          "Won the Google Developer Groups on Campus challenge by delivering a stronger full-stack solution with clear execution and problem framing.",
+      },
+      {
+        iconName: "rocket",
+        title: "National Hackathon Finalist",
+        subtitle: "IIIT Sonepat",
+        year: "2025",
+        category: "Hackathon",
+        description:
+          "Reached the final round with a working product concept focused on solving real rural-tech and AgriTech problems.",
+      },
+      {
+        iconName: "medal",
+        title: "Multiple Hackathon Finals",
+        subtitle: "GDG, IILM, and Sunhacks",
+        year: "2025",
+        category: "Recognition",
+        description:
+          "Repeatedly selected into final rounds across different hackathons, showing consistent execution under time pressure.",
+      },
+      {
+        iconName: "brain",
+        title: "Competitive Coding Growth",
+        subtitle: "550+ problems solved",
+        year: "Present",
+        category: "Coding",
+        description:
+          "Built stronger problem-solving habits through consistent practice across algorithms, data structures, and implementation-heavy questions.",
+      },
+    ],
+    stats: [
+      { label: "Best Finish", value: "1st Place" },
+      { label: "Hackathon Finals", value: "4+" },
+      { label: "Problems Solved", value: "550+" },
+      { label: "Momentum", value: "Still building" },
+    ],
+  },
+  hobbies: {
+    sectionLabel: "Beyond the build",
+    title: "Passions & Interests",
+    highlight: "shape the work too.",
+    description:
+      "The same curiosity that drives the product work also shows up in storytelling, systems thinking, and an obsession with understanding how things really work.",
+    items: [
+      {
+        iconName: "laptop",
+        title: "Code Crafting",
+        description: "Solving complex problems and building thoughtful software with strong foundations.",
+        eyebrow: "Personal energy source",
+      },
+      {
+        iconName: "film",
+        title: "Anime Exploration",
+        description: "Enjoying cinematic storytelling, character arcs, and imaginative world building.",
+        eyebrow: "Personal energy source",
+      },
+      {
+        iconName: "rocket",
+        title: "Cosmic Curiosity",
+        description: "Following astrophysics, space discoveries, and the deeper questions behind them.",
+        eyebrow: "Personal energy source",
+      },
+      {
+        iconName: "wrench",
+        title: "Code Archaeology",
+        description: "Tracing through systems, debugging edge cases, and refining existing codebases.",
+        eyebrow: "Personal energy source",
+      },
+    ],
+  },
+  contact: {
+    sectionLabel: "Contact",
+    title: "Let's build something useful and sharp.",
+    description:
+      "If you want to collaborate, talk through an idea, or bring me into a product that needs stronger engineering and design thinking, reach out here.",
+    formBadge: "Message",
+    formTitle: "Start the conversation",
+    infoTitle: "Contact Details",
+    socialTitle: "Elsewhere",
+    socialDescription: "You can also reach me through the platforms below.",
+    submitLabel: "Send Message",
+    submittingLabel: "Sending...",
+    formRecipientEmail: "abhinavrishi32@gmail.com",
+    infoItems: [
+      {
+        iconName: "map-pin",
+        label: "Location",
+        value: "Kanpur, Uttar Pradesh, India",
+      },
+      {
+        iconName: "mail",
+        label: "Primary Email",
+        value: "abhinavrishi32@gmail.com",
+      },
+      {
+        iconName: "user-round",
+        label: "Current Role",
+        value: "B.Tech CSE student building AI and product-focused systems",
+      },
+    ],
+  },
+  footer: {
+    description:
+      "Designing AI-first products and polished interfaces with the same focus on usefulness, speed, and craft.",
+    copyrightLabel: "All rights reserved.",
+  },
+  assistant: {
+    welcomeMessage:
+      "Hey there! I'm Abhinav's AI assistant. I know him pretty well and can chat about his work, achievements, or anything you're curious about. What would you like to know?",
+    tone: "Warm, smart, concise, and naturally conversational. Answer like a thoughtful human, not a brochure.",
+    systemPreamble:
+      "You are Abhinav Sahu's personal AI assistant. Answer with warmth, confidence, and specificity. Never dump the entire profile unless asked. Use retrieved portfolio and resume context first, then answer naturally.",
+    suggestedQuestions: [
+      "What are Abhinav's biggest achievements?",
+      "Tell me about his technical skills",
+      "What projects is he most proud of?",
+      "How did he get into AI and programming?",
+    ],
+    knowledgeNotes: [
+      "Abhinav is a Computer Science undergraduate focused on AI, full-stack product engineering, and competitive programming.",
+      "He values strong interface design, readable systems, and building products that solve real problems.",
+      "He has participated in hackathons, built AI projects, and solved hundreds of coding problems.",
+    ],
+    resumeText: "",
+  },
+  meta: {
+    title: "Abhinav Sahu | AI Enthusiast",
+    description: "AI & Data Science Enthusiast, C++ & Python Developer. Explore my projects, skills, and experience.",
+    keywords: ["Abhinav Sahu", "AI", "Data Science", "C++", "Python", "Developer", "Portfolio"],
+    siteUrl: "https://abhinav-sahu-portfolio.vercel.app",
+    ogImageUrl: "/profile.jpg",
+  },
+}

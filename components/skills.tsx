@@ -16,54 +16,43 @@ import {
   SiTypescript,
 } from "react-icons/si"
 
-type SkillCard = {
-  accent: string
-  category: string
-  icon: IconType
-  name: string
-  order: string
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { SkillCard, SkillsContent } from "@/lib/portfolio/schema"
+
+const skillIconMap: Record<string, IconType> = {
+  cplusplus: SiCplusplus,
+  express: SiExpress,
+  git: SiGit,
+  java: FaJava,
+  javascript: SiJavascript,
+  mongodb: SiMongodb,
+  nextjs: SiNextdotjs,
+  nodejs: SiNodedotjs,
+  postgresql: SiPostgresql,
+  python: SiPython,
+  react: SiReact,
+  typescript: SiTypescript,
 }
 
-const skillCards: SkillCard[] = [
-  { accent: "#4fd9ff", category: "Languages", icon: SiCplusplus, name: "C++", order: "01" },
-  { accent: "#ff8a55", category: "Languages", icon: FaJava, name: "Java", order: "02" },
-  { accent: "#ffd35f", category: "Languages", icon: SiPython, name: "Python", order: "03" },
-  { accent: "#ffe15f", category: "Frontend", icon: SiJavascript, name: "JavaScript", order: "04" },
-  { accent: "#59d4ff", category: "Frontend", icon: SiTypescript, name: "TypeScript", order: "05" },
-  { accent: "#6ce8ff", category: "Frontend", icon: SiReact, name: "React.js", order: "06" },
-  { accent: "#e7edf5", category: "Frameworks", icon: SiNextdotjs, name: "Next.js", order: "07" },
-  { accent: "#7de27f", category: "Backend", icon: SiNodedotjs, name: "Node.js", order: "08" },
-  { accent: "#c7d1dd", category: "Backend", icon: SiExpress, name: "Express.js", order: "09" },
-  { accent: "#48d08a", category: "Databases", icon: SiMongodb, name: "MongoDB", order: "10" },
-  { accent: "#7fb2ff", category: "Databases", icon: SiPostgresql, name: "PostgreSQL", order: "11" },
-  { accent: "#ff8f6d", category: "Tooling", icon: SiGit, name: "Git", order: "12" },
-]
-
-const rails = [
-  "Tailwind CSS",
-  "Bootstrap",
-  "REST APIs",
-  "JWT",
-  "Firebase",
-  "GitHub",
-  "Postman",
-  "Cloudinary",
-  "Expo",
-  "Vercel",
-  "DBMS",
-  "OOP",
-  "System Design",
-] as const
-
-
 const columnOffsets = ["xl:pt-14", "xl:pt-4", "xl:pt-20", "xl:pt-8"] as const
-const skillColumns = Array.from({ length: 4 }, () => [] as SkillCard[])
 
-skillCards.forEach((item, index) => {
-  skillColumns[index % skillColumns.length].push(item)
-})
+function splitSkillColumns(cards: SkillCard[]) {
+  const columns = Array.from({ length: 4 }, () => [] as SkillCard[])
 
-export default function Skills() {
+  cards.forEach((item, index) => {
+    columns[index % columns.length].push(item)
+  })
+
+  return columns
+}
+
+type SkillsProps = {
+  skills?: SkillsContent
+}
+
+export default function Skills({ skills = defaultPortfolioContent.skills }: SkillsProps) {
+  const skillColumns = splitSkillColumns(skills.cards)
+
   return (
     <section
       id="skills"
@@ -85,7 +74,7 @@ export default function Skills() {
           <div className="sticky top-28 flex h-[30rem] flex-col items-center justify-between">
             <span className="h-20 w-px bg-gradient-to-b from-primary-color/70 to-transparent" />
             <span className="rotate-180 text-xs uppercase tracking-[0.5em] text-text-secondary [writing-mode:vertical-rl]">
-              Skills
+              {skills.sectionLabel}
             </span>
             <span className="h-20 w-px bg-gradient-to-b from-transparent to-primary-color/55" />
           </div>
@@ -94,14 +83,14 @@ export default function Skills() {
         <div className="space-y-6">
           <div className="flex flex-col gap-4 border-b border-white/8 pb-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.36em] text-primary-light">Skills</p>
+              <p className="text-xs uppercase tracking-[0.36em] text-primary-light">{skills.sectionLabel}</p>
               <h2 className="mt-2 text-[clamp(2.1rem,4vw,3.3rem)] font-semibold tracking-[-0.05em] text-text-color">
-                Core Stack
+                {skills.title}
               </h2>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {["Languages", "Frontend", "Backend", "Databases", "Tooling"].map((item) => (
+              {skills.categories.map((item) => (
                 <span
                   key={item}
                   className="glass-pill px-3 py-1.5 text-[0.68rem] uppercase tracking-[0.26em] text-text-secondary"
@@ -114,16 +103,13 @@ export default function Skills() {
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {skillColumns.map((column, columnIndex) => (
-              <div
-                key={`skill-column-${columnIndex}`}
-                className={`space-y-4 ${columnOffsets[columnIndex]}`}
-              >
+              <div key={`skill-column-${columnIndex}`} className={`space-y-4 ${columnOffsets[columnIndex]}`}>
                 {column.map((item) => {
-                  const Icon = item.icon
+                  const Icon = skillIconMap[item.iconName] ?? SiReact
 
                   return (
                     <article
-                      key={item.name}
+                      key={`${item.order}-${item.name}`}
                       className="group relative overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(10,14,24,0.96),rgba(14,18,28,0.92))] p-5 shadow-[0_18px_42px_rgba(0,0,0,0.24)] transition-[border-color,box-shadow] duration-300 hover:border-white/18 hover:shadow-[0_22px_48px_rgba(0,0,0,0.28)]"
                     >
                       <div
@@ -178,7 +164,7 @@ export default function Skills() {
 
           <div className="glass-panel rounded-[28px] p-4">
             <div className="flex flex-wrap gap-2">
-              {rails.map((item) => (
+              {skills.rails.map((item) => (
                 <span key={item} className="glass-pill px-3 py-1.5 text-xs text-text-color">
                   {item}
                 </span>

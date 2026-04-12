@@ -7,54 +7,31 @@ import { useState } from "react"
 import emailjs from "@emailjs/browser"
 
 import { toast } from "@/hooks/use-toast"
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { ContactContent, Identity, SocialLink } from "@/lib/portfolio/schema"
 
-const contactInfo = [
-  {
-    Icon: MapPin,
-    label: "Location",
-    value: "Kanpur, Uttar Pradesh, India",
-  },
-  {
-    Icon: Mail,
-    label: "Primary Email",
-    value: "abhinavrishi32@gmail.com",
-  },
-  {
-    Icon: UserRound,
-    label: "Current Role",
-    value: "B.Tech CSE student building AI and product-focused systems",
-  },
-]
+const contactIconMap = {
+  mail: Mail,
+  "map-pin": MapPin,
+  "user-round": UserRound,
+}
 
-const contactOptions = [
-  {
-    icon: "fab fa-github",
-    text: "GitHub",
-    link: "https://github.com/Abhinav-2312307",
-  },
-  {
-    icon: "fab fa-linkedin",
-    text: "LinkedIn",
-    link: "https://www.linkedin.com/in/abhinav-sahu-865a01297/",
-  },
-  {
-    icon: "fas fa-code",
-    text: "LeetCode",
-    link: "https://leetcode.com/u/lucifer_debug/",
-  },
-  {
-    icon: "far fa-envelope",
-    text: "Email",
-    link: "mailto:2k23.cs2312307@gmail.com",
-  },
-]
+type ContactProps = {
+  contact?: ContactContent
+  identity?: Identity
+  socialLinks?: SocialLink[]
+}
 
-export default function Contact() {
+export default function Contact({
+  contact = defaultPortfolioContent.contact,
+  identity = defaultPortfolioContent.identity,
+  socialLinks = defaultPortfolioContent.socialLinks,
+}: ContactProps) {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
-    subject: "",
     message: "",
+    name: "",
+    subject: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -65,43 +42,57 @@ export default function Contact() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
+
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
+
+    if (!publicKey || !serviceId || !templateId) {
+      toast({
+        title: "Email setup missing",
+        description: "Add the EmailJS public key, service ID, and template ID in your env file.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
-      emailjs.init("5Qsk-kdFBYd2Wqpu1")
+      emailjs.init(publicKey)
 
       const now = new Date()
       const formattedDate = now.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "long",
         weekday: "long",
         year: "numeric",
-        month: "long",
-        day: "numeric",
       })
       const formattedTime = now.toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
       })
 
-      const result = await emailjs.send("service_oflnih7", "template_u296wlk", {
-        from_name: formData.name,
-        from_email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        to_email: "abhinavrishi32@gmail.com",
+      const result = await emailjs.send(serviceId, templateId, {
         date_time: `${formattedDate} at ${formattedTime}`,
+        from_email: formData.email,
+        from_name: formData.name,
+        message: formData.message,
+        subject: formData.subject,
+        to_email: contact.formRecipientEmail || identity.primaryEmail,
       })
 
       if (result.text === "OK") {
         toast({
           title: "Message sent!",
-          description: "Thank you for reaching out. I’ll get back to you soon.",
+          description: "Thank you for reaching out. I'll get back to you soon.",
         })
 
         setFormData({
-          name: "",
           email: "",
-          subject: "",
           message: "",
+          name: "",
+          subject: "",
         })
       }
     } catch (error) {
@@ -124,14 +115,11 @@ export default function Contact() {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm uppercase tracking-[0.34em] text-primary-light">Contact</p>
+          <p className="text-sm uppercase tracking-[0.34em] text-primary-light">{contact.sectionLabel}</p>
           <h2 className="mt-3 text-[clamp(2.4rem,5vw,4.1rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-text-color">
-            Let&apos;s build something useful and sharp.
+            {contact.title}
           </h2>
-          <p className="mt-5 text-sm leading-7 text-text-secondary md:text-base">
-            If you want to collaborate, talk through an idea, or bring me into a product that needs stronger
-            engineering and design thinking, reach out here.
-          </p>
+          <p className="mt-5 text-sm leading-7 text-text-secondary md:text-base">{contact.description}</p>
         </div>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
@@ -141,8 +129,8 @@ export default function Contact() {
                 <MessageSquare size={20} />
               </div>
               <div>
-                <p className="text-[0.68rem] uppercase tracking-[0.28em] text-text-secondary">Message</p>
-                <h3 className="mt-1 text-xl font-semibold text-text-color">Start the conversation</h3>
+                <p className="text-[0.68rem] uppercase tracking-[0.28em] text-text-secondary">{contact.formBadge}</p>
+                <h3 className="mt-1 text-xl font-semibold text-text-color">{contact.formTitle}</h3>
               </div>
             </div>
 
@@ -206,17 +194,17 @@ export default function Contact() {
                 className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,rgb(var(--primary-color)_/_0.94),rgb(var(--accent-color)_/_0.84))] px-6 py-3.5 text-sm font-semibold text-contrast-color shadow-[0_14px_34px_rgb(var(--primary-color)_/_0.16)] transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-70"
               >
                 <Send size={16} />
-                {isSubmitting ? "Sending..." : "Send Message"}
+                {isSubmitting ? contact.submittingLabel : contact.submitLabel}
               </button>
             </form>
           </div>
 
           <div className="space-y-5">
             <div className="glass-panel rounded-[30px] p-6">
-              <p className="text-[0.68rem] uppercase tracking-[0.3em] text-text-secondary">Contact Details</p>
+              <p className="text-[0.68rem] uppercase tracking-[0.3em] text-text-secondary">{contact.infoTitle}</p>
               <div className="mt-5 space-y-4">
-                {contactInfo.map((item) => {
-                  const Icon = item.Icon
+                {contact.infoItems.map((item) => {
+                  const Icon = contactIconMap[item.iconName as keyof typeof contactIconMap] ?? Mail
 
                   return (
                     <div key={item.label} className="flex items-start gap-4 rounded-[22px] border border-white/8 bg-white/[0.03] px-4 py-4">
@@ -236,25 +224,23 @@ export default function Contact() {
             <div className="glass-panel rounded-[30px] p-6">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[0.68rem] uppercase tracking-[0.3em] text-text-secondary">Elsewhere</p>
-                  <p className="mt-2 text-sm leading-7 text-text-secondary">
-                    You can also reach me through the platforms below.
-                  </p>
+                  <p className="text-[0.68rem] uppercase tracking-[0.3em] text-text-secondary">{contact.socialTitle}</p>
+                  <p className="mt-2 text-sm leading-7 text-text-secondary">{contact.socialDescription}</p>
                 </div>
                 <ArrowUpRight size={16} className="text-primary-color" />
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                {contactOptions.map((option) => (
+                {socialLinks.map((option) => (
                   <a
-                    key={option.text}
-                    href={option.link}
-                    target={option.link.startsWith("mailto:") ? undefined : "_blank"}
-                    rel={option.link.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                    key={option.label}
+                    href={option.href}
+                    target={option.href.startsWith("mailto:") ? undefined : "_blank"}
+                    rel={option.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
                     className="glass-pill inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium text-text-color transition-all duration-300 hover:border-primary-color/30 hover:text-primary-color"
                   >
-                    <i className={`${option.icon} text-base`} />
-                    {option.text}
+                    <i className={`${option.iconClass} text-base`} />
+                    {option.label}
                   </a>
                 ))}
               </div>

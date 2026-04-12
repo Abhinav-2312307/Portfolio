@@ -1,31 +1,21 @@
 import Link from "next/link"
 
-const links = ["home", "about", "education", "skills", "projects", "hobbies", "contact"]
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { FooterContent, Identity, NavigationItem, SocialLink } from "@/lib/portfolio/schema"
 
-const socialLinks = [
-  {
-    href: "https://github.com/Abhinav-2312307",
-    icon: "fab fa-github",
-    label: "GitHub",
-  },
-  {
-    href: "https://www.linkedin.com/in/abhinav-sahu-865a01297/",
-    icon: "fab fa-linkedin",
-    label: "LinkedIn",
-  },
-  {
-    href: "https://leetcode.com/u/lucifer_debug/",
-    icon: "fas fa-code",
-    label: "LeetCode",
-  },
-  {
-    href: "mailto:2k23.cs2312307@gmail.com",
-    icon: "far fa-envelope",
-    label: "Email",
-  },
-]
+type FooterProps = {
+  footer?: FooterContent
+  identity?: Identity
+  items?: NavigationItem[]
+  socialLinks?: SocialLink[]
+}
 
-export default function Footer() {
+export default function Footer({
+  footer = defaultPortfolioContent.footer,
+  identity = defaultPortfolioContent.identity,
+  items = defaultPortfolioContent.navigation.items,
+  socialLinks = defaultPortfolioContent.socialLinks,
+}: FooterProps) {
   return (
     <footer className="relative overflow-hidden px-8 py-12">
       <div className="mx-auto max-w-6xl">
@@ -35,23 +25,21 @@ export default function Footer() {
           <div className="relative z-10">
             <Link href="#home" className="inline-flex items-center gap-3 rounded-full px-4 py-2">
               <span className="glass-pill inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 font-semibold text-primary-color dark:border-white/10">
-                AS
+                {identity.initials}
               </span>
-              <span className="text-xl font-semibold text-text-color">Abhinav Sahu</span>
+              <span className="text-xl font-semibold text-text-color">{identity.fullName}</span>
             </Link>
 
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-text-secondary md:text-base">
-              Designing AI-first products and polished interfaces with the same focus on usefulness, speed, and craft.
-            </p>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-text-secondary md:text-base">{footer.description}</p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              {links.map((link) => (
+              {items.map((item) => (
                 <Link
-                  key={link}
-                  href={`#${link}`}
+                  key={item.id}
+                  href={`#${item.id}`}
                   className="glass-pill rounded-full border border-white/12 px-4 py-2 text-sm capitalize text-text-secondary transition-colors hover:text-primary-color dark:border-white/10"
                 >
-                  {link}
+                  {item.label.toLowerCase()}
                 </Link>
               ))}
             </div>
@@ -66,13 +54,13 @@ export default function Footer() {
                   className="glass-pill inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 text-text-secondary transition-colors hover:text-primary-color dark:border-white/10"
                   aria-label={link.label}
                 >
-                  <i className={link.icon}></i>
+                  <i className={link.iconClass}></i>
                 </a>
               ))}
             </div>
 
             <div className="mt-8 border-t border-white/10 pt-6 text-sm text-text-secondary">
-              &copy; {new Date().getFullYear()} Abhinav Sahu. All rights reserved.
+              &copy; {new Date().getFullYear()} {identity.fullName}. {footer.copyrightLabel}
             </div>
           </div>
         </div>

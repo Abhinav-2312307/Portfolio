@@ -1,217 +1,217 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
-const GEMINI_API_KEY = "AIzaSyAG3hpw2yL_6zwN4yJVoeSuomwrp1s_-CU"
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent"
+import { getPortfolioContent } from "@/lib/server/portfolio"
+import { getGeminiConfig } from "@/lib/server/env"
+import { retrieveKnowledge } from "@/lib/server/knowledge"
 
-// Core knowledge about Abhinav Sahu
-const ABHINAV_CORE_DATA = `
-ABOUT ABHINAV SAHU:
-- Full Name: Abhinav Sahu
-- Current Role: AI & Data Science Enthusiast, Full-Stack Developer, Competitive Programmer
-- Education: B.Tech Computer Science & Engineering at Pranveer Singh Institute of Technology, Kanpur (2023-2027)
-- Location: Kanpur, Uttar Pradesh, India
-- Email: abhinavrishi32@gmail.com
+type ConversationMessage = {
+  isUser?: boolean
+  text?: string
+}
 
-TECHNICAL EXPERTISE:
-- Programming: C++ (Expert - 400+ LeetCode problems), Python (AI/ML), JavaScript (Full-stack)
-- Specializations: AI/ML, Data Science, Full-Stack Development, Competitive Programming
-- Tools: React, Next.js, Node.js, Git, GitHub, ML libraries
-
-MAJOR ACHIEVEMENTS (2025):
-1. 🏆 GDGoC Challenge - Rank 1st in FullStack Development
-2. 🚀 IIIT Sonepat National Hackathon - Finalist (AgriTech innovation)
-3. 💡 HackO'clock by GDG (IILM University) - Finalist
-4. 🧠 LeetCode Expert - 400+ problems solved
-
-SOCIAL LINKS:
-- GitHub: https://github.com/Abhinav-2312307
-- LinkedIn: https://www.linkedin.com/in/abhinav-sahu-865a01297/
-- LeetCode: https://leetcode.com/u/lucifer_debug/
-
-PERSONALITY & INTERESTS:
-- Passionate about AI and emerging technologies
-- Strong problem-solver with analytical mindset
-- Loves competitive programming and hackathons
-- Interested in AgriTech and sustainable solutions
-- Continuous learner and innovator
-`
-
-function analyzeUserIntent(message: string, conversationHistory: any[]) {
+function analyzeUserIntent(message: string) {
   const lowerMessage = message.toLowerCase()
 
-  // Determine what the user is asking about
   const topics = {
-    achievements: ["achievement", "award", "win", "won", "rank", "first", "finalist", "hackathon", "gdgoc", "leetcode"],
+    achievements: ["achievement", "award", "win", "won", "rank", "first", "finalist", "hackathon", "leetcode"],
     skills: ["skill", "programming", "language", "technology", "tech", "code", "coding", "development"],
-    projects: ["project", "built", "created", "developed", "work", "portfolio"],
-    education: ["education", "study", "college", "university", "degree", "student"],
-    personal: ["about", "who", "person", "personality", "interest", "hobby", "like"],
-    experience: ["experience", "journey", "story", "how", "started", "began"],
+    projects: ["project", "built", "created", "developed", "portfolio", "startup", "product"],
+    education: ["education", "study", "college", "degree", "student", "cgpa", "school"],
+    personal: ["about", "who", "personality", "interest", "hobby", "like", "him"],
     contact: ["contact", "reach", "email", "linkedin", "github", "social"],
   }
 
-  const detectedTopics = []
-  for (const [topic, keywords] of Object.entries(topics)) {
-    if (keywords.some((keyword) => lowerMessage.includes(keyword))) {
-      detectedTopics.push(topic)
-    }
-  }
+  const matchedTopics = Object.entries(topics)
+    .filter(([, keywords]) => keywords.some((keyword) => lowerMessage.includes(keyword)))
+    .map(([topic]) => topic)
 
   return {
-    topics: detectedTopics,
-    isQuestion:
-      lowerMessage.includes("?") ||
-      lowerMessage.startsWith("what") ||
-      lowerMessage.startsWith("how") ||
-      lowerMessage.startsWith("tell"),
-    isGreeting: ["hi", "hello", "hey", "greetings"].some((greeting) => lowerMessage.includes(greeting)),
-    conversationLength: conversationHistory.length,
+    isGreeting: ["hi", "hello", "hey", "yo"].some((greeting) => lowerMessage.includes(greeting)),
+    topics: matchedTopics,
   }
 }
 
-function generateContextualPrompt(message: string, conversationHistory: any[], intent: any) {
-  const recentContext = conversationHistory
-    .slice(-4)
-    .map((msg) => `${msg.isUser ? "User" : "Assistant"}: ${msg.text}`)
-    .join("\n")
+function buildSuggestions(topics: string[]) {
+  if (topics.includes("achievements")) {
+    return [
+      "What kind of hackathons has he done?",
+      "Which achievement is he most proud of?",
+      "How did he build his problem-solving skills?",
+    ]
+  }
 
-  return `You are Abhinav Sahu's personal AI assistant. You have a warm, friendly, and conversational personality. 
+  if (topics.includes("skills")) {
+    return [
+      "Which stack does he use most often?",
+      "What projects show these skills best?",
+      "Is he stronger in AI or full-stack engineering?",
+    ]
+  }
 
-CORE INFORMATION:
-${ABHINAV_CORE_DATA}
+  if (topics.includes("projects")) {
+    return [
+      "Which project feels most production-ready?",
+      "What problem was he trying to solve with PrintMyPagePSIT?",
+      "What AI projects has he built so far?",
+    ]
+  }
 
-CONVERSATION CONTEXT:
-${recentContext ? `Recent conversation:\n${recentContext}\n` : "This is the start of our conversation."}
-
-CURRENT USER MESSAGE: "${message}"
-
-RESPONSE GUIDELINES:
-1. Be conversational and human-like, not robotic
-2. Only answer what's specifically asked - don't dump all information at once
-3. Use the conversation context to provide relevant follow-ups
-4. If asked about achievements, be specific about the impact and details
-5. If asked about skills, mention practical applications and experience level
-6. Use emojis sparingly but naturally
-7. Ask follow-up questions to keep the conversation engaging
-8. Remember what was discussed earlier in this conversation
-9. Be enthusiastic about Abhinav's accomplishments but not overly promotional
-10. If you don't have specific information, say so honestly
-
-${intent.isGreeting ? "The user is greeting you - respond warmly and offer to help." : ""}
-${intent.topics.length > 0 ? `The user seems interested in: ${intent.topics.join(", ")}. Focus your response on these areas.` : ""}
-
-Respond naturally as if you're having a real conversation about Abhinav:`
+  return [
+    "What are his biggest achievements?",
+    "Tell me about his technical skills",
+    "What kind of projects is he building right now?",
+  ]
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const { message, context, conversationHistory = [] } = await request.json()
+function buildPrompt({
+  assistantIntro,
+  conversationHistory,
+  message,
+  retrievedContext,
+  tone,
+}: {
+  assistantIntro: string
+  conversationHistory: ConversationMessage[]
+  message: string
+  retrievedContext: string
+  tone: string
+}) {
+  const recentConversation = conversationHistory
+    .slice(-6)
+    .map((entry) => `${entry.isUser ? "User" : "Assistant"}: ${entry.text ?? ""}`)
+    .join("\n")
 
-    if (!message) {
-      return NextResponse.json({ error: "Message is required" }, { status: 400 })
-    }
+  return `${assistantIntro}
 
-    // Analyze user intent and conversation context
-    const intent = analyzeUserIntent(message, conversationHistory)
-    const prompt = generateContextualPrompt(message, conversationHistory, intent)
+Tone and behavior:
+- ${tone}
+- Sound like a smart, grounded human assistant.
+- Answer only what the user asked.
+- Use the retrieved context first and do not invent specifics.
+- If information is missing, say that honestly and still be helpful.
+- Keep the reply naturally conversational, not like a resume dump.
+- When useful, add one short follow-up question at the end.
 
-    const response = await fetch(GEMINI_API_URL, {
+Retrieved portfolio and resume context:
+${retrievedContext}
+
+Conversation so far:
+${recentConversation || "This is the start of the conversation."}
+
+Current user message:
+${message}
+
+Write the best possible response as Abhinav's personal AI assistant.`
+}
+
+async function callGemini(prompt: string) {
+  const gemini = getGeminiConfig()
+
+  if (!gemini.apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured.")
+  }
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${gemini.model}:generateContent`,
+    {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-goog-api-key": GEMINI_API_KEY,
+        "X-goog-api-key": gemini.apiKey,
       },
       body: JSON.stringify({
         contents: [
           {
-            parts: [
-              {
-                text: prompt,
-              },
-            ],
+            parts: [{ text: prompt }],
           },
         ],
         generationConfig: {
-          temperature: 0.8, // More creative and conversational
-          topK: 40,
+          maxOutputTokens: 700,
+          temperature: 0.75,
+          topK: 32,
           topP: 0.95,
-          maxOutputTokens: 1024, // Shorter, more focused responses
-          stopSequences: [],
         },
-        safetySettings: [
-          {
-            category: "HARM_CATEGORY_HARASSMENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE",
-          },
-          {
-            category: "HARM_CATEGORY_HATE_SPEECH",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE",
-          },
-          {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE",
-          },
-          {
-            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE",
-          },
-        ],
       }),
+    },
+  )
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Gemini API error ${response.status}: ${errorText}`)
+  }
+
+  const data = await response.json()
+  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? ""
+}
+
+function buildFallbackResponse(message: string, contextText: string) {
+  if (!contextText) {
+    return `I couldn't pull the richer portfolio context right now, but I can still help with questions about Abhinav's projects, skills, education, or achievements. What would you like to know?`
+  }
+
+  const firstSentence = contextText.split(/(?<=[.!?])\s+/).slice(0, 3).join(" ")
+  return `${firstSentence} If you want, ask something more specific about ${message.toLowerCase().includes("project") ? "a project" : "his background"} and I'll narrow it down.`
+}
+
+export const runtime = "nodejs"
+
+export async function POST(request: NextRequest) {
+  try {
+    const { conversationHistory = [], message } = await request.json()
+
+    if (!message || typeof message !== "string") {
+      return NextResponse.json({ error: "Message is required." }, { status: 400 })
+    }
+
+    const content = await getPortfolioContent()
+    const intent = analyzeUserIntent(message)
+    const knowledge = await retrieveKnowledge(content, message, 6)
+    const retrievedContext = knowledge
+      .map((chunk) => `[${chunk.section.toUpperCase()}] ${chunk.title}: ${chunk.text}`)
+      .join("\n\n")
+    const prompt = buildPrompt({
+      assistantIntro: content.assistant.systemPreamble,
+      conversationHistory,
+      message,
+      retrievedContext,
+      tone: content.assistant.tone,
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error("Gemini API error:", response.status, errorText)
-      throw new Error(`Gemini API error: ${response.status}`)
+    let aiResponse = ""
+
+    try {
+      aiResponse = await callGemini(prompt)
+    } catch (error) {
+      console.error("Gemini request failed:", error)
+      aiResponse = buildFallbackResponse(message, retrievedContext)
     }
 
-    const data = await response.json()
-
-    if (!data.candidates || data.candidates.length === 0) {
-      throw new Error("No response generated")
+    if (!aiResponse) {
+      aiResponse = buildFallbackResponse(message, retrievedContext)
     }
 
-    let aiResponse =
-      data.candidates[0]?.content?.parts?.[0]?.text ||
-      "Hmm, I'm not sure how to respond to that. Could you ask me something else about Abhinav?"
-
-    // Clean up the response
-    aiResponse = aiResponse.trim()
-
-    // Generate contextual suggestions based on the conversation
-    let suggestions = []
-    if (intent.topics.includes("achievements")) {
-      suggestions = [
-        "How did he prepare for these competitions?",
-        "What was his biggest challenge?",
-        "Tell me about his coding journey",
-      ]
-    } else if (intent.topics.includes("skills")) {
-      suggestions = [
-        "What projects showcase these skills?",
-        "How long has he been programming?",
-        "What's his favorite technology to work with?",
-      ]
-    } else {
-      suggestions = [
-        "What are his biggest achievements?",
-        "Tell me about his technical skills",
-        "What's he working on currently?",
-      ]
+    if (intent.isGreeting && conversationHistory.length === 0) {
+      aiResponse = `${content.assistant.welcomeMessage} ${aiResponse}`.trim()
     }
 
     return NextResponse.json({
       response: aiResponse,
-      suggestions: suggestions,
+      suggestions: buildSuggestions(intent.topics),
     })
   } catch (error) {
     console.error("Error in chat API:", error)
     return NextResponse.json(
       {
-        response: "I'm having some trouble connecting right now. Could you try asking again? 😅",
+        response: "I'm having some trouble connecting right now. Please try again in a moment.",
+        suggestions: defaultSuggestions,
       },
       { status: 200 },
     )
   }
 }
 
+const defaultSuggestions = [
+  "What are his biggest achievements?",
+  "Tell me about his technical skills",
+  "What kind of projects is he building right now?",
+]

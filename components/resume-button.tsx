@@ -1,15 +1,22 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
 import { Download } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import { cn } from "@/lib/utils"
+
 interface ResumeButtonProps {
-  fullWidth?: boolean
   className?: string
+  fullWidth?: boolean
+  resumeUrl?: string
 }
 
-export default function ResumeButton({ fullWidth = false, className }: ResumeButtonProps) {
+export default function ResumeButton({
+  className,
+  fullWidth = false,
+  resumeUrl = defaultPortfolioContent.identity.resumeUrl,
+}: ResumeButtonProps) {
   return (
     <Button
       className={cn(
@@ -17,7 +24,7 @@ export default function ResumeButton({ fullWidth = false, className }: ResumeBut
         fullWidth && "w-full justify-center",
         className,
       )}
-      onClick={() => window.open("/resume.pdf", "_blank")}
+      onClick={() => window.open(resumeUrl, "_blank")}
     >
       <Download size={16} className="mr-2" />
       Resume

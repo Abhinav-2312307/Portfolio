@@ -8,23 +8,22 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import CandleThemeToggle from "@/components/candle-theme-toggle"
 import ResumeButton from "@/components/resume-button"
 import { useActiveSection } from "@/hooks/use-active-section"
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { Identity, NavigationItem } from "@/lib/portfolio/schema"
 import { lockActiveSection, requestPortfolioScrollTo } from "@/lib/smooth-scroll"
 import { cn } from "@/lib/utils"
 
-const navItems = [
-  { id: "home", label: "Home" },
-  { id: "about", label: "About" },
-  { id: "education", label: "Education" },
-  { id: "skills", label: "Skills" },
-  { id: "projects", label: "Projects" },
-  { id: "achievements", label: "Wins" },
-  { id: "hobbies", label: "Beyond" },
-  { id: "contact", label: "Contact" },
-] as const
+type NavbarProps = {
+  identity?: Identity
+  items?: NavigationItem[]
+  resumeUrl?: string
+}
 
-type NavItemId = (typeof navItems)[number]["id"]
-
-export default function Navbar() {
+export default function Navbar({
+  identity = defaultPortfolioContent.identity,
+  items = defaultPortfolioContent.navigation.items,
+  resumeUrl = defaultPortfolioContent.identity.resumeUrl,
+}: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [indicatorStyle, setIndicatorStyle] = useState({
@@ -32,20 +31,11 @@ export default function Navbar() {
     opacity: 0,
     width: 0,
   })
-  const sectionIds = useMemo(() => navItems.map((item) => item.id), [])
-  const activeSection = useActiveSection(sectionIds, 132) as NavItemId
-  const activeItem = useMemo(() => navItems.find((item) => item.id === activeSection) ?? navItems[0], [activeSection])
+  const sectionIds = useMemo(() => items.map((item) => item.id), [items])
+  const activeSection = (useActiveSection(sectionIds, 132) as string) || items[0]?.id || "home"
+  const activeItem = useMemo(() => items.find((item) => item.id === activeSection) ?? items[0], [activeSection, items])
   const desktopNavRef = useRef<HTMLDivElement>(null)
-  const desktopButtonRefs = useRef<Record<NavItemId, HTMLButtonElement | null>>({
-    home: null,
-    about: null,
-    education: null,
-    skills: null,
-    projects: null,
-    achievements: null,
-    hobbies: null,
-    contact: null,
-  })
+  const desktopButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({})
 
   useEffect(() => {
     const updateScrolled = (y: number) => {
@@ -109,7 +99,7 @@ export default function Navbar() {
     }
   }, [activeSection])
 
-  const scrollToSection = (id: NavItemId) => {
+  const scrollToSection = (id: string) => {
     lockActiveSection(id, 1100)
     requestPortfolioScrollTo({
       id,
@@ -118,7 +108,7 @@ export default function Navbar() {
     setIsOpen(false)
   }
 
-  const isActive = (section: NavItemId) => activeSection === section
+  const isActive = (section: string) => activeSection === section
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-6">
@@ -141,14 +131,14 @@ export default function Navbar() {
             aria-label="Scroll to hero section"
           >
             <span className="glass-pill flex h-10 w-10 shrink-0 items-center justify-center border border-[rgb(var(--glass-border)_/_0.16)] bg-[linear-gradient(135deg,rgb(var(--glass-bg-strong)_/_0.92),rgb(var(--glass-bg)_/_0.74))] text-sm font-semibold text-text-color shadow-[0_8px_22px_rgb(var(--overlay-color)_/_0.12)]">
-              AS
+              {identity.initials}
             </span>
             <span className="min-w-0">
               <span className="block truncate bg-[linear-gradient(135deg,rgb(var(--primary-light)),rgb(var(--accent-color)))] bg-clip-text text-[1.02rem] font-semibold tracking-[-0.04em] text-transparent">
-                Abhinav Sahu
+                {identity.fullName}
               </span>
               <span className="hidden truncate text-[0.62rem] uppercase tracking-[0.34em] text-text-secondary md:block">
-                AI Product Engineer
+                {identity.roleTagline}
               </span>
             </span>
           </button>
@@ -163,7 +153,7 @@ export default function Navbar() {
             />
 
             <div className="flex items-center gap-1 pb-3 pt-1">
-              {navItems.map((item) => (
+              {items.map((item) => (
                 <button
                   key={item.id}
                   ref={(element) => {
@@ -188,7 +178,7 @@ export default function Navbar() {
           <div className="hidden items-center gap-2 xl:flex">
             <div className="glass-pill inline-flex items-center gap-2 border border-[rgb(var(--glass-border)_/_0.14)] px-3 py-2 text-[0.65rem] uppercase tracking-[0.26em] text-text-secondary">
               <span className="h-2 w-2 rounded-full bg-primary-color" />
-              {activeItem.label}
+              {activeItem?.label}
             </div>
             <button
               type="button"
@@ -198,7 +188,7 @@ export default function Navbar() {
               Contact
               <ArrowUpRight size={16} />
             </button>
-            <ResumeButton />
+            <ResumeButton resumeUrl={resumeUrl} />
             <CandleThemeToggle />
           </div>
 
@@ -228,10 +218,10 @@ export default function Navbar() {
               <div className="glass-panel space-y-3 rounded-[24px] p-4">
                 <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3">
                   <span className="text-[0.64rem] uppercase tracking-[0.28em] text-text-secondary">Now viewing</span>
-                  <span className="text-sm font-medium text-text-color">{activeItem.label}</span>
+                  <span className="text-sm font-medium text-text-color">{activeItem?.label}</span>
                 </div>
 
-                {navItems.map((item) => (
+                {items.map((item) => (
                   <button
                     key={item.id}
                     type="button"
@@ -261,7 +251,7 @@ export default function Navbar() {
                   >
                     Contact
                   </button>
-                  <ResumeButton fullWidth />
+                  <ResumeButton fullWidth resumeUrl={resumeUrl} />
                 </div>
               </div>
             </motion.div>

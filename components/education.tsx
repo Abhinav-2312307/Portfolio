@@ -3,22 +3,19 @@
 import { motion, useReducedMotion } from "framer-motion"
 import { GraduationCap, School, Sparkles, University } from "lucide-react"
 
-const educationItems = [
-  {
-    Icon: University,
-    meta: "2023 - 2027",
-    points: ["B.Tech in Computer Science & Engineering", "AKTU University", "CGPA: 8.07"],
-    title: "Pranveer Singh Institute of Technology",
-  },
-  {
-    Icon: School,
-    meta: "2021 - 2023",
-    points: ["Intermediate (12th) - 86%", "High School (10th) - 93.4%"],
-    title: "Delhi Public School, Barra Kanpur",
-  },
-]
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { EducationContent } from "@/lib/portfolio/schema"
 
-export default function Education() {
+const educationIconMap = {
+  school: School,
+  university: University,
+}
+
+type EducationProps = {
+  education?: EducationContent
+}
+
+export default function Education({ education = defaultPortfolioContent.education }: EducationProps) {
   const prefersReducedMotion = useReducedMotion()
 
   return (
@@ -34,15 +31,15 @@ export default function Education() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="mb-12 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.34em] text-primary-light">Education</p>
+            <p className="text-sm uppercase tracking-[0.34em] text-primary-light">{education.sectionLabel}</p>
             <h2 className="mt-3 text-[clamp(2.5rem,5vw,4.6rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-text-color">
-              Journey
+              {education.title}
             </h2>
           </div>
 
           <div className="glass-pill inline-flex items-center gap-2 self-start px-4 py-2 text-xs uppercase tracking-[0.3em] text-text-secondary">
             <Sparkles size={14} className="text-primary-color" />
-            Foundations that shape the builds
+            {education.taglineBadge}
           </div>
         </div>
 
@@ -50,15 +47,12 @@ export default function Education() {
           <div className="absolute left-5 top-0 h-full w-px bg-gradient-to-b from-primary-color/55 via-accent-color/28 to-transparent md:left-1/2 md:-translate-x-1/2" />
 
           <div className="space-y-8">
-            {educationItems.map((item, index) => {
+            {education.items.map((item, index) => {
               const isRight = index % 2 === 1
-              const Icon = item.Icon
+              const Icon = educationIconMap[item.iconName as keyof typeof educationIconMap] ?? GraduationCap
 
               return (
-                <div
-                  key={item.title}
-                  className="relative md:grid md:grid-cols-2 md:gap-10"
-                >
+                <div key={item.title} className="relative md:grid md:grid-cols-2 md:gap-10">
                   <div className={isRight ? "md:col-start-2" : undefined}>
                     <motion.article
                       className="glass-panel-strong relative ml-12 rounded-[30px] border border-white/10 p-6 md:ml-0"

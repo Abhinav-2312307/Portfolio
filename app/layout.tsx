@@ -18,20 +18,8 @@ const manrope = Manrope({
 })
 
 export const metadata = {
-  title: "Abhinav Sahu | AI Enthusiast",
-  description: "AI & Data Science Enthusiast, C++ & Python Developer. Explore my projects, skills, and experience.",
-  keywords: "Abhinav Sahu, AI, Data Science, C++, Python, Developer, Portfolio",
-  authors: [{ name: "Abhinav Sahu" }],
-  metadataBase: new URL("https://abhinav-sahu-portfolio.vercel.app"),
-  openGraph: {
-    title: "Abhinav Sahu | AI Enthusiast",
-    description: "AI & Data Science Enthusiast, C++ & Python Developer",
-    images: ["/profile.jpg"],
-    url: "https://abhinav-sahu-portfolio.vercel.app/",
-  },
-  twitter: {
-    card: "summary_large_image",
-  },
+  title: "Portfolio",
+  description: "Personal portfolio",
   generator: "v0.dev",
 }
 

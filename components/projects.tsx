@@ -1,181 +1,15 @@
 "use client"
 
-import Image from "next/image"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { ArrowUpRight, ExternalLink, Github } from "lucide-react"
+import Image from "next/image"
 import { useEffect, useMemo, useRef, useState } from "react"
 
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { ProjectItem, ProjectsContent } from "@/lib/portfolio/schema"
 import { cn } from "@/lib/utils"
 
-type Project = {
-  category: "ai" | "full-stack" | "utility" | "web"
-  description: string
-  details: string
-  github?: string
-  highlights: string[]
-  image: string
-  live?: string
-  period?: string
-  stack: string[]
-  status?: string
-  summary: string
-  title: string
-}
-
-const projectFilters = [
-  { label: "All Work", value: "all" },
-  { label: "AI", value: "ai" },
-  { label: "Full Stack", value: "full-stack" },
-  { label: "Web", value: "web" },
-  { label: "Utility", value: "utility" },
-] as const
-
-const projects: Project[] = [
-  {
-    category: "full-stack",
-    description: "A SaaS-oriented multi-portal printing platform for students, admins, and order workflows.",
-    details:
-      "Built as a production-style printing system with student ordering, admin visibility, supplier handling, and payment-aware flows so the full document journey feels reliable instead of pieced together.",
-    github: "https://github.com/Abhinav-2312307/printmypagex",
-    highlights: [
-      "Designed a student-to-admin order flow with clearer operational states.",
-      "Connected payment, fulfillment, and status visibility into one product surface.",
-    ],
-    image: "/printmypagepsit.png",
-    live: "https://printmypagepsit.store/",
-    stack: ["Next.js", "React", "Node.js", "MongoDB", "Firebase", "REST APIs"],
-    summary: "Production-style platform for seamless document printing and order flows.",
-    title: "PrintMyPagePSIT",
-  },
-  {
-    category: "ai",
-    description: "Legal information experience shaped around AI-assisted support and accessible resource discovery.",
-    details:
-      "JusticeAlly is centered on making legal help feel easier to navigate through cleaner information architecture, guided support, and AI-assisted discovery across complex topics.",
-    github: "https://github.com/Abhinav-2312307/JusticeAlly",
-    highlights: [
-      "Focused the product on legal information clarity and discoverability.",
-      "Used AI support to make interaction more direct and useful.",
-    ],
-    image: "/justiceAlly.png",
-    live: "https://justice-ally.vercel.app/",
-    stack: ["Next.js", "React", "OpenAI API", "Python", "MySQL"],
-    summary: "AI-powered legal helper focused on clarity, accessibility, and real utility.",
-    title: "JusticeAlly",
-  },
-  {
-    category: "full-stack",
-    description: "Geospatial civic issue reporting platform with AQI comparison and authority routing.",
-    details:
-      "Built around map-based complaint reporting, regional comparison, and smarter routing so infrastructure issues become visible, comparable, and easier to direct to the right department.",
-    highlights: [
-      "Architected a geospatial civic issue reporting flow with public complaint visibility.",
-      "Built an Area Quality Index across 10+ infrastructure parameters.",
-    ],
-    image: "/placeholder.jpg",
-    period: "Apr 2026 - Present",
-    stack: ["React.js", "Node.js", "PostgreSQL", "PostGIS", "Leaflet.js"],
-    status: "In Progress",
-    summary: "Civic reporting system combining live maps, AQI-style comparison, and smarter complaint routing.",
-    title: "Civic Intelligence Platform",
-  },
-  {
-    category: "utility",
-    description: "Encryption-focused interface for image security workflows with a clean, task-first shell.",
-    details:
-      "The image encryption tool keeps the interface direct so secure image handling stays simple, fast, and focused on the core task.",
-    github: "https://github.com/Abhinav-2312307/Image-Encryption",
-    highlights: [
-      "Built a direct interface for image security-oriented tasks.",
-      "Kept the product shell simple so the main action stays obvious.",
-    ],
-    image: "/imgEnc.png",
-    stack: ["React", "Next.js", "TypeScript", "Tailwind CSS"],
-    summary: "Secure image transformation utility with emphasis on direct user actions.",
-    title: "Image Encryption Tool",
-  },
-  {
-    category: "web",
-    description: "Directional product site for mapping PSIT campus routes with stronger navigation context.",
-    details:
-      "MapMyPSIT turns campus navigation into a clearer experience with route-oriented interaction, location context, and better discoverability.",
-    github: "https://github.com/Abhinav-2312307/Map-MY-PSIT",
-    highlights: [
-      "Built around campus-specific route discovery rather than a generic site shell.",
-      "Made navigation easier for students with clearer location context.",
-    ],
-    image: "/mapmypsit.png",
-    live: "https://map-my-psit.vercel.app/#",
-    stack: ["Next.js", "React", "Node.js", "DBMS", "Tailwind CSS"],
-    summary: "Campus navigation project built around discoverability and student convenience.",
-    title: "MapMyPSIT",
-  },
-  {
-    category: "web",
-    description: "Classic game interaction rebuilt with cleaner frontend flow and browser-friendly polish.",
-    details:
-      "This Tic Tac Toe project reworks a familiar interaction into a sharper browser experience with quicker feedback and replay flow.",
-    github: "https://github.com/Abhinav-2312307/TicTacToe",
-    highlights: [
-      "Rebuilt the game loop with smoother browser interaction.",
-      "Focused on fast feedback and replayability in the UI.",
-    ],
-    image: "/tictactoe.png",
-    live: "https://tictactoe-psit.vercel.app/",
-    stack: ["HTML", "CSS", "JavaScript"],
-    summary: "Fast browser game experiment focused on interaction and replayability.",
-    title: "Tic Tac Toe",
-  },
-  {
-    category: "ai",
-    description: "Upcoming trip-planning system shaped around itinerary generation and assistive booking flows.",
-    details:
-      "Travel AI explores how itinerary generation, NLP, and travel support can come together in one system that helps users move from idea to plan with less friction.",
-    github: "https://github.com/Abhinav-2312307/TravelAI",
-    highlights: [
-      "Combined itinerary thinking with conversational travel assistance.",
-      "Explored NLP-driven planning and support experiences.",
-    ],
-    image: "/travelAI.png",
-    live: "https://travel-ai-red.vercel.app/",
-    stack: ["Next.js", "React", "OpenAI API", "Node.js", "NLP"],
-    status: "In Progress",
-    summary: "AI-assisted travel concept combining planning, automation, and conversational support.",
-    title: "Travel AI",
-  },
-  {
-    category: "ai",
-    description: "Sign-language communication concept built around interpretation and expressive accessibility.",
-    details:
-      "A Silent Voice focuses on communication accessibility by translating user input into sign-oriented guidance.",
-    highlights: [
-      "Built around accessibility and communication support as the main outcome.",
-      "Combined input interpretation with sign-language-oriented responses.",
-    ],
-    image: "/silentvoice.png",
-    stack: ["Next.js", "React", "OpenAI API", "NLP", "DBMS"],
-    status: "In Progress",
-    summary: "Accessibility-first concept for converting input into hand-sign communication cues.",
-    title: "A Silent Voice",
-  },
-  {
-    category: "web",
-    description: "The portfolio itself, rebuilt as a sharper product experience rather than a flat resume page.",
-    details:
-      "This portfolio pushes toward stronger interaction hierarchy, more intentional motion, and cleaner section behavior.",
-    highlights: [
-      "Reworked the layout toward editorial structure instead of flat cards.",
-      "Focused on stronger section transitions and scroll behavior.",
-    ],
-    image: "/portf.png",
-    live: "https://portfolio-abhinavsahu.vercel.app/",
-    stack: ["Next.js", "Framer Motion", "Tailwind CSS", "Locomotive Scroll"],
-    summary: "This site, now treated like a product experience rather than a static resume page.",
-    title: "Portfolio Experience",
-  },
-]
-
-function getCategoryLabel(category: Project["category"]) {
+function getCategoryLabel(category: string) {
   switch (category) {
     case "full-stack":
       return "Full Stack"
@@ -297,29 +131,44 @@ function StickyProjectPanel({ children }: { children: React.ReactNode }) {
           <div className="absolute bottom-0 left-0 right-0 h-28 bg-[linear-gradient(180deg,transparent,rgba(90,121,255,0.06))]" />
           <div className="absolute bottom-5 right-4 top-5 w-px bg-gradient-to-b from-transparent via-white/8 to-transparent" />
 
-          <div className="relative z-20 px-4 py-3">
-            {children}
-          </div>
+          <div className="relative z-20 px-4 py-3">{children}</div>
         </div>
       </div>
     </aside>
   )
 }
 
-export default function Projects() {
-  const [filter, setFilter] = useState<(typeof projectFilters)[number]["value"]>("all")
-  const [selectedTitle, setSelectedTitle] = useState(projects[0]?.title ?? "")
+type ProjectsProps = {
+  projects?: ProjectsContent
+}
+
+export default function Projects({ projects = defaultPortfolioContent.projects }: ProjectsProps) {
+  const [filter, setFilter] = useState<string>(projects.filters[0]?.value ?? "all")
+  const [selectedTitle, setSelectedTitle] = useState(projects.items[0]?.title ?? "")
   const prefersReducedMotion = useReducedMotion()
 
   const filteredProjects = useMemo(() => {
-    return filter === "all" ? projects : projects.filter((p) => p.category === filter)
-  }, [filter])
+    return filter === "all" ? projects.items : projects.items.filter((project) => project.category === filter)
+  }, [filter, projects.items])
 
-  const activeProject = filteredProjects.find((p) => p.title === selectedTitle) ?? filteredProjects[0] ?? projects[0]
-  const activeProjectIndex = Math.max(0, filteredProjects.findIndex((project) => project.title === activeProject?.title))
+  const activeProject =
+    filteredProjects.find((project) => project.title === selectedTitle) ?? filteredProjects[0] ?? projects.items[0]
+  const activeProjectIndex = Math.max(
+    0,
+    filteredProjects.findIndex((project) => project.title === activeProject?.title),
+  )
 
   useEffect(() => {
-    if (!filteredProjects.some((p) => p.title === selectedTitle)) {
+    setFilter((currentFilter) =>
+      projects.filters.some((item) => item.value === currentFilter) ? currentFilter : projects.filters[0]?.value ?? "all",
+    )
+    setSelectedTitle((currentTitle) =>
+      projects.items.some((project) => project.title === currentTitle) ? currentTitle : projects.items[0]?.title ?? "",
+    )
+  }, [projects.filters, projects.items])
+
+  useEffect(() => {
+    if (!filteredProjects.some((project) => project.title === selectedTitle)) {
       setSelectedTitle(filteredProjects[0]?.title ?? "")
     }
   }, [filteredProjects, selectedTitle])
@@ -335,23 +184,23 @@ export default function Projects() {
       <div className="absolute right-[-8%] top-[16%] h-[16rem] w-[24rem] bg-[radial-gradient(circle,rgba(90,121,255,0.14),transparent_68%)] blur-3xl" />
 
       <div className="relative z-10 mx-auto max-w-7xl">
-        {/* Header + Filters */}
         <div className="mb-5 flex flex-col gap-5 md:mb-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.34em] text-primary-light">Selected Work</p>
+            <p className="text-sm uppercase tracking-[0.34em] text-primary-light">{projects.sectionLabel}</p>
             <h2 className="mt-3 text-[clamp(2.4rem,5vw,4.2rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-text-color">
-              Projects
+              {projects.title}
             </h2>
           </div>
           <div className="flex flex-wrap gap-2">
-            {projectFilters.map((item) => (
+            {projects.filters.map((item) => (
               <button
                 key={item.value}
                 type="button"
                 onClick={() => {
                   setFilter(item.value)
-                  const next = item.value === "all" ? projects[0] : projects.find((p) => p.category === item.value)
-                  setSelectedTitle(next?.title ?? projects[0]?.title ?? "")
+                  const next =
+                    item.value === "all" ? projects.items[0] : projects.items.find((project) => project.category === item.value)
+                  setSelectedTitle(next?.title ?? projects.items[0]?.title ?? "")
                 }}
                 className={cn(
                   "glass-pill px-3.5 py-2 text-[0.68rem] uppercase tracking-[0.24em] transition-all duration-200",
@@ -366,9 +215,7 @@ export default function Projects() {
           </div>
         </div>
 
-        {/* Main layout: sticky panel + 2-col grid */}
         <div id="projects-grid-wrap" className="grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-stretch">
-          {/* Sticky detail panel */}
           <StickyProjectPanel>
             <div className="glass-panel-strong overflow-hidden rounded-[26px] border-white/10 bg-[linear-gradient(180deg,rgba(6,10,18,0.96),rgba(10,16,26,0.88))] px-3.5 py-3.5 shadow-[0_18px_40px_rgba(0,0,0,0.2)]">
               <AnimatePresence initial={false} mode="wait">
@@ -471,7 +318,6 @@ export default function Projects() {
             </div>
           </StickyProjectPanel>
 
-          {/* 2-column grid of project cards */}
           <div className="grid gap-5 self-start sm:grid-cols-2">
             {filteredProjects.map((project, index) => {
               const isSelected = activeProject?.title === project.title
@@ -482,9 +328,9 @@ export default function Projects() {
                   onClick={() => setSelectedTitle(project.title)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault()
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
                       setSelectedTitle(project.title)
                     }
                   }}
@@ -495,7 +341,6 @@ export default function Projects() {
                       : "border-[rgb(var(--glass-border)_/_0.1)] bg-[linear-gradient(180deg,rgb(var(--glass-bg-strong)_/_0.9),rgb(var(--glass-bg)_/_0.6))] shadow-[0_10px_24px_rgb(var(--overlay-color)_/_0.12)] hover:border-[rgb(var(--glass-border)_/_0.18)]",
                   )}
                 >
-                  {/* Image on top */}
                   <div className="relative aspect-[16/9] overflow-hidden">
                     <Image
                       src={project.image}
@@ -506,7 +351,6 @@ export default function Projects() {
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,rgba(6,8,12,0.75)_88%,rgba(6,8,12,0.95))]" />
 
-                    {/* Badges */}
                     <div className="absolute left-3 top-3 flex gap-1.5">
                       <span className="glass-pill bg-black/40 px-2.5 py-1 text-[0.58rem] uppercase tracking-[0.24em] text-white/90">
                         {getCategoryLabel(project.category)}
@@ -522,13 +366,11 @@ export default function Projects() {
                       {String(index + 1).padStart(2, "0")}
                     </div>
 
-                    {/* Title on bottom of image */}
                     <div className="absolute inset-x-0 bottom-0 px-4 pb-3">
                       <h3 className="text-lg font-semibold tracking-[-0.03em] text-white">{project.title}</h3>
                     </div>
                   </div>
 
-                  {/* Info below */}
                   <div className="space-y-3 p-4">
                     <p className="text-[0.82rem] leading-6 text-text-secondary">{project.summary}</p>
 
@@ -553,7 +395,7 @@ export default function Projects() {
                           rel="noopener noreferrer"
                           className="glass-pill inline-flex h-8 w-8 items-center justify-center text-text-secondary transition-colors duration-200 hover:text-primary-color"
                           aria-label={`${project.title} GitHub`}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(event) => event.stopPropagation()}
                         >
                           <Github size={14} />
                         </a>
@@ -565,18 +407,18 @@ export default function Projects() {
                           rel="noopener noreferrer"
                           className="glass-pill inline-flex h-8 w-8 items-center justify-center text-text-secondary transition-colors duration-200 hover:text-primary-color"
                           aria-label={`${project.title} live`}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(event) => event.stopPropagation()}
                         >
                           <ExternalLink size={14} />
                         </a>
                       ) : null}
 
-                      {isSelected && (
+                      {isSelected ? (
                         <span className="ml-auto flex items-center gap-1.5">
                           <span className="h-1.5 w-1.5 rounded-full bg-primary-color shadow-[0_0_8px_rgb(var(--primary-color)/0.5)]" />
                           <span className="text-[0.55rem] uppercase tracking-[0.2em] text-primary-color">Active</span>
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </article>

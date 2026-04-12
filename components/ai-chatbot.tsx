@@ -2,30 +2,37 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
+
 import { useMobile } from "@/hooks/use-mobile"
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { AssistantContent } from "@/lib/portfolio/schema"
 
 interface Message {
   id: string
-  text: string
   isUser: boolean
+  text: string
   timestamp: Date
 }
 
 interface ChatContext {
   messages: Message[]
   userPreferences: {
-    interestedTopics: string[]
     askedAbout: string[]
+    interestedTopics: string[]
   }
 }
 
-export default function AIChatbot() {
+type AIChatbotProps = {
+  assistant?: AssistantContent
+}
+
+export default function AIChatbot({ assistant = defaultPortfolioContent.assistant }: AIChatbotProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      text: "Hey there! 👋 I'm Abhinav's AI assistant. I know him pretty well and can chat about his work, achievements, or anything you're curious about. What would you like to know?",
+      text: assistant.welcomeMessage,
       isUser: false,
       timestamp: new Date(),
     },
@@ -35,10 +42,11 @@ export default function AIChatbot() {
   const [chatContext, setChatContext] = useState<ChatContext>({
     messages: [],
     userPreferences: {
-      interestedTopics: [],
       askedAbout: [],
+      interestedTopics: [],
     },
   })
+  const [dynamicSuggestions, setDynamicSuggestions] = useState(assistant.suggestedQuestions)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const isMobile = useMobile()
 
@@ -58,7 +66,9 @@ export default function AIChatbot() {
   }
 
   const sendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return
+    if (!inputValue.trim() || isLoading) {
+      return
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -81,9 +91,9 @@ export default function AIChatbot() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: currentInput,
+          conversationHistory: messages.slice(-6),
           context: chatContext,
-          conversationHistory: messages.slice(-6), // Last 6 messages for context
+          message: currentInput,
         }),
       })
 
@@ -103,15 +113,14 @@ export default function AIChatbot() {
       setMessages((prev) => [...prev, aiMessage])
       updateChatContext(aiMessage)
 
-      // Update suggestions based on conversation
-      if (data.suggestions) {
+      if (Array.isArray(data.suggestions) && data.suggestions.length > 0) {
         setDynamicSuggestions(data.suggestions)
       }
     } catch (error) {
       console.error("Error sending message:", error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Hmm, seems like I'm having some connection issues. Mind trying that again? 🤔",
+        text: "Hmm, seems like I'm having some connection issues. Mind trying that again?",
         isUser: false,
         timestamp: new Date(),
       }
@@ -121,19 +130,12 @@ export default function AIChatbot() {
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault()
       sendMessage()
     }
   }
-
-  const [dynamicSuggestions, setDynamicSuggestions] = useState([
-    "What are Abhinav's biggest achievements?",
-    "Tell me about his technical skills",
-    "What projects is he most proud of?",
-    "How did he get into AI and programming?",
-  ])
 
   const handleQuickQuestion = (question: string) => {
     setInputValue(question)
@@ -148,20 +150,21 @@ export default function AIChatbot() {
         "Tell me about his hackathon experiences",
         "What's his LeetCode journey like?",
       ]
-    } else if (recentTopics.includes("skills")) {
+    }
+
+    if (recentTopics.includes("skills")) {
       return [
         "What's his favorite programming language?",
         "How long has he been coding?",
         "What AI projects has he built?",
       ]
-    } else {
-      return dynamicSuggestions
     }
+
+    return dynamicSuggestions
   }
 
   return (
     <>
-      {/* Chat Toggle Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -188,14 +191,12 @@ export default function AIChatbot() {
         </button>
       </div>
 
-      {/* Chat Window */}
-      {isOpen && (
-        <div className="fixed bottom-24 right-6 w-80 h-96 bg-secondary-color rounded-xl shadow-2xl border border-white/10 z-40 flex flex-col overflow-hidden">
-          {/* Header */}
+      {isOpen ? (
+        <div className="fixed bottom-24 right-6 z-40 flex h-96 w-80 flex-col overflow-hidden rounded-xl border border-white/10 bg-secondary-color shadow-2xl">
           <div className="bg-gradient-to-r from-primary-color to-accent-color p-4 text-contrast-color">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -205,21 +206,20 @@ export default function AIChatbot() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-sm">AI Assistant</h3>
-                <p className="text-xs opacity-80">Abhinav's personal AI</p>
+                <h3 className="text-sm font-semibold">AI Assistant</h3>
+                <p className="text-xs opacity-80">Abhinav&apos;s personal AI</p>
               </div>
             </div>
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="flex-1 space-y-3 overflow-y-auto p-4">
             {messages.map((message) => (
               <div key={message.id} className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[85%] p-3 rounded-lg text-sm leading-relaxed ${
+                  className={`max-w-[85%] rounded-lg p-3 text-sm leading-relaxed ${
                     message.isUser
                       ? "ml-auto rounded-br-sm bg-primary-color text-contrast-color"
-                      : "bg-white/10 text-text-color rounded-bl-sm"
+                      : "rounded-bl-sm bg-white/10 text-text-color"
                   }`}
                 >
                   {message.text}
@@ -227,34 +227,33 @@ export default function AIChatbot() {
               </div>
             ))}
 
-            {/* Contextual Suggestions */}
-            {messages.length <= 2 && (
+            {messages.length <= 2 ? (
               <div className="space-y-2">
-                <p className="text-xs text-text-secondary">💡 Try asking:</p>
+                <p className="text-xs text-text-secondary">Try asking:</p>
                 {getContextualSuggestions().map((question, index) => (
                   <button
-                    key={index}
+                    key={`${question}-${index}`}
                     onClick={() => handleQuickQuestion(question)}
-                    className="block w-full text-left text-xs p-2 bg-white/5 hover:bg-white/10 rounded border border-white/10 text-text-secondary hover:text-text-color transition-all duration-200 hover:border-primary-color/30"
+                    className="block w-full rounded border border-white/10 bg-white/5 p-2 text-left text-xs text-text-secondary transition-all duration-200 hover:border-primary-color/30 hover:bg-white/10 hover:text-text-color"
                   >
                     {question}
                   </button>
                 ))}
               </div>
-            )}
+            ) : null}
 
-            {isLoading && (
+            {isLoading ? (
               <div className="flex justify-start">
-                <div className="bg-white/10 text-text-color p-3 rounded-lg text-sm rounded-bl-sm">
+                <div className="rounded-lg rounded-bl-sm bg-white/10 p-3 text-sm text-text-color">
                   <div className="flex items-center space-x-2">
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-primary-color rounded-full animate-bounce"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary-color"></div>
                       <div
-                        className="w-2 h-2 bg-primary-color rounded-full animate-bounce"
+                        className="h-2 w-2 animate-bounce rounded-full bg-primary-color"
                         style={{ animationDelay: "0.1s" }}
                       ></div>
                       <div
-                        className="w-2 h-2 bg-primary-color rounded-full animate-bounce"
+                        className="h-2 w-2 animate-bounce rounded-full bg-primary-color"
                         style={{ animationDelay: "0.2s" }}
                       ></div>
                     </div>
@@ -262,20 +261,19 @@ export default function AIChatbot() {
                   </div>
                 </div>
               </div>
-            )}
+            ) : null}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
-          <div className="p-4 border-t border-white/10">
+          <div className="border-t border-white/10 p-4">
             <div className="flex gap-2">
               <input
                 type="text"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onChange={(event) => setInputValue(event.target.value)}
+                onKeyDown={handleKeyPress}
                 placeholder="Ask me anything about Abhinav..."
-                className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-text-color placeholder-text-secondary focus:outline-none focus:border-primary-color transition-colors"
+                className="flex-1 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm text-text-color placeholder-text-secondary transition-colors focus:border-primary-color focus:outline-none"
                 disabled={isLoading}
               />
               <button
@@ -283,7 +281,7 @@ export default function AIChatbot() {
                 disabled={isLoading || !inputValue.trim()}
                 className="rounded-lg bg-primary-color px-3 py-2 text-contrast-color transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -295,7 +293,7 @@ export default function AIChatbot() {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   )
 }
