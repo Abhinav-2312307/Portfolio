@@ -8,14 +8,12 @@ const educationItems = [
     Icon: University,
     meta: "2023 - 2027",
     points: ["B.Tech in Computer Science & Engineering", "AKTU University", "CGPA: 8.07"],
-    speed: "0.22",
     title: "Pranveer Singh Institute of Technology",
   },
   {
     Icon: School,
     meta: "2021 - 2023",
     points: ["Intermediate (12th) - 86%", "High School (10th) - 93.4%"],
-    speed: "0.34",
     title: "Delhi Public School, Barra Kanpur",
   },
 ]

@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import dynamic from "next/dynamic"
 import About from "@/components/about"
+import AppWrapper from "@/components/AppWrapper"
 import BackToTop from "@/components/back-to-top"
 import Contact from "@/components/contact"
 import Education from "@/components/education"
@@ -16,10 +17,6 @@ import ScrollReveal from "@/components/scroll-reveal"
 import Achievements from "@/components/achievements"
 import ScrollLightBackdrop from "@/components/scroll-light-backdrop"
 import { requestPortfolioScrollTo } from "@/lib/smooth-scroll"
-
-const SmoothScroll = dynamic(() => import("@/components/locomotive-scroll"), {
-  ssr: false,
-})
 
 const AIChatbot = dynamic(() => import("@/components/ai-chatbot"), {
   ssr: false,
@@ -58,7 +55,7 @@ export default function Home() {
       <BackToTop />
       <Navbar />
 
-      <SmoothScroll>
+      <AppWrapper>
         <div className="relative z-10">
           <Hero />
 
@@ -90,7 +87,7 @@ export default function Home() {
             <Footer />
           </div>
         </div>
-      </SmoothScroll>
+      </AppWrapper>
 
       <div className="relative z-20">
         <AIChatbot />

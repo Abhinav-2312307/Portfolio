@@ -55,7 +55,7 @@ const rails = [
   "System Design",
 ] as const
 
-const columnSpeeds = ["-0.28", "0.22", "-0.18", "0.26"] as const
+
 const columnOffsets = ["xl:pt-14", "xl:pt-4", "xl:pt-20", "xl:pt-8"] as const
 const skillColumns = Array.from({ length: 4 }, () => [] as SkillCard[])
 

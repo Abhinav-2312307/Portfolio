@@ -1,6 +1,7 @@
 export const PORTFOLIO_SCROLL_EVENT = "portfolio:scroll"
 export const PORTFOLIO_SCROLL_TO_EVENT = "portfolio:scroll-to"
 export const PORTFOLIO_SCROLL_UPDATE_EVENT = "portfolio:scroll-update"
+export const PORTFOLIO_SECTION_LOCK_EVENT = "portfolio:section-lock"
 
 export type PortfolioScrollState = {
   direction: 1 | -1
@@ -14,6 +15,11 @@ export type PortfolioScrollToOptions = {
   id?: string
   offset?: number
   top?: number
+}
+
+export type PortfolioSectionLock = {
+  duration: number
+  sectionId: string
 }
 
 export function hasSmoothScroll() {
@@ -71,4 +77,21 @@ export function requestPortfolioScrollUpdate() {
   }
 
   window.dispatchEvent(new CustomEvent(PORTFOLIO_SCROLL_UPDATE_EVENT))
+}
+
+/**
+ * Lock the active section indicator to a specific section for a duration.
+ * Used when clicking a nav link — prevents the indicator from flickering
+ * through intermediate sections during the scroll animation.
+ */
+export function lockActiveSection(sectionId: string, duration = 1200) {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  window.dispatchEvent(
+    new CustomEvent<PortfolioSectionLock>(PORTFOLIO_SECTION_LOCK_EVENT, {
+      detail: { sectionId, duration },
+    }),
+  )
 }

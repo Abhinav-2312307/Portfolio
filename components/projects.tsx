@@ -188,6 +188,96 @@ function getCategoryLabel(category: Project["category"]) {
   }
 }
 
+function StickyProjectPanel({ children }: { children: React.ReactNode }) {
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let frameId = 0
+
+    const updatePosition = () => {
+      frameId = 0
+
+      const wrapper = wrapperRef.current
+      const panel = panelRef.current
+
+      if (!wrapper || !panel) {
+        return
+      }
+
+      if (window.innerWidth < 1024) {
+        panel.style.transform = "translate3d(0, 0, 0)"
+        return
+      }
+
+      const wrapperRect = wrapper.getBoundingClientRect()
+      const wrapperHeight = wrapper.offsetHeight
+      const panelHeight = panel.offsetHeight
+      const maxTranslate = Math.max(0, wrapperHeight - panelHeight)
+
+      if (maxTranslate === 0) {
+        panel.style.transform = "translate3d(0, 0, 0)"
+        return
+      }
+
+      const minViewportTop = 152
+      const maxViewportTop = Math.max(minViewportTop, window.innerHeight - panelHeight - 28)
+      const travelDistance = Math.max(1, maxTranslate - (maxViewportTop - minViewportTop))
+      const progress = Math.min(Math.max((minViewportTop - wrapperRect.top) / travelDistance, 0), 1)
+      const translate = progress * maxTranslate
+
+      panel.style.transform = `translate3d(0, ${translate}px, 0)`
+    }
+
+    const scheduleUpdate = () => {
+      if (frameId !== 0) {
+        return
+      }
+
+      frameId = window.requestAnimationFrame(updatePosition)
+    }
+
+    const resizeObserver =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(() => {
+            scheduleUpdate()
+          })
+
+    if (wrapperRef.current) {
+      resizeObserver?.observe(wrapperRef.current)
+    }
+
+    if (panelRef.current) {
+      resizeObserver?.observe(panelRef.current)
+    }
+
+    window.addEventListener("scroll", scheduleUpdate, { passive: true })
+    window.addEventListener("resize", scheduleUpdate, { passive: true })
+
+    scheduleUpdate()
+    const timeoutId = window.setTimeout(scheduleUpdate, 120)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+      if (frameId !== 0) {
+        window.cancelAnimationFrame(frameId)
+      }
+      resizeObserver?.disconnect()
+      window.removeEventListener("scroll", scheduleUpdate)
+      window.removeEventListener("resize", scheduleUpdate)
+    }
+  }, [])
+
+  return (
+    <div ref={wrapperRef} className="hidden lg:block lg:h-full">
+      <div ref={panelRef} className="space-y-4 will-change-transform">
+        {children}
+      </div>
+    </div>
+  )
+}
+
 export default function Projects() {
   const [filter, setFilter] = useState<(typeof projectFilters)[number]["value"]>("all")
   const [selectedTitle, setSelectedTitle] = useState(projects[0]?.title ?? "")
@@ -248,90 +338,83 @@ export default function Projects() {
         </div>
 
         {/* Main layout: sticky panel + 2-col grid */}
-        <div id="projects-grid-wrap" className="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-start">
-          {/* Sticky Detail Panel (desktop only) */}
-          <div className="hidden lg:block">
-            <div
-              data-scroll
-              data-scroll-sticky
-              data-scroll-target="#projects-grid-wrap"
-              className="sticky top-28 space-y-4"
-            >
-              <div className="glass-panel-strong rounded-[28px] p-5">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeProject?.title}
-                    initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
-                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-[0.62rem] uppercase tracking-[0.34em] text-text-secondary">Active Project</p>
-                        <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-text-color">
-                          {activeProject?.title}
-                        </h3>
-                      </div>
-                      {activeProject?.status ? (
-                        <span className="glass-pill shrink-0 border-primary-color/28 bg-primary-color/10 px-2.5 py-1 text-[0.58rem] uppercase tracking-[0.24em] text-primary-color">
-                          {activeProject.status}
-                        </span>
-                      ) : null}
+        <div id="projects-grid-wrap" className="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-stretch">
+          {/* Sticky detail panel */}
+          <StickyProjectPanel>
+            <div className="glass-panel-strong rounded-[28px] p-5">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeProject?.title}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[0.62rem] uppercase tracking-[0.34em] text-text-secondary">Active Project</p>
+                      <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-text-color">
+                        {activeProject?.title}
+                      </h3>
                     </div>
-
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <span className="glass-pill px-2.5 py-1 text-[0.68rem] uppercase tracking-[0.24em] text-text-color">
-                        {getCategoryLabel(activeProject?.category ?? "web")}
+                    {activeProject?.status ? (
+                      <span className="glass-pill shrink-0 border-primary-color/28 bg-primary-color/10 px-2.5 py-1 text-[0.58rem] uppercase tracking-[0.24em] text-primary-color">
+                        {activeProject.status}
                       </span>
-                      {activeProject?.period ? (
-                        <span className="glass-pill px-2.5 py-1 text-[0.68rem] text-text-color">{activeProject.period}</span>
-                      ) : null}
-                    </div>
+                    ) : null}
+                  </div>
 
-                    <p className="mt-4 text-sm leading-7 text-text-color">{activeProject?.summary}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="glass-pill px-2.5 py-1 text-[0.68rem] uppercase tracking-[0.24em] text-text-color">
+                      {getCategoryLabel(activeProject?.category ?? "web")}
+                    </span>
+                    {activeProject?.period ? (
+                      <span className="glass-pill px-2.5 py-1 text-[0.68rem] text-text-color">{activeProject.period}</span>
+                    ) : null}
+                  </div>
 
-                    <div className="mt-3 space-y-2">
-                      {activeProject?.highlights.map((item) => (
-                        <div key={item} className="flex items-start gap-2.5">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary-color" />
-                          <p className="text-[0.82rem] leading-6 text-text-secondary">{item}</p>
-                        </div>
-                      ))}
-                    </div>
+                  <p className="mt-4 text-sm leading-7 text-text-color">{activeProject?.summary}</p>
 
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {activeProject?.github ? (
-                        <a
-                          href={activeProject.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass-pill inline-flex items-center gap-2 px-3.5 py-2 text-sm text-text-color transition-all duration-200 hover:border-primary-color/35 hover:text-primary-color"
-                        >
-                          <Github size={15} />
-                          GitHub
-                        </a>
-                      ) : null}
-                      {activeProject?.live ? (
-                        <a
-                          href={activeProject.live}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,rgb(var(--primary-color)_/_0.94),rgb(var(--accent-color)_/_0.84))] px-3.5 py-2 text-sm font-semibold text-contrast-color shadow-[0_10px_24px_rgb(var(--primary-color)_/_0.16)] transition-all duration-200 hover:-translate-y-0.5"
-                        >
-                          View Live
-                          <ArrowUpRight size={14} />
-                        </a>
-                      ) : null}
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
+                  <div className="mt-3 space-y-2">
+                    {activeProject?.highlights.map((item) => (
+                      <div key={item} className="flex items-start gap-2.5">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary-color" />
+                        <p className="text-[0.82rem] leading-6 text-text-secondary">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {activeProject?.github ? (
+                      <a
+                        href={activeProject.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="glass-pill inline-flex items-center gap-2 px-3.5 py-2 text-sm text-text-color transition-all duration-200 hover:border-primary-color/35 hover:text-primary-color"
+                      >
+                        <Github size={15} />
+                        GitHub
+                      </a>
+                    ) : null}
+                    {activeProject?.live ? (
+                      <a
+                        href={activeProject.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,rgb(var(--primary-color)_/_0.94),rgb(var(--accent-color)_/_0.84))] px-3.5 py-2 text-sm font-semibold text-contrast-color shadow-[0_10px_24px_rgb(var(--primary-color)_/_0.16)] transition-all duration-200 hover:-translate-y-0.5"
+                      >
+                        View Live
+                        <ArrowUpRight size={14} />
+                      </a>
+                    ) : null}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </div>
-          </div>
+          </StickyProjectPanel>
 
           {/* 2-column grid of project cards */}
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5 self-start sm:grid-cols-2">
             {filteredProjects.map((project, index) => {
               const isSelected = activeProject?.title === project.title
 

@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import CandleThemeToggle from "@/components/candle-theme-toggle"
 import ResumeButton from "@/components/resume-button"
 import { useActiveSection } from "@/hooks/use-active-section"
-import { PORTFOLIO_SCROLL_EVENT, requestPortfolioScrollTo, type PortfolioScrollState } from "@/lib/smooth-scroll"
+import { lockActiveSection, requestPortfolioScrollTo } from "@/lib/smooth-scroll"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -32,10 +32,8 @@ export default function Navbar() {
     opacity: 0,
     width: 0,
   })
-  const activeSection = useActiveSection(
-    navItems.map((item) => item.id),
-    132,
-  ) as NavItemId
+  const sectionIds = useMemo(() => navItems.map((item) => item.id), [])
+  const activeSection = useActiveSection(sectionIds, 132) as NavItemId
   const activeItem = useMemo(() => navItems.find((item) => item.id === activeSection) ?? navItems[0], [activeSection])
   const desktopNavRef = useRef<HTMLDivElement>(null)
   const desktopButtonRefs = useRef<Record<NavItemId, HTMLButtonElement | null>>({
@@ -51,25 +49,21 @@ export default function Navbar() {
 
   useEffect(() => {
     const updateScrolled = (y: number) => {
-      setScrolled(y > 24)
+      setScrolled((current) => {
+        const next = y > 24
+        return current === next ? current : next
+      })
     }
 
     const handleWindowScroll = () => {
       updateScrolled(window.scrollY)
     }
 
-    const handleSmoothScroll = (event: Event) => {
-      const { detail } = event as CustomEvent<PortfolioScrollState>
-      updateScrolled(detail?.y ?? 0)
-    }
-
     window.addEventListener("scroll", handleWindowScroll, { passive: true })
-    window.addEventListener(PORTFOLIO_SCROLL_EVENT, handleSmoothScroll as EventListener)
     handleWindowScroll()
 
     return () => {
       window.removeEventListener("scroll", handleWindowScroll)
-      window.removeEventListener(PORTFOLIO_SCROLL_EVENT, handleSmoothScroll as EventListener)
     }
   }, [])
 
@@ -116,8 +110,8 @@ export default function Navbar() {
   }, [activeSection])
 
   const scrollToSection = (id: NavItemId) => {
+    lockActiveSection(id, 1100)
     requestPortfolioScrollTo({
-      duration: 950,
       id,
       offset: id === "home" ? -84 : -104,
     })

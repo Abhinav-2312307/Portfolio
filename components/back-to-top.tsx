@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useMobile } from "@/hooks/use-mobile"
-import { PORTFOLIO_SCROLL_EVENT, hasSmoothScroll, requestPortfolioScrollTo, type PortfolioScrollState } from "@/lib/smooth-scroll"
+import { requestPortfolioScrollTo } from "@/lib/smooth-scroll"
 
 export default function BackToTop() {
   const [visible, setVisible] = useState(false)
@@ -11,38 +11,26 @@ export default function BackToTop() {
 
   useEffect(() => {
     const updateVisibility = (y: number) => {
-      setVisible(y > 300)
+      setVisible((current) => {
+        const next = y > 300
+        return current === next ? current : next
+      })
     }
 
     const handleWindowScroll = () => {
       updateVisibility(window.scrollY)
     }
 
-    const handleSmoothScroll = (event: Event) => {
-      const { detail } = event as CustomEvent<PortfolioScrollState>
-      updateVisibility(detail?.y ?? 0)
-    }
-
     window.addEventListener("scroll", handleWindowScroll, { passive: true })
-    window.addEventListener(PORTFOLIO_SCROLL_EVENT, handleSmoothScroll as EventListener)
     handleWindowScroll()
 
     return () => {
       window.removeEventListener("scroll", handleWindowScroll)
-      window.removeEventListener(PORTFOLIO_SCROLL_EVENT, handleSmoothScroll as EventListener)
     }
   }, [])
 
   const scrollToTop = () => {
-    if (hasSmoothScroll()) {
-      requestPortfolioScrollTo({ top: 0, duration: 900 })
-      return
-    }
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    })
+    requestPortfolioScrollTo({ top: 0 })
   }
 
   return (

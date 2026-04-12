@@ -2,124 +2,120 @@
 
 import { useEffect, useRef, useState } from "react"
 
-import { PORTFOLIO_SCROLL_EVENT, type PortfolioScrollState } from "@/lib/smooth-scroll"
+import {
+  PORTFOLIO_SECTION_LOCK_EVENT,
+  type PortfolioSectionLock,
+} from "@/lib/smooth-scroll"
 
-/**
- * Detects which section is currently "active" in the viewport.
- *
- * Uses getBoundingClientRect (which works with Locomotive Scroll transforms)
- * and tracks direction from Locomotive scroll events to prevent backward jumps.
- */
 export function useActiveSection(sections: string[], offset = 120) {
   const [activeSection, setActiveSection] = useState<string>(sections[0] ?? "")
-  const directionRef = useRef<1 | -1>(1)
-  const lastUpdate = useRef(0)
-  const prevYRef = useRef(0)
+  const frameRef = useRef<number | null>(null)
+  const sectionLockRef = useRef<{ id: string; until: number } | null>(null)
 
   useEffect(() => {
     const resolveActiveSection = () => {
-      const anchorY = offset + 40
+      const entries = sections
+        .map((sectionId) => {
+          const element = document.getElementById(sectionId)
 
-      let candidate = sections[0] ?? ""
-      let bestDistance = Infinity
-
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId)
-        if (!el) continue
-
-        const rect = el.getBoundingClientRect()
-        const top = rect.top
-        const bottom = rect.bottom
-
-        // Section is entirely above the anchor - it already passed
-        if (bottom < anchorY - 50) continue
-
-        // The section that has its top CLOSEST to (but at or above) the anchor wins
-        if (top <= anchorY + 20) {
-          // Section top is at or above anchor — this is the best candidate so far
-          // Among those, prefer the one whose top is closest (most recently entered)
-          const dist = anchorY - top
-          if (dist < bestDistance) {
-            bestDistance = dist
-            candidate = sectionId
+          if (!element) {
+            return null
           }
-        }
+
+          return {
+            id: sectionId,
+            rect: element.getBoundingClientRect(),
+          }
+        })
+        .filter((entry): entry is { id: string; rect: DOMRect } => entry !== null)
+
+      if (!entries.length) {
+        return
       }
 
-      // Near bottom of page, activate last section
-      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 100) {
-        candidate = sections[sections.length - 1] ?? candidate
-      }
-
-      setActiveSection((current) => {
-        if (current === candidate) return current
-
-        const currentIndex = sections.indexOf(current)
-        const candidateIndex = sections.indexOf(candidate)
-
-        // Direction guard: when scrolling DOWN, don't allow jumping backwards
-        // This prevents the "bounce to home" issue during Locomotive interpolation
-        if (directionRef.current === 1 && candidateIndex < currentIndex) {
-          // Only allow going backwards if the current section
-          // is truly completely off-screen above the viewport
-          const currentEl = document.getElementById(current)
-          if (currentEl) {
-            const currentRect = currentEl.getBoundingClientRect()
-            if (currentRect.top > window.innerHeight) {
-              // Current section is below viewport — allow backwards
-              return candidate
-            }
-            if (currentRect.bottom > anchorY - 200) {
-              // Current section is still somewhat visible — block backwards jump
-              return current
-            }
-          }
+      const currentLock = sectionLockRef.current
+      if (currentLock) {
+        if (Date.now() < currentLock.until) {
+          setActiveSection(currentLock.id)
+          return
         }
 
-        return candidate
+        sectionLockRef.current = null
+      }
+
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 120) {
+        const lastSection = entries[entries.length - 1]?.id
+        if (lastSection) {
+          setActiveSection((current) => (current === lastSection ? current : lastSection))
+        }
+        return
+      }
+
+      const marker = offset + 24
+      let candidate = entries[0]?.id ?? ""
+
+      for (const entry of entries) {
+        if (entry.rect.top <= marker) {
+          candidate = entry.id
+          continue
+        }
+
+        break
+      }
+
+      setActiveSection((current) => (current === candidate ? current : candidate))
+    }
+
+    const scheduleResolve = () => {
+      if (frameRef.current !== null) {
+        return
+      }
+
+      frameRef.current = window.requestAnimationFrame(() => {
+        frameRef.current = null
+        resolveActiveSection()
       })
     }
 
-    // Track direction from Locomotive scroll events
-    const handleLocomotiveScroll = (event: Event) => {
-      const detail = (event as CustomEvent<PortfolioScrollState>).detail
-      if (detail) {
-        directionRef.current = detail.direction
+    const handleScroll = () => {
+      scheduleResolve()
+    }
+
+    const handleLock = (event: Event) => {
+      const detail = (event as CustomEvent<PortfolioSectionLock>).detail
+      if (!detail) {
+        return
       }
 
-      const now = performance.now()
-      if (now - lastUpdate.current < 16) return
-      lastUpdate.current = now
-      resolveActiveSection()
+      sectionLockRef.current = {
+        id: detail.sectionId,
+        until: Date.now() + detail.duration,
+      }
+      setActiveSection(detail.sectionId)
+      scheduleResolve()
     }
 
-    // Track direction from native scroll
-    const handleNativeScroll = () => {
-      const currentY = window.scrollY
-      directionRef.current = currentY >= prevYRef.current ? 1 : -1
-      prevYRef.current = currentY
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("resize", handleScroll, { passive: true })
+    window.addEventListener(PORTFOLIO_SECTION_LOCK_EVENT, handleLock as EventListener)
 
-      const now = performance.now()
-      if (now - lastUpdate.current < 16) return
-      lastUpdate.current = now
-      resolveActiveSection()
-    }
-
-    window.addEventListener("scroll", handleNativeScroll, { passive: true })
-    window.addEventListener(PORTFOLIO_SCROLL_EVENT, handleLocomotiveScroll as EventListener)
-    window.addEventListener("resize", handleNativeScroll, { passive: true })
-
-    // Initial resolve + delayed for Locomotive init
-    resolveActiveSection()
-    const t = setTimeout(resolveActiveSection, 500)
+    scheduleResolve()
+    const timeoutId = window.setTimeout(scheduleResolve, 180)
 
     return () => {
-      clearTimeout(t)
-      window.removeEventListener("scroll", handleNativeScroll)
-      window.removeEventListener(PORTFOLIO_SCROLL_EVENT, handleLocomotiveScroll as EventListener)
-      window.removeEventListener("resize", handleNativeScroll)
+      window.clearTimeout(timeoutId)
+      if (frameRef.current !== null) {
+        window.cancelAnimationFrame(frameRef.current)
+      }
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("resize", handleScroll)
+      window.removeEventListener(PORTFOLIO_SECTION_LOCK_EVENT, handleLock as EventListener)
     }
-  }, [offset, sections])
+  }, [offset, sections.join("|")])
+
+  useEffect(() => {
+    setActiveSection((current) => current || sections[0] || "")
+  }, [sections])
 
   return activeSection
 }
