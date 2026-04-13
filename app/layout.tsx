@@ -4,6 +4,7 @@ import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { Manrope, Space_Grotesk } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
 const spaceGrotesk = Space_Grotesk({
@@ -51,7 +52,7 @@ export default function RootLayout({
           </AppWrapper>
           <Toaster />
         </ThemeProvider>
-
+        <Analytics />
       </body>
     </html>
   )
