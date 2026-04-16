@@ -110,32 +110,43 @@ export default function Skills({ skills = defaultPortfolioContent.skills }: Skil
                   return (
                     <article
                       key={`${item.order}-${item.name}`}
-                      className="group relative overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(10,14,24,0.96),rgba(14,18,28,0.92))] p-5 shadow-[0_18px_42px_rgba(0,0,0,0.24)] transition-[border-color,box-shadow] duration-300 hover:border-white/18 hover:shadow-[0_22px_48px_rgba(0,0,0,0.28)]"
+                      className="skill-card group relative overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(10,14,24,0.96),rgba(14,18,28,0.92))] p-5 shadow-[0_18px_42px_rgba(0,0,0,0.24)] transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-2 hover:border-white/22 hover:shadow-[0_28px_56px_rgba(0,0,0,0.36)]"
+                      style={{
+                        "--skill-accent": item.accent,
+                      } as React.CSSProperties}
                     >
                       <div
-                        className="absolute inset-0 opacity-75"
+                        className="absolute inset-0 opacity-75 transition-opacity duration-[420ms] group-hover:opacity-100"
                         style={{
                           background: `linear-gradient(140deg, rgba(255,255,255,0.08), transparent 40%, transparent 78%, ${item.accent}18)`,
                         }}
                       />
 
+                      {/* Hover glow overlay */}
                       <div
-                        className="absolute inset-x-8 bottom-[-12px] h-10 rounded-full blur-2xl"
+                        className="absolute inset-0 opacity-0 transition-opacity duration-[420ms] group-hover:opacity-100"
+                        style={{
+                          background: `radial-gradient(ellipse at 50% 100%, ${item.accent}12, transparent 60%)`,
+                        }}
+                      />
+
+                      <div
+                        className="absolute inset-x-8 bottom-[-12px] h-10 rounded-full blur-2xl transition-all duration-[420ms] group-hover:bottom-[-8px] group-hover:h-14 group-hover:blur-3xl"
                         style={{ backgroundColor: `${item.accent}2d` }}
                       />
 
                       <div className="relative flex min-h-[12.75rem] flex-col">
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <p className="text-[0.62rem] uppercase tracking-[0.34em] text-text-secondary">{item.category}</p>
+                            <p className="text-[0.62rem] uppercase tracking-[0.34em] text-text-secondary transition-colors duration-300 group-hover:text-text-color/70">{item.category}</p>
                             <h3 className="mt-3 text-[1.9rem] font-semibold tracking-[-0.05em] text-text-color">{item.name}</h3>
                           </div>
-                          <span className="text-[0.68rem] text-text-secondary">{item.order}</span>
+                          <span className="text-[0.68rem] text-text-secondary transition-colors duration-300 group-hover:text-text-color/50">{item.order}</span>
                         </div>
 
                         <div className="mt-auto flex items-end justify-between gap-4 pt-8">
                           <div
-                            className="relative flex h-[4.75rem] w-[4.75rem] items-center justify-center rounded-[1.45rem] border text-[2rem]"
+                            className="relative flex h-[4.75rem] w-[4.75rem] items-center justify-center rounded-[1.45rem] border text-[2rem] transition-all duration-[420ms] group-hover:scale-110 group-hover:rotate-3"
                             style={{
                               borderColor: `${item.accent}33`,
                               color: item.accent,
@@ -144,11 +155,11 @@ export default function Skills({ skills = defaultPortfolioContent.skills }: Skil
                             }}
                           >
                             <div className="absolute inset-[6px] rounded-[1.05rem] border border-white/8 bg-white/[0.03]" />
-                            <Icon className="relative z-10 transition-transform duration-300 group-hover:scale-105" />
+                            <Icon className="relative z-10 transition-transform duration-[420ms] group-hover:scale-110" />
                           </div>
 
                           <span
-                            className="h-px flex-1 rounded-full"
+                            className="h-px flex-1 origin-right rounded-full transition-all duration-[420ms] group-hover:scale-x-110"
                             style={{
                               background: `linear-gradient(90deg, rgba(255,255,255,0.06), ${item.accent}88)`,
                             }}
@@ -165,7 +176,7 @@ export default function Skills({ skills = defaultPortfolioContent.skills }: Skil
           <div className="glass-panel rounded-[28px] p-4">
             <div className="flex flex-wrap gap-2">
               {skills.rails.map((item) => (
-                <span key={item} className="glass-pill px-3 py-1.5 text-xs text-text-color">
+                <span key={item} className="glass-pill px-3 py-1.5 text-xs text-text-color transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-color/30 hover:text-primary-color hover:shadow-[0_8px_20px_rgb(var(--primary-color)_/_0.1)]">
                   {item}
                 </span>
               ))}

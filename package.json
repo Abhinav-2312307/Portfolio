@@ -50,6 +50,7 @@
     "date-fns": "4.1.0",
     "embla-carousel-react": "latest",
     "framer-motion": "^12.38.0",
+    "gsap": "^3.15.0",
     "input-otp": "latest",
     "locomotive-scroll": "latest",
     "lucide-react": "^0.454.0",

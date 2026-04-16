@@ -1,5 +1,6 @@
 import fs from "fs/promises"
 import path from "path"
+import { inflateSync } from "zlib"
 
 import type { PortfolioContent } from "@/lib/portfolio/schema"
 import { getDatabase } from "@/lib/server/db"
@@ -13,6 +14,14 @@ export type KnowledgeChunk = {
   title: string
   updatedAt: string
 }
+
+type KnowledgeCacheEntry = {
+  cacheKey: string
+  chunks: KnowledgeChunk[]
+  resumeText: string
+}
+
+let inMemoryKnowledgeCache: KnowledgeCacheEntry | null = null
 
 const STOPWORDS = new Set([
   "a",
@@ -67,6 +76,73 @@ function chunkLongText(text: string, size = 150, overlap = 35) {
   return chunks
 }
 
+function extractTextFromPdfBuffer(raw: Buffer): string {
+  const textParts: string[] = []
+
+  // Find and inflate FlateDecode streams
+  const streamRegex = /stream\r?\n([\s\S]*?)endstream/g
+  let match: RegExpExecArray | null
+
+  while ((match = streamRegex.exec(raw.toString("binary"))) !== null) {
+    try {
+      const streamBytes = Buffer.from(match[1], "binary")
+      let decoded: string
+
+      try {
+        decoded = inflateSync(streamBytes).toString("utf-8")
+      } catch {
+        // Not a compressed stream, try raw
+        decoded = streamBytes.toString("utf-8")
+      }
+
+      // Extract text from BT...ET blocks (PDF text objects)
+      const btRegex = /BT\s([\s\S]*?)ET/g
+      let btMatch: RegExpExecArray | null
+
+      while ((btMatch = btRegex.exec(decoded)) !== null) {
+        const block = btMatch[1]
+        // Extract parenthesised text strings: Tj, TJ, ', "
+        const tjRegex = /\(([^)]*)\)/g
+        let tjMatch: RegExpExecArray | null
+
+        while ((tjMatch = tjRegex.exec(block)) !== null) {
+          const text = tjMatch[1]
+            .replace(/\\n/g, "\n")
+            .replace(/\\r/g, "")
+            .replace(/\\\(/g, "(")
+            .replace(/\\\)/g, ")")
+            .replace(/\\\\/g, "\\")
+            .trim()
+
+          if (text) {
+            textParts.push(text)
+          }
+        }
+      }
+
+      // Also grab any raw text lines in non-BT streams (some PDFs use direct text)
+      if (textParts.length === 0) {
+        const lines = decoded.split("\n").filter((line) => {
+          const trimmed = line.trim()
+          return (
+            trimmed.length > 2 &&
+            /[a-zA-Z]{2,}/.test(trimmed) &&
+            !/^[%/<\[\]{}]/.test(trimmed) &&
+            !trimmed.startsWith("q ") &&
+            !trimmed.startsWith("Q") &&
+            !/^\d+\s+\d+\s+(m|l|c|re)/.test(trimmed)
+          )
+        })
+        textParts.push(...lines)
+      }
+    } catch {
+      // Skip streams that fail
+    }
+  }
+
+  return textParts.join(" ").replace(/\s+/g, " ").trim()
+}
+
 async function extractResumeText(resumeUrl: string) {
   try {
     let buffer: Buffer
@@ -82,11 +158,8 @@ async function extractResumeText(resumeUrl: string) {
       buffer = Buffer.from(await response.arrayBuffer())
     }
 
-    const { PDFParse } = await import("pdf-parse")
-    const parser = new PDFParse({ data: new Uint8Array(buffer) })
-    const result = await parser.getText()
-    await parser.destroy()
-    return result.text?.replace(/\s+/g, " ").trim() ?? ""
+    const text = extractTextFromPdfBuffer(buffer)
+    return text
   } catch (error) {
     console.error("Unable to extract resume text:", error)
     return ""
@@ -106,6 +179,24 @@ function buildChunk(id: string, section: string, title: string, text: string): K
     title,
     updatedAt: new Date().toISOString(),
   }
+}
+
+function buildKnowledgeCacheKey(content: PortfolioContent) {
+  return JSON.stringify({
+    identity: content.identity,
+    hero: content.hero,
+    about: content.about,
+    education: content.education,
+    skills: content.skills,
+    projects: content.projects,
+    achievements: content.achievements,
+    hobbies: content.hobbies,
+    contact: content.contact,
+    assistant: {
+      knowledgeNotes: content.assistant.knowledgeNotes,
+      resumeText: content.assistant.resumeText,
+    },
+  })
 }
 
 export async function buildKnowledgeChunks(content: PortfolioContent) {
@@ -209,6 +300,11 @@ export async function buildKnowledgeChunks(content: PortfolioContent) {
 
 export async function rebuildKnowledgeBase(content: PortfolioContent) {
   const { chunks, resumeText } = await buildKnowledgeChunks(content)
+  inMemoryKnowledgeCache = {
+    cacheKey: buildKnowledgeCacheKey(content),
+    chunks,
+    resumeText,
+  }
 
   if (isMongoConfigured()) {
     const database = await getDatabase()
@@ -226,8 +322,19 @@ export async function rebuildKnowledgeBase(content: PortfolioContent) {
 }
 
 export async function getKnowledgeChunks(content: PortfolioContent) {
+  const cacheKey = buildKnowledgeCacheKey(content)
+
+  if (inMemoryKnowledgeCache?.cacheKey === cacheKey) {
+    return inMemoryKnowledgeCache.chunks
+  }
+
   if (!isMongoConfigured()) {
     const rebuilt = await buildKnowledgeChunks(content)
+    inMemoryKnowledgeCache = {
+      cacheKey,
+      chunks: rebuilt.chunks,
+      resumeText: rebuilt.resumeText,
+    }
     return rebuilt.chunks
   }
 
@@ -236,6 +343,11 @@ export async function getKnowledgeChunks(content: PortfolioContent) {
   const storedChunks = await collection.find({}).toArray()
 
   if (storedChunks.length > 0) {
+    inMemoryKnowledgeCache = {
+      cacheKey,
+      chunks: storedChunks,
+      resumeText: content.assistant.resumeText,
+    }
     return storedChunks
   }
 

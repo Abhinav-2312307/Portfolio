@@ -17,6 +17,7 @@ import Projects from "@/components/projects"
 import ScrollLightBackdrop from "@/components/scroll-light-backdrop"
 import ScrollReveal from "@/components/scroll-reveal"
 import Skills from "@/components/skills"
+import TargetCursor from "@/components/target-cursor"
 import type { PortfolioContent } from "@/lib/portfolio/schema"
 import { requestPortfolioScrollTo } from "@/lib/smooth-scroll"
 
@@ -57,9 +58,20 @@ export default function HomePageClient({ content }: HomePageClientProps) {
 
   return (
     <main className="page-ambient relative min-h-screen overflow-x-clip bg-dark-color text-text-color">
+      <TargetCursor
+        spinDuration={2.2}
+        hoverDuration={0.2}
+        hideDefaultCursor
+        parallaxOn
+        targetSelector="button, a, [data-cursor-target='true'], .cursor-target"
+      />
       <ScrollLightBackdrop />
       <BackToTop />
-      <Navbar items={content.navigation.items} identity={content.identity} resumeUrl={content.identity.resumeUrl} />
+      <Navbar
+        items={content.navigation.items}
+        identity={content.identity}
+        resumeUrl={content.identity.resumeUrl}
+      />
 
       <AppWrapper>
         <div className="relative z-10">
