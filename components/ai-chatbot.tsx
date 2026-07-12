@@ -82,19 +82,23 @@ const messageVariants = {
   },
 }
 
-export default function AIChatbot({ assistant = defaultPortfolioContent.assistant }: AIChatbotProps) {
+export default function AIChatbot({ assistant }: AIChatbotProps) {
+  const assistantData = assistant || defaultPortfolioContent.assistant
+  const welcomeMessage = assistantData?.welcomeMessage || "Welcome to my portfolio! How can I assist you today?"
+  const suggestedQuestions = assistantData?.suggestedQuestions || []
+
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      text: assistant.welcomeMessage,
+      text: welcomeMessage,
       isUser: false,
       timestamp: new Date(),
     },
   ])
   const [inputValue, setInputValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [dynamicSuggestions, setDynamicSuggestions] = useState(assistant.suggestedQuestions)
+  const [dynamicSuggestions, setDynamicSuggestions] = useState(suggestedQuestions)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const isMobile = useMobile()

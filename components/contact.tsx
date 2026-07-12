@@ -1,19 +1,20 @@
 "use client"
 
 import type React from "react"
-
-import { ArrowUpRight, Mail, MapPin, MessageSquare, Send, UserRound } from "lucide-react"
-import { useState } from "react"
+import { ArrowUpRight, Mail, MapPin, MessageSquare, Send, Swords } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
 import emailjs from "@emailjs/browser"
+import { useTheme } from "next-themes"
 
 import { toast } from "@/hooks/use-toast"
 import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
 import type { ContactContent, Identity, SocialLink } from "@/lib/portfolio/schema"
+import { cn } from "@/lib/utils"
 
 const contactIconMap = {
   mail: Mail,
   "map-pin": MapPin,
-  "user-round": UserRound,
+  "user-round": Swords,
 }
 
 type ContactProps = {
@@ -34,6 +35,29 @@ export default function Contact({
     subject: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const clickAudioRef = useRef<HTMLAudioElement | null>(null)
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const isLight = mounted && theme === "light"
+
+  useEffect(() => {
+    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav")
+    audio.volume = 0.2
+    clickAudioRef.current = audio
+  }, [])
+
+  const playClickSound = () => {
+    const isMuted = localStorage.getItem("portfolio-muted") !== "false"
+    if (!isMuted && clickAudioRef.current) {
+      clickAudioRef.current.currentTime = 0
+      clickAudioRef.current.play().catch(() => {})
+    }
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target
@@ -42,6 +66,7 @@ export default function Contact({
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
+    playClickSound()
 
     const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
     const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
@@ -50,7 +75,7 @@ export default function Contact({
     if (!publicKey || !serviceId || !templateId) {
       toast({
         title: "Email setup missing",
-        description: "Add the EmailJS public key, service ID, and template ID in your env file.",
+        description: "Add the EmailJS credentials to your env configuration.",
         variant: "destructive",
       })
       return
@@ -84,8 +109,8 @@ export default function Contact({
 
       if (result.text === "OK") {
         toast({
-          title: "Message sent!",
-          description: "Thank you for reaching out. I'll get back to you soon.",
+          title: "Message dispatched to coordinates!",
+          description: "Your correspondence has been sent to the Survey Command.",
         })
 
         setFormData({
@@ -98,8 +123,8 @@ export default function Contact({
     } catch (error) {
       console.error("Error sending email:", error)
       toast({
-        title: "Error sending message",
-        description: "There was a problem sending your message. Please try again later.",
+        title: "Failed transmission",
+        description: "There was a disruption in the link flow. Try again later.",
         variant: "destructive",
       })
     } finally {
@@ -108,82 +133,138 @@ export default function Contact({
   }
 
   return (
-    <section id="contact" className="relative overflow-hidden px-6 py-20 md:px-10 md:py-24 lg:px-16 lg:py-28">
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,16,0.98),rgba(11,16,24,0.95))]" />
-      <div className="absolute inset-x-[10%] top-0 h-px bg-gradient-to-r from-transparent via-primary-color/22 to-transparent" />
-      <div className="absolute right-[-8%] top-[14%] h-[16rem] w-[20rem] bg-[radial-gradient(circle,rgba(90,121,255,0.12),transparent_68%)] blur-3xl" />
+    <section id="contact" className="relative overflow-hidden px-6 py-24 md:px-12 lg:px-20 bg-dark-color transition-colors duration-700">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(110,5,5,0.06)_0%,_transparent_65%)]" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-900/10 to-transparent" />
 
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm uppercase tracking-[0.34em] text-primary-light">{contact.sectionLabel}</p>
-          <h2 className="mt-3 text-[clamp(2.4rem,5vw,4.1rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-text-color">
+      <div className="relative z-10 mx-auto max-w-6xl">
+        
+        {/* Header Block */}
+        <div className="mx-auto max-w-3xl text-center space-y-4 mb-16">
+          <div
+            className={`inline-flex items-center gap-2 border px-4 py-1.5 rounded-sm ${
+              isLight
+                ? "border-emerald-800/30 bg-emerald-950/10 text-emerald-600"
+                : "border-red-800/30 bg-red-950/10 text-red-500"
+            }`}
+          >
+            <Swords size={12} className={`${isLight ? "text-emerald-500" : "text-red-500"} animate-pulse`} />
+            <span className="text-[0.62rem] uppercase tracking-[0.38em] font-semibold font-mono">
+              {isLight ? "THE DAWN ASSEMBLY" : "THE CAMPFIRE ASSEMBLY"}
+            </span>
+          </div>
+
+          <h2 className="gothic-header text-4xl md:text-5xl font-bold uppercase tracking-[-0.04em] text-text-color">
             {contact.title}
           </h2>
-          <p className="mt-5 text-sm leading-7 text-text-secondary md:text-base">{contact.description}</p>
+          <p className="text-sm md:text-base leading-relaxed text-text-secondary">
+            {isLight
+              ? `${contact.description} "Dream of the tomorrow. Stand together at dawn, ready to make the final move."`
+              : `${contact.description} "Struggle, endure, contend. There is no paradise to escape to. Join the campfire."`}
+          </p>
         </div>
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-          <div className="glass-panel-strong rounded-[32px] p-6 md:p-7">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="glass-pill inline-flex h-12 w-12 items-center justify-center rounded-[16px] text-primary-color">
-                <MessageSquare size={20} />
+        {/* Layout Grid */}
+        <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+          
+          {/* Form dossier container */}
+          <div className="steel-runic-panel p-6 md:p-8 rounded-[24px] border border-text-color/5 space-y-6">
+            <div className="flex items-center gap-3 border-b border-text-color/5 pb-4">
+              <div
+                className={`flex h-11 w-11 items-center justify-center rounded-sm border ${
+                  isLight
+                    ? "border-emerald-800/25 bg-emerald-950/5 text-emerald-650"
+                    : "border-red-800/30 bg-red-950/20 text-red-500"
+                }`}
+              >
+                <MessageSquare size={16} />
               </div>
               <div>
-                <p className="text-[0.68rem] uppercase tracking-[0.28em] text-text-secondary">{contact.formBadge}</p>
-                <h3 className="mt-1 text-xl font-semibold text-text-color">{contact.formTitle}</h3>
+                <p className="text-[0.55rem] font-mono uppercase tracking-[0.25em] text-text-secondary/40">
+                  Dossier dispatch
+                </p>
+                <h3 className="text-lg font-bold uppercase text-text-color tracking-tight">{contact.formTitle}</h3>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 font-mono">
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block text-left">
-                  <span className="mb-2 block text-sm text-text-secondary">Your Name</span>
+                  <span className={`mb-2 block text-[0.65rem] uppercase tracking-widest ${isLight ? "text-text-secondary/80" : "text-white/50"}`}>
+                    Your Name
+                  </span>
                   <input
                     type="text"
                     id="name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="glass-input w-full rounded-2xl px-4 py-3 text-base text-text-color focus:outline-none"
+                    className={cn(
+                      "w-full rounded-sm border text-sm px-4 py-3 focus:outline-none transition-colors",
+                      isLight
+                        ? "bg-black/5 border-text-color/10 text-text-color focus:border-emerald-600"
+                        : "bg-black/60 border-white/5 text-white focus:border-red-800"
+                    )}
                     required
                   />
                 </label>
 
                 <label className="block text-left">
-                  <span className="mb-2 block text-sm text-text-secondary">Your Email</span>
+                  <span className={`mb-2 block text-[0.65rem] uppercase tracking-widest ${isLight ? "text-text-secondary/80" : "text-white/50"}`}>
+                    Your Email
+                  </span>
                   <input
                     type="email"
                     id="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="glass-input w-full rounded-2xl px-4 py-3 text-base text-text-color focus:outline-none"
+                    className={cn(
+                      "w-full rounded-sm border text-sm px-4 py-3 focus:outline-none transition-colors",
+                      isLight
+                        ? "bg-black/5 border-text-color/10 text-text-color focus:border-emerald-600"
+                        : "bg-black/60 border-white/5 text-white focus:border-red-800"
+                    )}
                     required
                   />
                 </label>
               </div>
 
               <label className="block text-left">
-                <span className="mb-2 block text-sm text-text-secondary">Subject</span>
+                <span className={`mb-2 block text-[0.65rem] uppercase tracking-widest ${isLight ? "text-text-secondary/80" : "text-white/50"}`}>
+                  Subject Coordinate
+                </span>
                 <input
                   type="text"
                   id="subject"
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="glass-input w-full rounded-2xl px-4 py-3 text-base text-text-color focus:outline-none"
+                  className={cn(
+                    "w-full rounded-sm border text-sm px-4 py-3 focus:outline-none transition-colors",
+                    isLight
+                      ? "bg-black/5 border-text-color/10 text-text-color focus:border-emerald-600"
+                      : "bg-black/60 border-white/5 text-white focus:border-red-800"
+                  )}
                   required
                 />
               </label>
 
               <label className="block text-left">
-                <span className="mb-2 block text-sm text-text-secondary">Message</span>
+                <span className={`mb-2 block text-[0.65rem] uppercase tracking-widest ${isLight ? "text-text-secondary/80" : "text-white/50"}`}>
+                  Correspondence Message
+                </span>
                 <textarea
                   id="message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  className="glass-input min-h-[180px] w-full resize-y rounded-2xl px-4 py-3 text-base text-text-color focus:outline-none"
+                  className={cn(
+                    "w-full rounded-sm border text-sm px-4 py-3 min-h-[160px] resize-y focus:outline-none transition-colors",
+                    isLight
+                      ? "bg-black/5 border-text-color/10 text-text-color focus:border-emerald-600"
+                      : "bg-black/60 border-white/5 text-white focus:border-red-800"
+                  )}
                   required
                 />
               </label>
@@ -191,29 +272,43 @@ export default function Contact({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,rgb(var(--primary-color)_/_0.94),rgb(var(--accent-color)_/_0.84))] px-6 py-3.5 text-sm font-semibold text-contrast-color shadow-[0_14px_34px_rgb(var(--primary-color)_/_0.16)] transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-70"
+                className={cn(
+                  "group w-full inline-flex items-center justify-center gap-3 border px-6 py-4 text-xs font-semibold uppercase tracking-[0.25em] rounded-sm transition-all disabled:opacity-50",
+                  isLight
+                    ? "border-emerald-800 bg-emerald-950/10 text-emerald-805 hover:bg-emerald-900/10 hover:border-emerald-500 hover:text-emerald-700"
+                    : "border-red-800 bg-red-950/20 text-red-500 hover:bg-red-900/20 hover:border-red-500"
+                )}
               >
-                <Send size={16} />
-                {isSubmitting ? contact.submittingLabel : contact.submitLabel}
+                <Send size={13} />
+                <span>{isSubmitting ? contact.submittingLabel : contact.submitLabel}</span>
               </button>
             </form>
           </div>
 
-          <div className="space-y-5">
-            <div className="glass-panel rounded-[30px] p-6">
-              <p className="text-[0.68rem] uppercase tracking-[0.3em] text-text-secondary">{contact.infoTitle}</p>
-              <div className="mt-5 space-y-4">
+          {/* Info Panels */}
+          <div className="space-y-6">
+            <div className="steel-runic-panel p-6 rounded-[24px] border border-text-color/5">
+              <p className="text-[0.55rem] font-mono uppercase tracking-[0.25em] text-text-secondary/40 border-b border-text-color/5 pb-2 mb-4">
+                {contact.infoTitle}
+              </p>
+              <div className="space-y-4">
                 {contact.infoItems.map((item) => {
                   const Icon = contactIconMap[item.iconName as keyof typeof contactIconMap] ?? Mail
 
                   return (
-                    <div key={item.label} className="flex items-start gap-4 rounded-[22px] border border-white/8 bg-white/[0.03] px-4 py-4">
-                      <div className="glass-pill inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] text-primary-color">
-                        <Icon size={18} />
+                    <div key={item.label} className="flex items-start gap-4 rounded-sm border border-text-color/5 bg-black/5 p-4">
+                      <div
+                        className={`flex h-11 w-11 shrink-0 items-center justify-center border ${
+                          isLight
+                            ? "border-emerald-800/25 bg-emerald-950/5 text-emerald-700"
+                            : "border-red-800/30 bg-red-950/20 text-red-500"
+                        }`}
+                      >
+                        <Icon size={16} />
                       </div>
                       <div>
-                        <p className="text-[0.68rem] uppercase tracking-[0.24em] text-text-secondary">{item.label}</p>
-                        <p className="mt-2 text-sm leading-7 text-text-color">{item.value}</p>
+                        <p className="text-[0.62rem] font-mono uppercase tracking-[0.2em] text-text-secondary/40">{item.label}</p>
+                        <p className="mt-1 text-sm leading-relaxed text-text-color font-sans">{item.value}</p>
                       </div>
                     </div>
                   )
@@ -221,32 +316,39 @@ export default function Contact({
               </div>
             </div>
 
-            <div className="glass-panel rounded-[30px] p-6">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-[0.68rem] uppercase tracking-[0.3em] text-text-secondary">{contact.socialTitle}</p>
-                  <p className="mt-2 text-sm leading-7 text-text-secondary">{contact.socialDescription}</p>
-                </div>
-                <ArrowUpRight size={16} className="text-primary-color" />
+            <div className="steel-runic-panel p-6 rounded-[24px] border border-text-color/5">
+              <div className="flex items-center justify-between gap-4 border-b border-text-color/5 pb-2 mb-4">
+                <p className="text-[0.55rem] font-mono uppercase tracking-[0.25em] text-text-secondary/40">
+                  {contact.socialTitle}
+                </p>
+                <ArrowUpRight size={14} className={isLight ? "text-emerald-600" : "text-red-500"} />
               </div>
+              <p className="text-xs text-text-secondary leading-relaxed mb-4">{contact.socialDescription}</p>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 {socialLinks.map((option) => (
                   <a
                     key={option.label}
                     href={option.href}
                     target={option.href.startsWith("mailto:") ? undefined : "_blank"}
                     rel={option.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
-                    className="glass-pill inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium text-text-color transition-all duration-300 hover:border-primary-color/30 hover:text-primary-color"
+                    className={cn(
+                      "text-[0.68rem] font-mono uppercase tracking-wider px-4 py-3 border rounded-sm text-center transition-all",
+                      isLight
+                        ? "border-emerald-800/10 bg-white/20 text-text-secondary hover:text-emerald-700 hover:border-emerald-800/25"
+                        : "border-white/5 bg-black/40 text-text-secondary hover:text-white hover:border-white/10"
+                    )}
                   >
-                    <i className={`${option.iconClass} text-base`} />
+                    <i className={`${option.iconClass} mr-2`} />
                     {option.label}
                   </a>
                 ))}
               </div>
             </div>
           </div>
+
         </div>
+
       </div>
     </section>
   )

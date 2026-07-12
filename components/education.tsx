@@ -1,98 +1,162 @@
 "use client"
 
-import { motion, useReducedMotion } from "framer-motion"
-import { GraduationCap, School, Sparkles, University } from "lucide-react"
+import { motion } from "framer-motion"
+import { Shield, Sparkles, BookOpen } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useTheme } from "next-themes"
 
 import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
 import type { EducationContent } from "@/lib/portfolio/schema"
-
-const educationIconMap = {
-  school: School,
-  university: University,
-}
+import { cn } from "@/lib/utils"
 
 type EducationProps = {
   education?: EducationContent
 }
 
-export default function Education({ education = defaultPortfolioContent.education }: EducationProps) {
-  const prefersReducedMotion = useReducedMotion()
+export default function Education({ education }: EducationProps) {
+  const educationData = education || defaultPortfolioContent.education
+  const items = educationData?.items || []
+  const taglineBadge = educationData?.taglineBadge || ""
+
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const isLight = mounted && theme === "light"
 
   return (
-    <section
-      id="education"
-      className="relative overflow-hidden px-6 py-20 md:px-10 md:py-24 lg:px-16 lg:py-28"
-    >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,14,22,0.96),rgba(7,10,16,0.98))]" />
-      <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:86px_86px]" />
-      <div className="absolute left-[12%] top-0 h-full w-px bg-gradient-to-b from-transparent via-primary-color/28 to-transparent" />
-      <div className="absolute right-[10%] top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+    <section id="education" className="relative overflow-hidden px-6 py-24 md:px-12 lg:px-20 bg-dark-color transition-colors duration-700">
+      {/* Background ambient lighting */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_rgba(30,70,59,0.06)_0%,_transparent_60%)]" />
+      
+      {/* Runic line details */}
+      <div className="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-emerald-800/20 to-transparent" />
+      <div className="absolute left-[7%] top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-emerald-950/10 to-transparent" />
 
       <div className="relative z-10 mx-auto max-w-6xl">
-        <div className="mb-12 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        
+        {/* Header Block */}
+        <div className="mb-16 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between border-b border-text-color/5 pb-8">
           <div>
-            <p className="text-sm uppercase tracking-[0.34em] text-primary-light">{education.sectionLabel}</p>
-            <h2 className="mt-3 text-[clamp(2.5rem,5vw,4.6rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-text-color">
-              {education.title}
+            <div
+              className={`inline-flex items-center gap-2 border px-4 py-1.5 rounded-sm ${
+                isLight
+                  ? "border-emerald-850/30 bg-emerald-950/10 text-emerald-600"
+                  : "border-emerald-800/30 bg-emerald-950/10 text-emerald-500"
+              }`}
+            >
+              <Shield size={12} className={`${isLight ? "text-emerald-650" : "text-emerald-500"} animate-pulse`} />
+              <span className="text-[0.62rem] uppercase tracking-[0.38em] font-semibold font-mono">
+                {isLight ? "ACADEMY SCROLL RECORDFILE" : "MILITARY COMMAND ARCHIVES"}
+              </span>
+            </div>
+
+            <h2 className="gothic-header text-4xl md:text-5xl font-bold uppercase tracking-[-0.04em] text-text-color mt-4">
+              {isLight ? (
+                <>
+                  Academic <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-amber-500">
+                    Foundations
+                  </span>
+                </>
+              ) : (
+                <>
+                  Foundational <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-amber-500">
+                    Fortresses
+                  </span>
+                </>
+              )}
             </h2>
           </div>
 
-          <div className="glass-pill inline-flex items-center gap-2 self-start px-4 py-2 text-xs uppercase tracking-[0.3em] text-text-secondary">
-            <Sparkles size={14} className="text-primary-color" />
-            {education.taglineBadge}
+          <div
+            className={`inline-flex items-center gap-2.5 rounded-sm border px-4 py-2 text-[0.65rem] uppercase tracking-[0.25em] font-mono self-start lg:self-auto ${
+              isLight
+                ? "border-emerald-800/30 bg-emerald-950/10 text-emerald-700"
+                : "border-emerald-800/30 bg-emerald-950/20 text-emerald-400"
+            }`}
+          >
+            <Sparkles size={13} className="animate-spin" />
+            {taglineBadge}
           </div>
         </div>
 
-        <div className="relative">
-          <div className="absolute left-5 top-0 h-full w-px bg-gradient-to-b from-primary-color/55 via-accent-color/28 to-transparent md:left-1/2 md:-translate-x-1/2" />
+        {/* Dossiers Grid */}
+        <div className="grid gap-8 md:grid-cols-2">
+          {items.map((item, index) => (
+            <motion.article
+              key={item.title}
+              initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className={cn(
+                "steel-runic-panel p-8 rounded-[24px] border hover:border-emerald-550/40 transition-all group relative",
+                isLight
+                  ? "border-emerald-800/10 bg-gradient-to-b from-secondary-color/30 to-dark-color/40"
+                  : "border-emerald-950/30 bg-gradient-to-b from-emerald-950/20 to-black/60"
+              )}
+            >
+              {/* Corner Runic Stamps */}
+              <div className={`absolute top-3 right-3 text-[0.55rem] font-mono select-none ${isLight ? "text-emerald-800/25" : "text-emerald-500/30"}`}>
+                DOSSIER // 0{index + 1}
+              </div>
 
-          <div className="space-y-8">
-            {education.items.map((item, index) => {
-              const isRight = index % 2 === 1
-              const Icon = educationIconMap[item.iconName as keyof typeof educationIconMap] ?? GraduationCap
-
-              return (
-                <div key={item.title} className="relative md:grid md:grid-cols-2 md:gap-10">
-                  <div className={isRight ? "md:col-start-2" : undefined}>
-                    <motion.article
-                      className="glass-panel-strong relative ml-12 rounded-[30px] border border-white/10 p-6 md:ml-0"
-                      initial={prefersReducedMotion ? false : { opacity: 0, x: isRight ? 36 : -36, y: 30 }}
-                      whileInView={prefersReducedMotion ? undefined : { opacity: 1, x: 0, y: 0 }}
-                      viewport={{ once: true, amount: 0.28 }}
-                      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      <div
-                        className={`absolute left-[-2.65rem] top-8 flex h-8 w-8 items-center justify-center rounded-full border border-primary-color/35 bg-dark-color text-primary-color shadow-[0_0_24px_rgb(var(--primary-color)/0.16)] md:top-10 ${
-                          isRight ? "md:left-[-2.65rem]" : "md:left-auto md:right-[-2.65rem]"
-                        }`}
-                      >
-                        <span className="h-2.5 w-2.5 rounded-full bg-primary-color" />
-                      </div>
-
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="glass-pill inline-flex h-14 w-14 items-center justify-center rounded-[18px] text-primary-color">
-                          <Icon size={24} />
-                        </div>
-                        <span className="text-xs uppercase tracking-[0.28em] text-text-secondary">{item.meta}</span>
-                      </div>
-
-                      <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-text-color">{item.title}</h3>
-
-                      <div className="mt-5 space-y-3">
-                        {item.points.map((point) => (
-                          <div key={point} className="flex items-start gap-3">
-                            <GraduationCap size={16} className="mt-1 shrink-0 text-primary-color" />
-                            <p className="text-sm leading-7 text-text-secondary">{point}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.article>
-                  </div>
+              {/* Icon / Meta row */}
+              <div className="flex items-center justify-between gap-4 border-b border-text-color/5 pb-4 mb-6">
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-sm border ${
+                    isLight
+                      ? "border-emerald-800/20 bg-emerald-950/5 text-emerald-700"
+                      : "border-emerald-800/30 bg-emerald-950/25 text-emerald-500"
+                  }`}
+                >
+                  <BookOpen size={18} />
                 </div>
-              )
-            })}
-          </div>
+                <span
+                  className={`text-xs font-mono px-3 py-1 rounded-sm border ${
+                    isLight
+                      ? "text-emerald-700 bg-emerald-950/5 border-emerald-800/20"
+                      : "text-emerald-400 bg-emerald-950/30 border-emerald-900/40"
+                  }`}
+                >
+                  {item.meta}
+                </span>
+              </div>
+
+              {/* Heading */}
+              <h3
+                className={`text-2xl font-bold uppercase tracking-tight text-text-color mb-2 font-sans transition-colors ${
+                  isLight ? "group-hover:text-emerald-600" : "group-hover:text-emerald-400"
+                }`}
+              >
+                {item.title}
+              </h3>
+              
+              <div className="space-y-3 mt-6">
+                {item.points.map((point) => (
+                  <div key={point} className="flex items-start gap-3">
+                    <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${isLight ? "bg-emerald-600" : "bg-emerald-500 shadow-[0_0_8px_rgba(52,211,153,0.8)]"}`} />
+                    <p className="text-sm leading-relaxed text-text-secondary font-mono">
+                      {point}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* dossier footer decoration */}
+              <div className="mt-8 flex justify-between items-center text-[0.55rem] font-mono text-text-secondary/35 border-t border-dashed border-text-color/5 pt-4">
+                <span>SECTOR: ELDIA // AKTU</span>
+                <span>STATUS: VERIFIED</span>
+              </div>
+            </motion.article>
+          ))}
         </div>
+
       </div>
     </section>
   )

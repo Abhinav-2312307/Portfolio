@@ -1,171 +1,86 @@
 "use client"
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
-import { ArrowUpRight, ExternalLink, Github } from "lucide-react"
+import { ArrowUpRight, ExternalLink, Github, Swords, Shield } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useTheme } from "next-themes"
 
 import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
 import type { ProjectItem, ProjectsContent } from "@/lib/portfolio/schema"
 import { cn } from "@/lib/utils"
+
+const projectWallpapers: Record<string, string> = {
+  "PrintMyPagePSIT": "/assets/guts-illustration-5120x2880-26034.jpg",
+  "JusticeAlly": "/assets/eren-yeager-dark-wind-cliff-anime-realism-live-wallpaper-mobile-hd-4k-8k.jpg",
+  "Civic Intelligence Platform": "/assets/berserk-knight-guts-5120x2880-18713.jpg",
+  "Image Encryption Tool": "/assets/guts-neon-iconic-5120x2880-21415.png",
+  "MapMyPSIT": "/assets/wallpapersden.com_eren-yeager-cool-attack-on-titan_4808x3858.jpg",
+  "Tic Tac Toe": "/assets/be48f2bbee4c7b0ff38c85a86feca549.jpg",
+  "Travel AI": "/assets/guts-battle-dragon-5120x2880-26066.jpg",
+  "A Silent Voice": "/assets/eren-eren-yeager.gif",
+  "Portfolio Experience": "/assets/berserker-armor-5120x2880-13643.jpg",
+}
 
 function getCategoryLabel(category: string) {
   switch (category) {
     case "full-stack":
       return "Full Stack"
     case "ai":
-      return "AI"
+      return "AI Agent"
     case "utility":
-      return "Utility"
+      return "Tactical Utility"
     default:
-      return "Web"
+      return "Web Grid"
   }
 }
 
-function StickyProjectPanel({ children }: { children: React.ReactNode }) {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const shellRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    let frameId = 0
-
-    const updatePosition = () => {
-      frameId = 0
-
-      const track = trackRef.current
-      const shell = shellRef.current
-
-      if (!track || !shell) {
-        return
-      }
-
-      if (window.innerWidth < 1024) {
-        shell.style.position = "relative"
-        shell.style.top = "0px"
-        shell.style.left = "0px"
-        shell.style.width = "100%"
-        shell.style.transform = "translate3d(0, 0, 0)"
-        return
-      }
-
-      const trackRect = track.getBoundingClientRect()
-      const shellHeight = shell.offsetHeight
-      const maxTranslate = Math.max(0, track.offsetHeight - shellHeight)
-      const startTop = 110
-      const endTop = Math.max(startTop, window.innerHeight - shellHeight - 28)
-      const progress = Math.min(Math.max((startTop - trackRect.top) / Math.max(1, maxTranslate), 0), 1)
-      const desiredTop = startTop + (endTop - startTop) * progress
-
-      if (trackRect.top > startTop) {
-        shell.style.position = "absolute"
-        shell.style.top = "0px"
-        shell.style.left = "0px"
-        shell.style.width = "100%"
-        shell.style.transform = "translate3d(0, 0, 0)"
-        return
-      }
-
-      const bottomLocked = trackRect.bottom <= desiredTop + shellHeight
-
-      if (bottomLocked) {
-        shell.style.position = "absolute"
-        shell.style.top = `${maxTranslate}px`
-        shell.style.left = "0px"
-        shell.style.width = "100%"
-        shell.style.transform = "translate3d(0, 0, 0)"
-        return
-      }
-
-      shell.style.position = "fixed"
-      shell.style.top = `${desiredTop}px`
-      shell.style.left = `${trackRect.left}px`
-      shell.style.width = `${trackRect.width}px`
-      shell.style.transform = "translate3d(0, 0, 0)"
-    }
-
-    const scheduleUpdate = () => {
-      if (frameId !== 0) {
-        return
-      }
-
-      frameId = window.requestAnimationFrame(updatePosition)
-    }
-
-    const resizeObserver =
-      typeof ResizeObserver === "undefined"
-        ? null
-        : new ResizeObserver(() => {
-            scheduleUpdate()
-          })
-
-    if (trackRef.current) {
-      resizeObserver?.observe(trackRef.current)
-    }
-
-    if (shellRef.current) {
-      resizeObserver?.observe(shellRef.current)
-    }
-
-    window.addEventListener("scroll", scheduleUpdate, { passive: true })
-    window.addEventListener("resize", scheduleUpdate, { passive: true })
-
-    scheduleUpdate()
-    const timeoutId = window.setTimeout(scheduleUpdate, 120)
-
-    return () => {
-      window.clearTimeout(timeoutId)
-      if (frameId !== 0) {
-        window.cancelAnimationFrame(frameId)
-      }
-      resizeObserver?.disconnect()
-      window.removeEventListener("scroll", scheduleUpdate)
-      window.removeEventListener("resize", scheduleUpdate)
-    }
-  }, [])
-
-  return (
-    <aside ref={trackRef} className="relative hidden lg:block lg:h-full lg:self-stretch">
-      <div ref={shellRef} className="w-full will-change-transform">
-        <div className="relative overflow-hidden rounded-[30px] border border-white/8 bg-[linear-gradient(180deg,rgba(9,12,20,0.96),rgba(12,17,27,0.92))] shadow-[0_24px_56px_rgba(0,0,0,0.22)]">
-          <div className="absolute inset-x-0 top-0 h-28 bg-[linear-gradient(180deg,rgba(79,239,255,0.06),transparent)]" />
-          <div className="absolute bottom-0 left-0 right-0 h-28 bg-[linear-gradient(180deg,transparent,rgba(90,121,255,0.06))]" />
-          <div className="absolute bottom-5 right-4 top-5 w-px bg-gradient-to-b from-transparent via-white/8 to-transparent" />
-
-          <div className="relative z-20 px-4 py-3">{children}</div>
-        </div>
-      </div>
-    </aside>
-  )
+function getThematicStatus(status: string | undefined, isLight: boolean) {
+  if (isLight) {
+    if (status === "In Progress") return "[SURVEYING STATE]"
+    return "[CAMPAIGN SECURED]"
+  }
+  if (!status) return "[FORGED IN STEEL]"
+  if (status === "In Progress") return "[SURVEYING STATE]"
+  return `[${status.toUpperCase()}]`
 }
 
 type ProjectsProps = {
   projects?: ProjectsContent
 }
 
-export default function Projects({ projects = defaultPortfolioContent.projects }: ProjectsProps) {
-  const [filter, setFilter] = useState<string>(projects.filters[0]?.value ?? "all")
-  const [selectedTitle, setSelectedTitle] = useState(projects.items[0]?.title ?? "")
+export default function Projects({ projects }: ProjectsProps) {
+  const projectsData = projects || defaultPortfolioContent.projects
+  const items = projectsData?.items || []
+  const filters = projectsData?.filters || []
+
+  const [filter, setFilter] = useState<string>("all")
+  const [selectedTitle, setSelectedTitle] = useState(items[0]?.title ?? "")
   const prefersReducedMotion = useReducedMotion()
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const isLight = mounted && theme === "light"
 
   const filteredProjects = useMemo(() => {
-    return filter === "all" ? projects.items : projects.items.filter((project) => project.category === filter)
-  }, [filter, projects.items])
+    return filter === "all" ? items : items.filter((project) => project.category === filter)
+  }, [filter, items])
 
   const activeProject =
-    filteredProjects.find((project) => project.title === selectedTitle) ?? filteredProjects[0] ?? projects.items[0]
+    filteredProjects.find((project) => project.title === selectedTitle) ?? filteredProjects[0] ?? items[0]
+
   const activeProjectIndex = Math.max(
     0,
     filteredProjects.findIndex((project) => project.title === activeProject?.title),
   )
 
-  useEffect(() => {
-    setFilter((currentFilter) =>
-      projects.filters.some((item) => item.value === currentFilter) ? currentFilter : projects.filters[0]?.value ?? "all",
-    )
-    setSelectedTitle((currentTitle) =>
-      projects.items.some((project) => project.title === currentTitle) ? currentTitle : projects.items[0]?.title ?? "",
-    )
-  }, [projects.filters, projects.items])
+  const activeBg = useMemo(() => {
+    return activeProject ? (projectWallpapers[activeProject.title] ?? "/assets/berserk-knight-guts-5120x2880-18713.jpg") : "/assets/berserk-knight-guts-5120x2880-18713.jpg"
+  }, [activeProject])
 
   useEffect(() => {
     if (!filteredProjects.some((project) => project.title === selectedTitle)) {
@@ -177,36 +92,77 @@ export default function Projects({ projects = defaultPortfolioContent.projects }
     <section
       id="projects"
       data-scroll-section
-      className="relative overflow-hidden px-6 pb-20 pt-10 md:px-10 md:pb-24 md:pt-12 lg:px-16 lg:pb-28 lg:pt-14"
+      className="relative overflow-visible w-full px-6 py-24 md:px-12 lg:px-20 min-h-screen bg-dark-color transition-colors duration-700"
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(var(--dark-color)_/_0.98),rgb(var(--secondary-color)_/_0.94))]" />
-      <div className="absolute inset-0 opacity-14 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:94px_94px]" />
-      <div className="absolute right-[-8%] top-[16%] h-[16rem] w-[24rem] bg-[radial-gradient(circle,rgba(90,121,255,0.14),transparent_68%)] blur-3xl" />
+      {/* Immersive background wallpaper reacting to current active project */}
+      <div className="absolute inset-0 z-0">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeBg}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isLight ? 0.08 : 0.12 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${activeBg})` }}
+          />
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-color via-dark-color/90 to-dark-color" />
+      </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <div className="mb-5 flex flex-col gap-5 md:mb-6 md:flex-row md:items-end md:justify-between">
+      <div className="relative z-10 mx-auto max-w-6xl space-y-12">
+        
+        {/* Header Block */}
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between border-b border-text-color/5 pb-8">
           <div>
-            <p className="text-sm uppercase tracking-[0.34em] text-primary-light">{projects.sectionLabel}</p>
-            <h2 className="mt-3 text-[clamp(2.4rem,5vw,4.2rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-text-color">
-              {projects.title}
+            <div
+              className={`inline-flex items-center gap-2 border px-4 py-1.5 rounded-sm ${
+                isLight
+                  ? "border-emerald-800/30 bg-emerald-950/10 text-emerald-600"
+                  : "border-red-800/30 bg-red-950/10 text-red-500"
+              }`}
+            >
+              <Swords size={12} className={`${isLight ? "text-emerald-500" : "text-red-500"} animate-pulse`} />
+              <span className="text-[0.62rem] uppercase tracking-[0.38em] font-semibold font-mono">
+                {isLight ? "MILITARY STRATEGY ARCHIVES" : "CONQUESTS & SHIELDWORK"}
+              </span>
+            </div>
+
+            <h2 className="gothic-header text-4xl md:text-5xl font-bold uppercase tracking-[-0.04em] text-text-color mt-4">
+              {isLight ? "Military" : "Forged"} <br className="md:hidden" />
+              <span
+                className={`text-transparent bg-clip-text bg-gradient-to-r ${
+                  isLight ? "from-emerald-600 via-teal-500 to-amber-500" : "from-red-600 to-amber-500"
+                }`}
+              >
+                {isLight ? "Campaigns" : "Endeavors"}
+              </span>
             </h2>
           </div>
+
+          {/* Filtering handles */}
           <div className="flex flex-wrap gap-2">
-            {projects.filters.map((item) => (
+            {filters.map((item) => (
               <button
                 key={item.value}
                 type="button"
                 onClick={() => {
                   setFilter(item.value)
                   const next =
-                    item.value === "all" ? projects.items[0] : projects.items.find((project) => project.category === item.value)
-                  setSelectedTitle(next?.title ?? projects.items[0]?.title ?? "")
+                    item.value === "all"
+                      ? items[0]
+                      : items.find((p) => p.category === item.value)
+                  setSelectedTitle(next?.title ?? items[0]?.title ?? "")
                 }}
                 className={cn(
-                  "glass-pill px-3.5 py-2 text-[0.68rem] uppercase tracking-[0.24em] transition-all duration-200",
+                  "text-[0.65rem] font-mono uppercase tracking-widest px-4 py-2 border rounded-sm transition-all",
                   filter === item.value
-                    ? "border-primary-color/35 bg-primary-color/10 text-primary-color"
-                    : "text-text-secondary hover:border-primary-color/18 hover:text-text-color",
+                    ? isLight
+                      ? "border-emerald-600/40 bg-emerald-950/10 text-emerald-800 shadow-[0_0_12px_rgba(32,96,74,0.1)] font-bold"
+                      : "border-red-600/40 bg-red-950/20 text-red-500 shadow-[0_0_12px_rgba(180,15,15,0.15)] font-bold"
+                    : isLight
+                      ? "border-emerald-850/10 bg-white/20 text-text-secondary hover:text-emerald-700 hover:border-emerald-800/20"
+                      : "border-white/5 bg-black/40 text-text-secondary hover:text-white hover:border-white/10",
                 )}
               >
                 {item.label}
@@ -215,112 +171,138 @@ export default function Projects({ projects = defaultPortfolioContent.projects }
           </div>
         </div>
 
-        <div id="projects-grid-wrap" className="grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-stretch">
-          <StickyProjectPanel>
-            <div className="glass-panel-strong overflow-hidden rounded-[26px] border-white/10 bg-[linear-gradient(180deg,rgba(6,10,18,0.96),rgba(10,16,26,0.88))] px-3.5 py-3.5 shadow-[0_18px_40px_rgba(0,0,0,0.2)]">
-              <AnimatePresence initial={false} mode="wait">
-                <motion.div
-                  key={activeProject?.title}
-                  initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={prefersReducedMotion ? undefined : { opacity: 0, y: -4 }}
-                  transition={{ duration: 0.14, ease: [0.22, 1, 0.36, 1] }}
-                  className="project-sidebar-scroll flex max-h-[calc(100vh-10.25rem)] flex-col gap-2.5 overflow-y-auto pr-1"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-[0.56rem] uppercase tracking-[0.3em] text-primary-light">Selected Project</p>
-                      <h3 className="mt-2 max-w-[11rem] text-[1.18rem] font-semibold leading-[1.06] tracking-[-0.05em] text-white">
-                        {activeProject?.title}
-                      </h3>
-                    </div>
-                    <div className="shrink-0 rounded-full border border-white/12 bg-black/25 px-3 py-1.5 text-[0.56rem] uppercase tracking-[0.24em] text-white/72">
-                      {String(activeProjectIndex + 1).padStart(2, "0")} / {String(filteredProjects.length).padStart(2, "0")}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <span className="glass-pill border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.22em] text-white/88">
-                      {getCategoryLabel(activeProject?.category ?? "web")}
+        {/* Dynamic Grid Layout */}
+        <div className="grid lg:grid-cols-[22rem_minmax(0,1fr)] gap-8">
+          
+          {/* Details Sidebar panel */}
+          <aside className="lg:sticky lg:top-28 lg:self-start steel-runic-panel p-6 rounded-[24px] bg-gradient-to-b from-secondary-color/40 to-dark-color/60 border border-text-color/5 space-y-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeProject?.title}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-6"
+              >
+                {/* Index / category */}
+                <div className="flex items-center justify-between border-b border-text-color/5 pb-4">
+                  <div>
+                    <span
+                      className={`text-[0.55rem] font-mono uppercase tracking-widest block ${
+                        isLight ? "text-emerald-600" : "text-red-500"
+                      }`}
+                    >
+                      {isLight ? "strategic blueprint" : "CONQUEST blueprint"}
                     </span>
-                    {activeProject?.status ? (
-                      <span className="glass-pill border-primary-color/28 bg-primary-color/12 px-2.5 py-1 text-[0.56rem] uppercase tracking-[0.22em] text-primary-color">
-                        {activeProject.status}
-                      </span>
-                    ) : null}
-                    {activeProject?.period ? (
-                      <span className="glass-pill border-white/10 bg-white/[0.02] px-2.5 py-1 text-[0.6rem] text-text-color">
-                        {activeProject.period}
-                      </span>
-                    ) : null}
+                    <h3 className="text-xl font-bold uppercase tracking-tight text-text-color mt-1">
+                      {activeProject?.title}
+                    </h3>
                   </div>
+                  <span className="text-xs font-mono text-text-secondary/50 border border-text-color/5 px-2.5 py-1 rounded-sm bg-black/5">
+                    {String(activeProjectIndex + 1).padStart(2, "0")} / {String(filteredProjects.length).padStart(2, "0")}
+                  </span>
+                </div>
 
-                  <p className="text-[0.8rem] leading-6 text-text-secondary">{activeProject?.description}</p>
+                {/* Badges */}
+                <div className="flex flex-wrap gap-2">
+                  <span
+                    className={`text-[0.62rem] font-mono uppercase border px-2 py-0.5 rounded-sm ${
+                      isLight
+                        ? "text-emerald-600 bg-emerald-950/15 border-emerald-900/20"
+                        : "text-red-400 bg-red-950/15 border-red-900/20"
+                    }`}
+                  >
+                    {getCategoryLabel(activeProject?.category ?? "web")}
+                  </span>
+                  <span
+                    className={`text-[0.62rem] font-mono uppercase border px-2 py-0.5 rounded-sm ${
+                      isLight
+                        ? "text-emerald-700 bg-emerald-950/5 border-emerald-800/20"
+                        : "text-text-secondary bg-black/40 border-text-color/5"
+                    }`}
+                  >
+                    {getThematicStatus(activeProject?.status, isLight)}
+                  </span>
+                </div>
 
-                  <div className="rounded-[22px] border border-white/8 bg-[linear-gradient(180deg,rgba(10,14,24,0.88),rgba(12,18,28,0.74))] p-3.5">
-                    <p className="text-[0.54rem] uppercase tracking-[0.3em] text-text-secondary">Highlights</p>
+                {/* Description */}
+                <p className="text-sm leading-relaxed text-text-secondary">
+                  {activeProject?.description}
+                </p>
 
-                    <div className="mt-3 space-y-2.5">
-                      {activeProject?.highlights.slice(0, 2).map((item) => (
-                        <div key={item} className="flex items-start gap-3">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary-color shadow-[0_0_10px_rgb(var(--primary-color)/0.42)]" />
-                          <p className="text-[0.79rem] leading-6 text-text-secondary">{item}</p>
-                        </div>
-                      ))}
+                {/* Highlights dossier */}
+                <div className="border border-text-color/5 bg-black/5 p-4 rounded-sm space-y-3 font-mono">
+                  <span className="text-[0.55rem] uppercase tracking-widest text-text-secondary/40 block border-b border-text-color/5 pb-1.5">
+                    Combat Highlights
+                  </span>
+                  {activeProject?.highlights.map((item) => (
+                    <div key={item} className="flex items-start gap-2.5">
+                      <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rotate-45 ${isLight ? "bg-emerald-500" : "bg-red-500"}`} />
+                      <p className="text-xs leading-relaxed text-text-secondary/80">{item}</p>
                     </div>
+                  ))}
+                </div>
 
-                    <div className="mt-4">
-                      <p className="text-[0.54rem] uppercase tracking-[0.3em] text-text-secondary">Tech Stack</p>
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {activeProject?.stack.slice(0, 4).map((tech) => (
-                          <span
-                            key={tech}
-                            className="glass-pill border-white/10 bg-white/[0.02] px-2 py-0.5 text-[0.62rem] text-text-color"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                        {activeProject && activeProject.stack.length > 4 ? (
-                          <span className="glass-pill border-white/10 bg-white/[0.02] px-2 py-0.5 text-[0.62rem] text-text-color">
-                            +{activeProject.stack.length - 4}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {activeProject?.github ? (
-                        <a
-                          href={activeProject.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass-pill inline-flex items-center gap-2 px-3 py-2 text-[0.78rem] text-text-color transition-all duration-200 hover:border-primary-color/35 hover:text-primary-color"
-                        >
-                          <Github size={15} />
-                          GitHub
-                        </a>
-                      ) : null}
-                      {activeProject?.live ? (
-                        <a
-                          href={activeProject.live}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,rgb(var(--primary-color)_/_0.94),rgb(var(--accent-color)_/_0.84))] px-3 py-2 text-[0.78rem] font-semibold text-contrast-color shadow-[0_10px_24px_rgb(var(--primary-color)_/_0.16)] transition-all duration-200 hover:-translate-y-0.5"
-                        >
-                          View Live
-                          <ArrowUpRight size={14} />
-                        </a>
-                      ) : null}
-                    </div>
+                {/* Tech specifications */}
+                <div className="space-y-2">
+                  <span className="text-[0.55rem] font-mono uppercase tracking-widest text-text-secondary/40 block">
+                    Alloy components
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {activeProject?.stack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="text-[0.62rem] font-mono px-2 py-1 rounded-sm border border-text-color/5 bg-dark-color text-text-secondary"
+                      >
+                        {tech}
+                      </span>
+                    ))}
                   </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </StickyProjectPanel>
+                </div>
 
-          <div className="grid gap-5 self-start sm:grid-cols-2">
+                {/* Direct link gateways */}
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-text-color/5">
+                  {activeProject?.github ? (
+                    <a
+                      href={activeProject.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex-1 text-center justify-center inline-flex items-center gap-2 border px-4 py-2.5 text-xs font-mono uppercase tracking-wider rounded-sm bg-black/5 transition-colors ${
+                        isLight
+                          ? "border-text-color/10 hover:border-emerald-600 hover:text-emerald-600"
+                          : "border-white/10 hover:border-red-800 hover:text-red-500"
+                      }`}
+                    >
+                      <Github size={13} />
+                      Codebase
+                    </a>
+                  ) : null}
+                  {activeProject?.live ? (
+                    <a
+                      href={activeProject.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex-1 text-center justify-center inline-flex items-center gap-2 border px-4 py-2.5 text-xs font-mono uppercase tracking-wider rounded-sm transition-colors ${
+                        isLight
+                          ? "border-emerald-800 bg-emerald-950/20 text-emerald-700 hover:bg-emerald-900/20 hover:border-emerald-500"
+                          : "border-red-800 bg-red-950/20 text-red-500 hover:bg-red-900/20 hover:border-red-500"
+                      }`}
+                    >
+                      View Live
+                      <ArrowUpRight size={13} />
+                    </a>
+                  ) : null}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </aside>
+
+          {/* Cards Grid list */}
+          <div className="grid gap-4 sm:grid-cols-2">
             {filteredProjects.map((project, index) => {
               const isSelected = activeProject?.title === project.title
+              const wallpaper = projectWallpapers[project.title] ?? "/assets/berserk-knight-guts-5120x2880-18713.jpg"
 
               return (
                 <article
@@ -335,97 +317,97 @@ export default function Projects({ projects = defaultPortfolioContent.projects }
                     }
                   }}
                   className={cn(
-                    "group relative cursor-pointer overflow-hidden rounded-[22px] border transition-all duration-200",
+                    "steel-runic-panel rounded-[24px] cursor-pointer select-none overflow-hidden transition-all duration-300 relative border group flex flex-col justify-between h-[20rem]",
                     isSelected
-                      ? "border-primary-color/30 bg-[linear-gradient(180deg,rgb(var(--glass-bg-strong)_/_0.96),rgb(var(--glass-bg)_/_0.76))] shadow-[0_16px_36px_rgb(var(--primary-color)_/_0.1)]"
-                      : "border-[rgb(var(--glass-border)_/_0.1)] bg-[linear-gradient(180deg,rgb(var(--glass-bg-strong)_/_0.9),rgb(var(--glass-bg)_/_0.6))] shadow-[0_10px_24px_rgb(var(--overlay-color)_/_0.12)] hover:border-[rgb(var(--glass-border)_/_0.18)]",
+                      ? isLight
+                        ? "border-emerald-600/40 shadow-[0_0_20px_rgba(32,96,74,0.15)]"
+                        : "border-red-600/40 shadow-[0_0_20px_rgba(180,15,15,0.2)]"
+                      : "border-text-color/5 bg-black/5 hover:border-text-color/15 hover:shadow-lg",
                   )}
                 >
-                  <div className="relative aspect-[16/9] overflow-hidden">
+                  {/* Card Background image visual */}
+                  <div className="absolute inset-0 z-0">
+                    {/* Anime wallpaper (default view) */}
                     <Image
-                      src={project.image}
+                      src={wallpaper}
                       alt={project.title}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-400 group-hover:scale-[1.03]"
+                      sizes="(max-width: 640px) 100vw, 300px"
+                      className="object-cover object-center opacity-[0.24] group-hover:opacity-0 transition-all duration-500 filter saturate-[0.6] group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,rgba(6,8,12,0.75)_88%,rgba(6,8,12,0.95))]" />
-
-                    <div className="absolute left-3 top-3 flex gap-1.5">
-                      <span className="glass-pill bg-black/40 px-2.5 py-1 text-[0.58rem] uppercase tracking-[0.24em] text-white/90">
-                        {getCategoryLabel(project.category)}
-                      </span>
-                      {project.status ? (
-                        <span className="glass-pill border-primary-color/30 bg-primary-color/15 px-2.5 py-1 text-[0.58rem] uppercase tracking-[0.24em] text-primary-color">
-                          {project.status}
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <div className="absolute right-3 top-3 text-[0.58rem] uppercase tracking-[0.3em] text-white/40">
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
-
-                    <div className="absolute inset-x-0 bottom-0 px-4 pb-3">
-                      <h3 className="text-lg font-semibold tracking-[-0.03em] text-white">{project.title}</h3>
-                    </div>
+                    {/* Real project screenshot (shown on hover) */}
+                    <Image
+                      src={project.image}
+                      alt={`${project.title} screenshot`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 300px"
+                      className="object-cover object-center opacity-0 group-hover:opacity-95 transition-all duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                   </div>
 
-                  <div className="space-y-3 p-4">
-                    <p className="text-[0.82rem] leading-6 text-text-secondary">{project.summary}</p>
+                  {/* Card Header information */}
+                  <div className="relative z-10 p-5 flex justify-between items-start">
+                    <span
+                      className={`text-[0.62rem] font-mono uppercase tracking-widest border px-2 py-0.5 rounded-sm ${
+                        isLight
+                          ? "text-emerald-700 border-emerald-850 bg-emerald-950/10"
+                          : "text-red-500/80 border-red-950 bg-red-950/20"
+                      }`}
+                    >
+                      {getCategoryLabel(project.category)}
+                    </span>
+                    <span className="text-[0.68rem] font-mono text-text-secondary/35">
+                      0{index + 1}
+                    </span>
+                  </div>
 
-                    <div className="flex flex-wrap gap-1.5">
-                      {project.stack.slice(0, 3).map((tech) => (
-                        <span key={tech} className="glass-pill px-2 py-0.5 text-[0.65rem] text-text-secondary">
-                          {tech}
-                        </span>
-                      ))}
-                      {project.stack.length > 3 ? (
-                        <span className="glass-pill px-2 py-0.5 text-[0.65rem] text-text-secondary">
-                          +{project.stack.length - 3}
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      {project.github ? (
-                        <a
-                          href={project.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass-pill inline-flex h-8 w-8 items-center justify-center text-text-secondary transition-colors duration-200 hover:text-primary-color"
-                          aria-label={`${project.title} GitHub`}
-                          onClick={(event) => event.stopPropagation()}
-                        >
-                          <Github size={14} />
-                        </a>
-                      ) : null}
-                      {project.live ? (
-                        <a
-                          href={project.live}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass-pill inline-flex h-8 w-8 items-center justify-center text-text-secondary transition-colors duration-200 hover:text-primary-color"
-                          aria-label={`${project.title} live`}
-                          onClick={(event) => event.stopPropagation()}
-                        >
-                          <ExternalLink size={14} />
-                        </a>
-                      ) : null}
-
-                      {isSelected ? (
-                        <span className="ml-auto flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary-color shadow-[0_0_8px_rgb(var(--primary-color)/0.5)]" />
-                          <span className="text-[0.55rem] uppercase tracking-[0.2em] text-primary-color">Active</span>
-                        </span>
-                      ) : null}
+                  {/* Card Footer details */}
+                  <div className="relative z-10 p-5 border-t border-text-color/5 bg-black/40 backdrop-blur-xs space-y-2">
+                    <h3
+                      className={`text-xl font-bold uppercase tracking-tight text-white transition-colors truncate ${
+                        isLight ? "group-hover:text-emerald-500" : "group-hover:text-red-500"
+                      }`}
+                    >
+                      {project.title}
+                    </h3>
+                    <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">
+                      {project.summary}
+                    </p>
+                    
+                    {/* Status link triggers */}
+                    <div className="flex items-center justify-between pt-2">
+                      <div className="flex gap-2">
+                        {project.github ? <Github size={12} className="text-white/40" /> : null}
+                        {project.live ? <ExternalLink size={12} className="text-white/40" /> : null}
+                      </div>
+                      {isSelected && (
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={`h-1.5 w-1.5 rounded-full animate-pulse ${
+                              isLight
+                                ? "bg-emerald-500 shadow-[0_0_8px_rgba(52,211,153,0.8)]"
+                                : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                            }`}
+                          />
+                          <span
+                            className={`text-[0.55rem] font-mono uppercase tracking-widest ${
+                              isLight ? "text-emerald-500" : "text-red-500"
+                            }`}
+                          >
+                            {isLight ? "SURVEYING" : "ACTIVE"}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </article>
               )
             })}
           </div>
+
         </div>
+
       </div>
     </section>
   )

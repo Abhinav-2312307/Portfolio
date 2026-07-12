@@ -4,39 +4,40 @@
 
 :root {
   color-scheme: dark;
-  --primary-color: 79 239 255;
-  --primary-dark: 25 196 220;
-  --primary-light: 170 250 255;
-  --secondary-color: 16 20 30;
-  --dark-color: 7 10 16;
-  --text-color: 255 255 255;
-  --text-secondary: 181 194 214;
-  --accent-color: 90 121 255;
+  /* Default: Despair / Berserk Crimson Theme */
+  --primary-color: 180 15 15;
+  --primary-dark: 110 5 5;
+  --primary-light: 235 40 40;
+  --secondary-color: 16 17 21;
+  --dark-color: 6 7 9;
+  --text-color: 235 240 245;
+  --text-secondary: 155 162 172;
+  --accent-color: 220 85 10; /* Ember Fire */
   --danger-color: 255 71 87;
   --success-color: 46 213 115;
   --warning-color: 255 165 2;
-  --contrast-color: 8 12 20;
-  --overlay-color: 6 9 16;
-  --glass-bg: 16 20 30;
-  --glass-bg-strong: 7 10 16;
-  --glass-border: 255 255 255;
-  --glass-border-alpha: 0.16;
-  --glass-highlight-alpha: 0.36;
+  --contrast-color: 5 5 7;
+  --overlay-color: 10 11 14;
+  --glass-bg: 18 19 24;
+  --glass-bg-strong: 10 11 14;
+  --glass-border: 255 60 60;
+  --glass-border-alpha: 0.12;
+  --glass-highlight-alpha: 0.24;
   --transition-fast: 0.3s;
   --transition-medium: 0.5s;
   --transition-slow: 0.8s;
-  --border-radius-sm: 5px;
-  --border-radius-md: 10px;
-  --border-radius-lg: 15px;
-  --border-radius-xl: 20px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
   --border-radius-round: 50%;
-  --shadow-sm: 0 12px 28px rgba(2, 8, 23, 0.16);
-  --shadow-md: 0 18px 42px rgba(2, 8, 23, 0.22);
-  --shadow-lg: 0 28px 76px rgba(2, 8, 23, 0.34);
-  --shadow-primary: 0 18px 48px rgba(79, 239, 255, 0.24);
-  --shadow-glass: 0 24px 64px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --shadow-liquid: 0 30px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 16px 36px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.8);
+  --shadow-primary: 0 12px 36px rgba(180, 15, 15, 0.35);
+  --shadow-glass: 0 16px 48px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --shadow-liquid: 0 24px 64px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.02),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   --font-family: var(--font-poppins), sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
@@ -68,29 +69,29 @@
 }
 
 html.light {
-  color-scheme: light;
-  --primary-color: 55 211 232;
-  --primary-dark: 18 164 184;
-  --primary-light: 121 224 241;
-  --secondary-color: 225 232 242;
-  --dark-color: 238 243 249;
-  --text-color: 23 34 53;
-  --text-secondary: 88 101 125;
-  --accent-color: 76 104 236;
-  --contrast-color: 13 21 35;
-  --overlay-color: 29 41 61;
-  --glass-bg: 247 250 253;
-  --glass-bg-strong: 233 239 246;
-  --glass-border: 45 60 88;
-  --glass-border-alpha: 0.18;
-  --glass-highlight-alpha: 0.4;
-  --shadow-sm: 0 10px 24px rgba(101, 122, 153, 0.12);
-  --shadow-md: 0 18px 38px rgba(101, 122, 153, 0.16);
-  --shadow-lg: 0 30px 70px rgba(101, 122, 153, 0.18);
-  --shadow-primary: 0 18px 42px rgba(55, 211, 232, 0.12);
-  --shadow-glass: 0 18px 40px rgba(113, 131, 159, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  --shadow-liquid: 0 24px 60px rgba(113, 131, 159, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  /* Hope / Attack on Titan Forest Green Theme - Genuine Light Mode */
+  --primary-color: 32 96 74; /* Survey Corps Green */
+  --primary-dark: 20 66 50;
+  --primary-light: 55 145 115;
+  --secondary-color: 232 230 220; /* Beige parchment */
+  --dark-color: 244 242 234; /* Off-white canvas */
+  --text-color: 24 32 28; /* Dark charcoal */
+  --text-secondary: 76 86 82; /* Muted slate */
+  --accent-color: 185 138 25; /* Gold badge */
+  --contrast-color: 250 250 246;
+  --overlay-color: 224 222 212;
+  --glass-bg: 238 236 226;
+  --glass-bg-strong: 230 228 218;
+  --glass-border: 32 96 74;
+  --glass-border-alpha: 0.14;
+  --glass-highlight-alpha: 0.16;
+  --shadow-sm: 0 8px 24px rgba(26, 32, 28, 0.08);
+  --shadow-md: 0 16px 36px rgba(26, 32, 28, 0.12);
+  --shadow-lg: 0 24px 56px rgba(26, 32, 28, 0.16);
+  --shadow-primary: 0 12px 36px rgba(32, 96, 74, 0.15);
+  --shadow-glass: 0 16px 48px rgba(26, 32, 28, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --shadow-liquid: 0 24px 64px rgba(26, 32, 28, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 html.dark {
@@ -891,3 +892,142 @@ html.light .candle-toggle::after {
     0 28px 56px rgba(0, 0, 0, 0.36),
     0 0 40px color-mix(in srgb, var(--skill-accent) 8%, transparent);
 }
+
+/* ─── Cinematic Anime Portfolio Enhancements ─── */
+
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-2px, -2px) rotate(-0.5deg); }
+  20% { transform: translate(2px, 1px) rotate(0.5deg); }
+  30% { transform: translate(-1px, 2px) rotate(0deg); }
+  40% { transform: translate(2px, -1px) rotate(0.5deg); }
+  50% { transform: translate(-2px, 1px) rotate(-0.5deg); }
+  60% { transform: translate(1px, -2px) rotate(0.5deg); }
+  75% { transform: translate(-1px, 1px) rotate(0deg); }
+  90% { transform: translate(2px, 2px) rotate(-0.5deg); }
+}
+
+.animate-shake {
+  animation: screen-shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes impact-flash-anim {
+  0% {
+    background-color: rgb(255 255 255);
+    opacity: 1;
+  }
+  30% {
+    background-color: rgb(180 15 15);
+    opacity: 0.9;
+  }
+  100% {
+    background-color: transparent;
+    opacity: 0;
+  }
+}
+
+.animate-impact-flash {
+  animation: impact-flash-anim 0.8s cubic-bezier(0.1, 0.8, 0.1, 1) forwards;
+}
+
+@keyframes float-embers {
+  0% {
+    transform: translateY(105vh) translateX(0) scale(1) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(45px) scale(0.6) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.ambient-ember {
+  position: absolute;
+  bottom: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, rgb(var(--accent-color)) 0%, transparent 80%);
+  border-radius: 50%;
+  animation: float-embers var(--ember-duration, 8s) linear infinite;
+  animation-delay: var(--ember-delay, 0s);
+  left: var(--ember-left, 50%);
+  width: var(--ember-size, 6px);
+  height: var(--ember-size, 6px);
+  filter: blur(1px);
+  will-change: transform, opacity;
+}
+
+/* Stencil & Military headers */
+.gothic-header {
+  font-family: 'Bebas Neue', var(--font-poppins), sans-serif;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 24px rgb(var(--primary-color) / 0.45);
+}
+
+.stencil-text {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.stencil-text::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgb(var(--primary-color)), transparent);
+  transform: translateX(-100%);
+  animation: shine 2s infinite;
+}
+
+/* Metal runic panel styles */
+.steel-runic-panel {
+  border: 1px solid rgb(var(--text-color) / 0.08);
+  background: linear-gradient(135deg, rgb(var(--glass-bg)) 0%, rgb(var(--glass-bg-strong)) 100%);
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+html.dark .steel-runic-panel {
+  background: linear-gradient(135deg, rgb(16 17 21) 0%, rgb(8 9 11) 100%);
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.9), 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.steel-runic-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--primary-color) / 0.5), transparent);
+}
+
+/* Light Mode Atmospheric Animations */
+@keyframes float-clouds {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(2%, 1.5%) scale(1.03); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes god-rays-drift {
+  0% { opacity: 0.08; transform: skewX(-4deg) rotate(-1deg); }
+  50% { opacity: 0.16; transform: skewX(-2deg) rotate(1deg); }
+  100% { opacity: 0.08; transform: skewX(-4deg) rotate(-1deg); }
+}
+
+.animate-clouds {
+  animation: float-clouds 45s ease-in-out infinite;
+}
+
+.animate-god-rays {
+  animation: god-rays-drift 20s ease-in-out infinite;
+}
+

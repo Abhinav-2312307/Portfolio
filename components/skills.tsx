@@ -1,188 +1,322 @@
 "use client"
 
-import type { IconType } from "react-icons"
-import { FaJava } from "react-icons/fa6"
-import {
-  SiCplusplus,
-  SiExpress,
-  SiGit,
-  SiJavascript,
-  SiMongodb,
-  SiNextdotjs,
-  SiNodedotjs,
-  SiPostgresql,
-  SiPython,
-  SiReact,
-  SiTypescript,
-} from "react-icons/si"
+import { motion, AnimatePresence } from "framer-motion"
+import { Swords, CircleDot, Activity } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useTheme } from "next-themes"
+import * as SimpleIcons from "react-icons/si"
+import { IconType } from "react-icons"
 
 import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
-import type { SkillCard, SkillsContent } from "@/lib/portfolio/schema"
-
-const skillIconMap: Record<string, IconType> = {
-  cplusplus: SiCplusplus,
-  express: SiExpress,
-  git: SiGit,
-  java: FaJava,
-  javascript: SiJavascript,
-  mongodb: SiMongodb,
-  nextjs: SiNextdotjs,
-  nodejs: SiNodedotjs,
-  postgresql: SiPostgresql,
-  python: SiPython,
-  react: SiReact,
-  typescript: SiTypescript,
-}
-
-const columnOffsets = ["xl:pt-14", "xl:pt-4", "xl:pt-20", "xl:pt-8"] as const
-
-function splitSkillColumns(cards: SkillCard[]) {
-  const columns = Array.from({ length: 4 }, () => [] as SkillCard[])
-
-  cards.forEach((item, index) => {
-    columns[index % columns.length].push(item)
-  })
-
-  return columns
-}
+import type { SkillsContent } from "@/lib/portfolio/schema"
+import { cn } from "@/lib/utils"
 
 type SkillsProps = {
   skills?: SkillsContent
 }
 
-export default function Skills({ skills = defaultPortfolioContent.skills }: SkillsProps) {
-  const skillColumns = splitSkillColumns(skills.cards)
+const skillIconMap: Record<string, IconType> = {
+  SiTypescript: SimpleIcons.SiTypescript,
+  SiJavascript: SimpleIcons.SiJavascript,
+  SiPython: SimpleIcons.SiPython,
+  SiCplusplus: SimpleIcons.SiCplusplus,
+  SiReact: SimpleIcons.SiReact,
+  SiNextdotjs: SimpleIcons.SiNextdotjs,
+  SiTailwindcss: SimpleIcons.SiTailwindcss,
+  SiFramer: SimpleIcons.SiFramer,
+  SiNodejs: SimpleIcons.SiNodedotjs,
+  SiPostgresql: SimpleIcons.SiPostgresql,
+  SiMongodb: SimpleIcons.SiMongodb,
+  SiRedis: SimpleIcons.SiRedis,
+  SiDocker: SimpleIcons.SiDocker,
+  SiGit: SimpleIcons.SiGit,
+  SiHtml5: SimpleIcons.SiHtml5,
+  SiCss3: SimpleIcons.SiCss,
+}
+
+const categoryArsenalLabels: Record<string, { label: string; desc: string }> = {
+  Languages: {
+    label: "Primary Blades",
+    desc: "Core coding parameters loaded for immediate compilation."
+  },
+  Frontend: {
+    label: "Maneuver Handles",
+    desc: "Tactical HUD controls and responsive client interface frames."
+  },
+  Backend: {
+    label: "Gas Propulsion",
+    desc: "High-velocity backend pipelines and transactional microservices."
+  },
+  Database: {
+    label: "Reinforced Hooks",
+    desc: "Secure storage anchors and optimized indexing pipelines."
+  },
+  Tooling: {
+    label: "Ancillary Gear",
+    desc: "Deployment containers, workflow controls, and codebase automation."
+  }
+}
+
+export default function Skills({ skills }: SkillsProps) {
+  const skillsData = skills || defaultPortfolioContent.skills
+  const categories = skillsData?.categories || []
+  const items = skillsData?.items || []
+
+  const [activeCategory, setActiveCategory] = useState(categories[0] ?? "Languages")
+  const [hoveredCardOrder, setHoveredCardOrder] = useState<number | null>(null)
+  const sliceAudioRef = useRef<HTMLAudioElement | null>(null)
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const isLight = mounted && theme === "light"
+
+  // Preload sound
+  useEffect(() => {
+    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav") // Slice whoosh sound
+    audio.volume = 0.12
+    sliceAudioRef.current = audio
+  }, [])
+
+  const playSliceSound = () => {
+    const isMuted = localStorage.getItem("portfolio-muted") !== "false"
+    if (!isMuted && sliceAudioRef.current) {
+      sliceAudioRef.current.currentTime = 0
+      sliceAudioRef.current.play().catch(() => {})
+    }
+  }
+
+  const filteredCards = useMemo(() => {
+    return items.filter((card) => {
+      if (activeCategory === "Languages") {
+        return card.category === "Languages" || card.category === "Scripts"
+      }
+      if (activeCategory === "Backend") {
+        return card.category === "Backend" || card.category === "Frameworks"
+      }
+      return card.category === activeCategory
+    })
+  }, [activeCategory, items])
 
   return (
     <section
       id="skills"
       data-scroll-section
-      className="relative overflow-hidden px-6 py-20 md:px-10 md:py-24 lg:px-16 lg:py-24"
+      className="relative overflow-hidden px-6 py-24 md:px-12 lg:px-20 bg-dark-color transition-colors duration-700"
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,11,18,0.98),rgba(9,13,20,0.96))]" />
-      <div className="absolute inset-0 opacity-26 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:72px_72px]" />
-      <div className="absolute inset-y-0 left-[7%] w-px bg-gradient-to-b from-transparent via-primary-color/26 to-transparent" />
-      <div className="absolute inset-y-0 right-[8%] w-px bg-gradient-to-b from-transparent via-accent-color/18 to-transparent" />
+      {/* Background visual layout */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(110,5,5,0.04)_0%,_transparent_70%)]" />
+      <div className="absolute inset-y-0 right-[5%] w-px bg-gradient-to-b from-transparent via-red-900/10 to-transparent" />
 
-      <div className="relative z-10 mx-auto grid max-w-7xl gap-6 lg:grid-cols-[5rem_minmax(0,1fr)] lg:gap-8">
-        <div
-          data-scroll
-          data-scroll-sticky
-          data-scroll-target="#skills"
-          className="hidden items-start justify-center lg:flex"
-        >
-          <div className="sticky top-28 flex h-[30rem] flex-col items-center justify-between">
-            <span className="h-20 w-px bg-gradient-to-b from-primary-color/70 to-transparent" />
-            <span className="rotate-180 text-xs uppercase tracking-[0.5em] text-text-secondary [writing-mode:vertical-rl]">
-              {skills.sectionLabel}
-            </span>
-            <span className="h-20 w-px bg-gradient-to-b from-transparent to-primary-color/55" />
+      <div className="relative z-10 mx-auto max-w-6xl space-y-16">
+        
+        {/* Section Header */}
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-text-color/5 pb-8">
+          <div>
+            <div
+              className={`inline-flex items-center gap-2 border px-4 py-1.5 rounded-sm ${
+                isLight
+                  ? "border-emerald-800/30 bg-emerald-950/10 text-emerald-600"
+                  : "border-red-800/30 bg-red-950/10 text-red-500"
+              }`}
+            >
+              <Swords size={12} className={`${isLight ? "text-emerald-500" : "text-red-500"} animate-pulse`} />
+              <span className="text-[0.62rem] uppercase tracking-[0.38em] font-semibold font-mono">
+                {isLight ? "ODM WEAPON TRAINING ROOM" : "ODM WEAPON ARSENAL"}
+              </span>
+            </div>
+
+            <h2 className="gothic-header text-4xl md:text-5xl font-bold uppercase tracking-[-0.04em] text-text-color mt-4">
+              Combat <br className="md:hidden" />
+              <span
+                className={`text-transparent bg-clip-text bg-gradient-to-r ${
+                  isLight ? "from-emerald-600 via-teal-500 to-amber-500" : "from-red-600 to-amber-500"
+                }`}
+              >
+                Capabilities
+              </span>
+            </h2>
+          </div>
+
+          <div className="text-left md:text-right max-w-sm">
+            <p className="text-xs font-mono text-text-secondary/50 uppercase tracking-widest">
+              Gear Unit Status: Optimal // Calibrated
+            </p>
+            <p className="text-sm text-text-secondary mt-1">
+              Select a gear module to inspect component blueprints.
+            </p>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="flex flex-col gap-4 border-b border-white/8 pb-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.36em] text-primary-light">{skills.sectionLabel}</p>
-              <h2 className="mt-2 text-[clamp(2.1rem,4vw,3.3rem)] font-semibold tracking-[-0.05em] text-text-color">
-                {skills.title}
-              </h2>
-            </div>
+        {/* Weapons HUD Framework */}
+        <div className="grid lg:grid-cols-[16rem_minmax(0,1fr)] gap-8 items-start">
+          
+          {/* HUD Module Tabs */}
+          <nav className="flex flex-row lg:flex-col flex-wrap gap-2 z-10">
+            {categories.map((cat) => {
+              const info = categoryArsenalLabels[cat] || { label: cat, desc: "" }
+              const isActive = activeCategory === cat
 
-            <div className="flex flex-wrap gap-2">
-              {skills.categories.map((item) => (
-                <span
-                  key={item}
-                  className="glass-pill px-3 py-1.5 text-[0.68rem] uppercase tracking-[0.26em] text-text-secondary"
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  className={`flex-1 min-w-[8rem] lg:w-full text-left p-4 rounded-sm border transition-all ${
+                    isActive
+                      ? isLight
+                        ? "border-emerald-600/40 bg-emerald-950/10 text-emerald-800 shadow-[0_0_15px_rgba(32,96,74,0.1)] font-bold"
+                        : "border-red-600/40 bg-red-950/20 text-white shadow-[0_0_15px_rgba(180,15,15,0.15)] font-bold"
+                      : isLight
+                        ? "border-emerald-800/10 bg-white/20 text-text-secondary hover:text-emerald-700 hover:border-emerald-800/20"
+                        : "border-white/5 bg-black/40 text-text-secondary hover:text-white hover:border-white/10"
+                  }`}
                 >
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
+                  <div className="flex items-center gap-2">
+                    <CircleDot
+                      size={10}
+                      className={
+                        isActive
+                          ? isLight
+                            ? "text-emerald-600 animate-pulse"
+                            : "text-red-500 animate-pulse"
+                          : "text-text-secondary/25"
+                      }
+                    />
+                    <span className="text-[0.68rem] uppercase tracking-[0.22em] font-mono">
+                      {info.label}
+                    </span>
+                  </div>
+                  <p className="text-[0.55rem] font-mono text-text-secondary/40 hidden lg:block mt-1 truncate">
+                    {info.desc}
+                  </p>
+                </button>
+              )
+            })}
+          </nav>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {skillColumns.map((column, columnIndex) => (
-              <div key={`skill-column-${columnIndex}`} className={`space-y-4 ${columnOffsets[columnIndex]}`}>
-                {column.map((item) => {
-                  const Icon = skillIconMap[item.iconName] ?? SiReact
+          {/* Cards Display Grid */}
+          <div className="space-y-6">
+            
+            {/* Category Description Tag */}
+            <div className="steel-runic-panel p-4 rounded-[20px] flex items-center gap-4 border border-text-color/5">
+              <div
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border ${
+                  isLight
+                    ? "border-emerald-800/25 bg-emerald-950/5 text-emerald-700"
+                    : "border-red-800/30 bg-red-950/20 text-red-500"
+                }`}
+              >
+                <Activity size={14} className="animate-pulse" />
+              </div>
+              <div>
+                <p className="text-[0.6rem] uppercase tracking-[0.25em] text-text-secondary/40 font-mono">
+                  Module Specification
+                </p>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  {categoryArsenalLabels[activeCategory]?.desc}
+                </p>
+              </div>
+            </div>
+
+            {/* Cards Array */}
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+              <AnimatePresence mode="popLayout">
+                {filteredCards.map((item) => {
+                  const Icon = skillIconMap[item.iconName] ?? SimpleIcons.SiReact
+                  const isHovered = hoveredCardOrder === item.order
 
                   return (
-                    <article
-                      key={`${item.order}-${item.name}`}
-                      className="skill-card group relative overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(10,14,24,0.96),rgba(14,18,28,0.92))] p-5 shadow-[0_18px_42px_rgba(0,0,0,0.24)] transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-2 hover:border-white/22 hover:shadow-[0_28px_56px_rgba(0,0,0,0.36)]"
-                      style={{
-                        "--skill-accent": item.accent,
-                      } as React.CSSProperties}
+                    <motion.article
+                      key={item.name}
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                      onMouseEnter={() => {
+                        setHoveredCardOrder(item.order)
+                        playSliceSound()
+                      }}
+                      onMouseLeave={() => setHoveredCardOrder(null)}
+                      className={cn(
+                        "skill-card steel-runic-panel rounded-[20px] p-6 cursor-pointer select-none group overflow-hidden border border-text-color/5 relative transition-colors duration-300",
+                        isLight
+                          ? "bg-gradient-to-b from-secondary-color/25 to-dark-color/35 hover:border-emerald-500/30"
+                          : "bg-gradient-to-b from-black/40 to-[#0c0d10] hover:border-red-500/30"
+                      )}
+                      style={{ "--skill-accent": item.accent } as React.CSSProperties}
                     >
+                      {/* Brand Slash Overlay Flash */}
+                      <div className="absolute inset-0 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        {/* A slash line cutting diagonally */}
+                        <div
+                          className={`absolute top-0 bottom-0 left-[-20%] right-[-20%] bg-gradient-to-r from-transparent to-transparent rotate-[40deg] scale-0 group-hover:scale-150 transition-transform duration-[600ms] ease-out ${
+                            isLight ? "via-emerald-500/15" : "via-red-500/10"
+                          }`}
+                        />
+                      </div>
+
+                      {/* Accent Glow backdrop */}
                       <div
-                        className="absolute inset-0 opacity-75 transition-opacity duration-[420ms] group-hover:opacity-100"
-                        style={{
-                          background: `linear-gradient(140deg, rgba(255,255,255,0.08), transparent 40%, transparent 78%, ${item.accent}18)`,
-                        }}
+                        className="absolute bottom-[-15px] left-1/2 -translate-x-1/2 h-14 w-28 rounded-full blur-[32px] opacity-10 group-hover:opacity-30 transition-all duration-300"
+                        style={{ backgroundColor: item.accent }}
                       />
 
-                      {/* Hover glow overlay */}
-                      <div
-                        className="absolute inset-0 opacity-0 transition-opacity duration-[420ms] group-hover:opacity-100"
-                        style={{
-                          background: `radial-gradient(ellipse at 50% 100%, ${item.accent}12, transparent 60%)`,
-                        }}
-                      />
-
-                      <div
-                        className="absolute inset-x-8 bottom-[-12px] h-10 rounded-full blur-2xl transition-all duration-[420ms] group-hover:bottom-[-8px] group-hover:h-14 group-hover:blur-3xl"
-                        style={{ backgroundColor: `${item.accent}2d` }}
-                      />
-
-                      <div className="relative flex min-h-[12.75rem] flex-col">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-[0.62rem] uppercase tracking-[0.34em] text-text-secondary transition-colors duration-300 group-hover:text-text-color/70">{item.category}</p>
-                            <h3 className="mt-3 text-[1.9rem] font-semibold tracking-[-0.05em] text-text-color">{item.name}</h3>
-                          </div>
-                          <span className="text-[0.68rem] text-text-secondary transition-colors duration-300 group-hover:text-text-color/50">{item.order}</span>
+                      {/* Header row */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <span className="text-[0.55rem] uppercase tracking-widest font-mono text-text-secondary/40">
+                            {item.category}
+                          </span>
+                          <h3
+                            className={`text-xl font-bold uppercase tracking-tight text-text-color mt-1 transition-colors ${
+                              isLight ? "group-hover:text-emerald-600" : "group-hover:text-red-500"
+                            }`}
+                          >
+                            {item.name}
+                          </h3>
                         </div>
 
-                        <div className="mt-auto flex items-end justify-between gap-4 pt-8">
-                          <div
-                            className="relative flex h-[4.75rem] w-[4.75rem] items-center justify-center rounded-[1.45rem] border text-[2rem] transition-all duration-[420ms] group-hover:scale-110 group-hover:rotate-3"
-                            style={{
-                              borderColor: `${item.accent}33`,
-                              color: item.accent,
-                              background: `linear-gradient(180deg, rgba(255,255,255,0.08), ${item.accent}12)`,
-                              boxShadow: `0 18px 30px ${item.accent}16, inset 0 1px 0 rgba(255,255,255,0.08)`,
-                            }}
-                          >
-                            <div className="absolute inset-[6px] rounded-[1.05rem] border border-white/8 bg-white/[0.03]" />
-                            <Icon className="relative z-10 transition-transform duration-[420ms] group-hover:scale-110" />
-                          </div>
+                        <div
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-text-color/5 bg-black/5 text-text-color shadow-inner"
+                          style={{ color: isHovered ? item.accent : undefined }}
+                        >
+                          <Icon size={16} />
+                        </div>
+                      </div>
 
-                          <span
-                            className="h-px flex-1 origin-right rounded-full transition-all duration-[420ms] group-hover:scale-x-110"
-                            style={{
-                              background: `linear-gradient(90deg, rgba(255,255,255,0.06), ${item.accent}88)`,
-                            }}
+                      {/* Level progress indicator */}
+                      <div className="mt-8 space-y-2">
+                        <div className="flex justify-between text-[0.62rem] font-mono text-text-secondary/60">
+                          <span>Sync Efficiency</span>
+                          <span>{item.level}%</span>
+                        </div>
+                        <div className={`h-1.5 w-full rounded-full overflow-hidden ${isLight ? "bg-emerald-800/10" : "bg-black/50"}`}>
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${item.level}%` }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className={`h-full rounded-full ${
+                              isLight
+                                ? "bg-gradient-to-r from-emerald-600 to-teal-500"
+                                : "bg-gradient-to-r from-red-800 to-amber-500"
+                            }`}
                           />
                         </div>
                       </div>
-                    </article>
+                    </motion.article>
                   )
                 })}
-              </div>
-            ))}
-          </div>
-
-          <div className="glass-panel rounded-[28px] p-4">
-            <div className="flex flex-wrap gap-2">
-              {skills.rails.map((item) => (
-                <span key={item} className="glass-pill px-3 py-1.5 text-xs text-text-color transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-color/30 hover:text-primary-color hover:shadow-[0_8px_20px_rgb(var(--primary-color)_/_0.1)]">
-                  {item}
-                </span>
-              ))}
+              </AnimatePresence>
             </div>
           </div>
+
         </div>
+
       </div>
     </section>
   )

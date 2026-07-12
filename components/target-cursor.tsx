@@ -2,6 +2,8 @@
 
 import { gsap } from "gsap"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useTheme } from "next-themes"
+import { cn } from "@/lib/utils"
 
 export interface TargetCursorProps {
   targetSelector?: string
@@ -11,8 +13,8 @@ export interface TargetCursorProps {
   parallaxOn?: boolean
 }
 
-const BORDER_WIDTH = 3
-const CORNER_SIZE = 12
+const BORDER_WIDTH = 2
+const CORNER_SIZE = 8
 
 function detectMobileCursor() {
   if (typeof window === "undefined") {
@@ -29,10 +31,10 @@ function detectMobileCursor() {
 }
 
 export default function TargetCursor({
-  targetSelector = "button, a, [data-cursor-target='true'], .cursor-target",
-  spinDuration = 2,
+  targetSelector = "button, a, [data-cursor-target='true'], .cursor-target, [role='button']",
+  spinDuration = 2.5,
   hideDefaultCursor = true,
-  hoverDuration = 0.2,
+  hoverDuration = 0.25,
   parallaxOn = true,
 }: TargetCursorProps) {
   const cursorRef = useRef<HTMLDivElement>(null)
@@ -44,6 +46,14 @@ export default function TargetCursor({
   const activeStrengthRef = useRef({ current: 0 })
   const [isReady, setIsReady] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const isLight = mounted && theme === "light"
 
   const moveCursor = useCallback((x: number, y: number) => {
     if (!cursorRef.current) {
@@ -54,7 +64,7 @@ export default function TargetCursor({
       x,
       y,
       duration: 0.1,
-      ease: "power3.out",
+      ease: "power2.out",
       overwrite: "auto",
     })
   }, [])
@@ -98,8 +108,8 @@ export default function TargetCursor({
     }
 
     gsap.set(cursor, {
-      xPercent: -50,
-      yPercent: -50,
+      xPercent: -55,
+      yPercent: -55,
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
     })
@@ -136,7 +146,7 @@ export default function TargetCursor({
         const targetY = targetCornerPositionsRef.current![index].y - cursorY
         const finalX = currentX + (targetX - currentX) * strength
         const finalY = currentY + (targetY - currentY) * strength
-        const duration = strength >= 0.99 ? (parallaxOn ? 0.2 : 0) : 0.05
+        const duration = strength >= 0.99 ? (parallaxOn ? 0.22 : 0) : 0.05
 
         gsap.to(corner, {
           x: finalX,
@@ -173,18 +183,22 @@ export default function TargetCursor({
       if (!dotRef.current || !cursorRef.current) {
         return
       }
-
-      gsap.to(dotRef.current, { scale: 0.7, duration: 0.3 })
-      gsap.to(cursorRef.current, { scale: 0.92, duration: 0.2 })
+      const glowColor = document.documentElement.classList.contains("light") 
+        ? "rgba(52, 211, 153, 0.9)"
+        : "rgba(220, 20, 20, 0.95)"
+      gsap.to(dotRef.current, { scale: 0.65, filter: `drop-shadow(0 0 12px ${glowColor})`, duration: 0.25 })
+      gsap.to(cursorRef.current, { scale: 0.88, duration: 0.18 })
     }
 
     const mouseUpHandler = () => {
       if (!dotRef.current || !cursorRef.current) {
         return
       }
-
-      gsap.to(dotRef.current, { scale: 1, duration: 0.3 })
-      gsap.to(cursorRef.current, { scale: 1, duration: 0.2 })
+      const glowColor = document.documentElement.classList.contains("light") 
+        ? "rgba(32, 96, 74, 0.5)"
+        : "rgba(180, 15, 15, 0.6)"
+      gsap.to(dotRef.current, { scale: 1, filter: `drop-shadow(0 0 8px ${glowColor})`, duration: 0.25 })
+      gsap.to(cursorRef.current, { scale: 1, duration: 0.18 })
     }
 
     const enterHandler = (event: MouseEvent) => {
@@ -251,7 +265,7 @@ export default function TargetCursor({
         gsap.to(corner, {
           x: targetCornerPositionsRef.current![index].x - cursorX,
           y: targetCornerPositionsRef.current![index].y - cursorY,
-          duration: 0.2,
+          duration: 0.18,
           ease: "power2.out",
         })
       })
@@ -283,7 +297,7 @@ export default function TargetCursor({
               {
                 x: positions[index].x,
                 y: positions[index].y,
-                duration: 0.3,
+                duration: 0.28,
                 ease: "power3.out",
               },
               0,
@@ -378,25 +392,71 @@ export default function TargetCursor({
       className="pointer-events-none fixed left-0 top-0 z-[9998] h-0 w-0"
       style={{ willChange: "transform" }}
     >
+      {/* Central Reticle Emblem - glows green/red based on theme */}
       <div
         ref={dotRef}
-        className="absolute left-1/2 top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgb(var(--text-color))]"
+        className={cn(
+          "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 filter",
+          isLight 
+            ? "text-emerald-700 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" 
+            : "text-red-500 drop-shadow-[0_0_8px_rgba(180,15,15,0.6)]"
+        )}
+        style={{ willChange: "transform" }}
+      >
+        {isLight ? (
+          /* Wings of Freedom Wings SVG */
+          <svg
+            width="18"
+            height="22"
+            viewBox="0 0 20 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="fill-current"
+          >
+            <path d="M3 13C3 13 4.5 9 8 8C9.5 7.5 10.5 8 11.5 8.5C11.5 8.5 9.5 10 9 11.5C8.5 13 9 14.5 9 14.5C9 14.5 7 13.5 6 14.5C5 15.5 5 17 5 17C5 17 6.5 16 8 16.5C9.5 17 10 18.5 10 18.5C10 18.5 8.5 19.5 7 19.5C5.5 19.5 4 18 4 18C4 18 4.5 20.5 7.5 21C10.5 21.5 12 19 12 19C12 19 12.5 21 15 20.5C17.5 20 18 17 18 17C18 17 17 18 15.5 17.5C14 17 13.5 15.5 13.5 15.5C13.5 15.5 15 16.5 16.5 15.5C18 14.5 18 12.5 18 12.5C18 12.5 16 13 15 12C14 11 14.5 9.5 14.5 9.5C14.5 9.5 15.5 11 17 10.5C18.5 10 19 7 19 7C19 7 17.5 8.5 15 8C12.5 7.5 11 9 11 9C11 9 10.5 6.5 7.5 6C4.5 5.5 3 8 3 8C3 8 4 6.5 6 6.5C8 6.5 9 8.5 9 8.5C9 8.5 7.5 9.5 6 9.5C4.5 9.5 3 11 3 11C3 11 4.5 11 6 12C7.5 13 8 14.5 8 14.5C8 14.5 6 15 5 14C4 13 3 13 3 13Z" />
+          </svg>
+        ) : (
+          /* Brand of Sacrifice SVG */
+          <svg
+            width="16"
+            height="22"
+            viewBox="0 0 20 28"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="fill-current"
+          >
+            <path d="M10 2C9.5 2 9 3 9 4.5V11L4 7.5L3 9L9 13.5V17L2 15L1 16.5L9 20.5V26C9 27 9.5 27.5 10 27.5C10.5 27.5 11 27 11 26V20.5L19 16.5L18 15L11 17V13.5L17 9L16 7.5L11 11V4.5C11 3 10.5 2 10 2Z" />
+          </svg>
+        )}
+      </div>
+
+      {/* Target HUD Reticle Brackets */}
+      <div
+        className={cn(
+          "target-cursor-corner absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-[150%] -translate-y-[150%] border-2 border-b-0 border-r-0",
+          isLight ? "border-emerald-600/60" : "border-red-500/60"
+        )}
         style={{ willChange: "transform" }}
       />
       <div
-        className="target-cursor-corner absolute left-1/2 top-1/2 h-3 w-3 -translate-x-[150%] -translate-y-[150%] border-[3px] border-[rgb(var(--text-color))] border-b-0 border-r-0"
+        className={cn(
+          "target-cursor-corner absolute left-1/2 top-1/2 h-2.5 w-2.5 translate-x-1/2 -translate-y-[150%] border-2 border-b-0 border-l-0",
+          isLight ? "border-emerald-600/60" : "border-red-500/60"
+        )}
         style={{ willChange: "transform" }}
       />
       <div
-        className="target-cursor-corner absolute left-1/2 top-1/2 h-3 w-3 translate-x-1/2 -translate-y-[150%] border-[3px] border-[rgb(var(--text-color))] border-b-0 border-l-0"
+        className={cn(
+          "target-cursor-corner absolute left-1/2 top-1/2 h-2.5 w-2.5 translate-x-1/2 translate-y-1/2 border-2 border-l-0 border-t-0",
+          isLight ? "border-emerald-600/60" : "border-red-500/60"
+        )}
         style={{ willChange: "transform" }}
       />
       <div
-        className="target-cursor-corner absolute left-1/2 top-1/2 h-3 w-3 translate-x-1/2 translate-y-1/2 border-[3px] border-[rgb(var(--text-color))] border-l-0 border-t-0"
-        style={{ willChange: "transform" }}
-      />
-      <div
-        className="target-cursor-corner absolute left-1/2 top-1/2 h-3 w-3 -translate-x-[150%] translate-y-1/2 border-[3px] border-[rgb(var(--text-color))] border-r-0 border-t-0"
+        className={cn(
+          "target-cursor-corner absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-[150%] translate-y-1/2 border-2 border-r-0 border-t-0",
+          isLight ? "border-emerald-600/60" : "border-red-500/60"
+        )}
         style={{ willChange: "transform" }}
       />
     </div>

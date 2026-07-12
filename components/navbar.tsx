@@ -147,7 +147,7 @@ export default function Navbar({
             <div className="absolute inset-x-5 bottom-0 h-px bg-gradient-to-r from-transparent via-[rgb(var(--glass-border)_/_0.18)] to-transparent" />
             <motion.span
               aria-hidden
-              className="pointer-events-none absolute bottom-0 h-[3px] rounded-full bg-[linear-gradient(90deg,rgba(79,239,255,0.92),rgba(90,121,255,0.92))] shadow-[0_0_18px_rgba(79,239,255,0.26)]"
+              className="pointer-events-none absolute bottom-0 h-[3px] rounded-full bg-primary-color shadow-[0_0_18px_rgb(var(--primary-color)/0.5)]"
               animate={indicatorStyle}
               transition={{ type: "spring", stiffness: 800, damping: 50, mass: 0.2 }}
             />
@@ -165,8 +165,8 @@ export default function Navbar({
                   className={cn(
                     "theme-transition-safe rounded-full px-3.5 py-2.5 text-[0.72rem] uppercase tracking-[0.22em]",
                     isActive(item.id)
-                      ? "bg-[linear-gradient(135deg,rgba(78,123,255,0.18),rgba(79,239,255,0.14))] text-text-color shadow-[0_12px_24px_rgba(77,122,255,0.12)]"
-                      : "text-text-secondary hover:bg-white/6 hover:text-text-color",
+                      ? "bg-primary-color/10 border border-primary-color/20 text-primary-color shadow-[0_12px_24px_rgb(var(--primary-color)/0.06)] font-bold"
+                      : "text-text-secondary hover:bg-white/5 hover:text-text-color",
                   )}
                 >
                   {item.label}

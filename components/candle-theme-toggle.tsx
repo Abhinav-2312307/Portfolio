@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useTheme } from "next-themes"
 
 type CandleThemeToggleProps = {
@@ -10,47 +10,62 @@ type CandleThemeToggleProps = {
 export default function CandleThemeToggle({ className = "" }: CandleThemeToggleProps) {
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       setMounted(true)
     })
 
+    // Preload sword sound for theme transition
+    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav") // sword slice sound
+    audio.volume = 0.2
+    audioRef.current = audio
+
     return () => window.cancelAnimationFrame(frame)
   }, [])
+
+  const handleToggle = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark"
+    setTheme(nextTheme)
+
+    // Play whoosh sound if unmuted
+    const isMuted = localStorage.getItem("portfolio-muted") !== "false"
+    if (!isMuted && audioRef.current) {
+      audioRef.current.currentTime = 0
+      audioRef.current.play().catch(() => {})
+    }
+  }
 
   return (
     <button
       type="button"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={handleToggle}
       className={`group relative flex items-center justify-center overflow-visible cursor-pointer ${className}`}
-      aria-label="Toggle theme"
+      aria-label="Toggle theme coordinate"
+      title={theme === "dark" ? "Switch to Hope (AoT)" : "Switch to Despair (Berserk)"}
     >
       <div className="relative h-6 w-6 scale-75">
         {mounted && theme === "dark" ? (
-          <div className="absolute -top-8 left-1/2 h-10 w-10 -translate-x-1/2 rounded-full bg-yellow-400/30 blur-xl animate-pulse" />
+          <div className="absolute -top-8 left-1/2 h-10 w-10 -translate-x-1/2 rounded-full bg-red-600/20 blur-xl animate-pulse" />
         ) : null}
 
+        {/* Outer Cylinder (White Wax Candle) */}
         <div
-          className={`absolute h-6 w-6 duration-500 ${
+          className={`absolute h-6 w-6 duration-500 rounded-sm border border-stone-350 bg-white ${
             mounted && theme === "dark"
-              ? "bg-neutral-50 shadow-[0_-6px_12px_rgba(255,200,0,0.4),0_-18px_40px_rgba(255,200,0,0.55),0_-30px_70px_rgba(255,200,0,0.35)]"
-              : "bg-neutral-200 shadow-none"
+              ? "shadow-[0_-4px_8px_rgba(220,38,38,0.25)]"
+              : "shadow-[0_-4px_8px_rgba(52,211,153,0.2)]"
           }`}
         >
-          <div className="h-6 w-6 bg-neutral-50 shadow-inner shadow-yellow-200" />
-          <div className="absolute -bottom-3 h-6 w-6 rounded-full bg-neutral-50 [transform:rotateX(80deg)]" />
-
-          <div
-            className={`absolute -top-3 h-6 w-6 rounded-full border-2 [transform:rotateX(80deg)] ${
-              mounted && theme === "dark" ? "border-yellow-300 bg-yellow-400" : "border-gray-400 bg-gray-300"
-            }`}
-          />
+          {/* Top cover */}
+          <div className="absolute -top-[3px] left-0 right-0 h-1.5 rounded-full border-t border-stone-300 bg-stone-100 [transform:rotateX(80deg)]" />
         </div>
 
+        {/* Small Flame Vector */}
         <svg
-          className={`absolute -top-3 left-[2px] h-4 w-4 rounded-full duration-500 ${
-            mounted && theme === "dark" ? "fill-yellow-300 animate-[pulse_1.8s_ease-in-out_infinite]" : "fill-gray-400"
+          className={`absolute -top-4 left-[2px] h-4 w-4 rounded-full duration-500 ${
+            mounted && theme === "dark" ? "fill-red-500 animate-[pulse_1.8s_ease-in-out_infinite]" : "fill-emerald-400"
           }`}
           viewBox="0 0 100 100"
         >
