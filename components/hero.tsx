@@ -288,12 +288,12 @@ export default function Hero({
 
   // Theme-specific visuals
   const bgWallpaper = isLight
-    ? "/assets/wallpapersden.com_eren-yeager-cool-attack-on-titan_4808x3858.jpg"
-    : "/assets/berserk-knight-guts-5120x2880-18713.jpg"
+    ? hero.lightWallpaper ?? "/assets/wallpapersden.com_eren-yeager-cool-attack-on-titan_4808x3858.jpg"
+    : hero.darkWallpaper ?? "/assets/berserk-knight-guts-5120x2880-18713.jpg"
 
   const cutoutImage = isLight
-    ? "/assets/Eren-Yeager-Lock-Screen-Wallpaper-4k.jpg"
-    : "/assets/eren-yeager-dark-wind-cliff-anime-realism-live-wallpaper-mobile-hd-4k-8k.jpg"
+    ? hero.lightCutout ?? "/assets/Eren-Yeager-Lock-Screen-Wallpaper-4k.jpg"
+    : hero.darkCutout ?? "/assets/eren-yeager-dark-wind-cliff-anime-realism-live-wallpaper-mobile-hd-4k-8k.jpg"
 
   return (
     <section
@@ -427,8 +427,8 @@ export default function Hero({
 
           <p className="max-w-xl text-base md:text-lg leading-relaxed text-text-secondary">
             {isLight
-              ? `${hero.intro} "If you begin to regret, you'll dull your future decisions and let others make choices for you. Keep moving forward, dream of the ocean."`
-              : `${hero.intro} This portfolio is my weapon—forged to conquer complex backend systems and build intelligent AI products. If we do not fight, we cannot win.`}
+              ? `${hero.intro} ${hero.lightIntroQuote ?? "\"If you begin to regret, you'll dull your future decisions and let others make choices for you. Keep moving forward, dream of the ocean.\""}`
+              : `${hero.intro} ${hero.darkIntroQuote ?? "This portfolio is my weapon—forged to conquer complex backend systems and build intelligent AI products. If we do not fight, we cannot win."}`}
           </p>
 
           {/* Typewriter details */}

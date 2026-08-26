@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Volume2, VolumeX } from "lucide-react"
+import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
+import type { HeroContent } from "@/lib/portfolio/schema"
 
 const DESPAIR_QUOTES = [
   {
@@ -50,7 +52,8 @@ const HOPE_QUOTES = [
   }
 ]
 
-export default function Preloader({ onFinish }: { onFinish?: () => void }) {
+export default function Preloader({ onFinish, hero }: { onFinish?: () => void; hero?: HeroContent }) {
+  const heroData = hero || defaultPortfolioContent.hero
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0)
   const [typedText, setTypedText] = useState("")
   const [isDoneLoading, setIsDoneLoading] = useState(false)
@@ -163,10 +166,11 @@ export default function Preloader({ onFinish }: { onFinish?: () => void }) {
       {/* Floating Canvas/Mist Layer */}
       <div
         className={`absolute inset-0 opacity-[0.06] bg-cover bg-center filter blur-xs ${
-          isLight
-            ? "bg-[url('/assets/wallpapersden.com_eren-yeager-cool-attack-on-titan_4808x3858.jpg')] mix-blend-multiply"
-            : "bg-[url('/assets/Eren-Yeager-Lock-Screen-Wallpaper-4k.jpg')] mix-blend-color-dodge"
+          isLight ? "mix-blend-multiply" : "mix-blend-color-dodge"
         }`}
+        style={{
+          backgroundImage: `url('${isLight ? (heroData.lightWallpaper ?? "/assets/wallpapersden.com_eren-yeager-cool-attack-on-titan_4808x3858.jpg") : (heroData.lightCutout ?? "/assets/Eren-Yeager-Lock-Screen-Wallpaper-4k.jpg")}')`
+        }}
       />
 
       {/* Volume Toggle */}

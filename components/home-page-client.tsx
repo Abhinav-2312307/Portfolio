@@ -122,7 +122,7 @@ export default function HomePageClient({ content }: HomePageClientProps) {
   return (
     <AnimatePresence mode="wait">
       {showPreloader ? (
-        <Preloader key="preloader" onFinish={() => setShowPreloader(false)} />
+        <Preloader key="preloader" hero={content.hero} onFinish={() => setShowPreloader(false)} />
       ) : (
         <motion.main
           key="main-content"

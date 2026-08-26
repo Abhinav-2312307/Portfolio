@@ -48,7 +48,7 @@ export default function Footer({
       {/* Background Graphic Visual Fade: Guts/Eren standing cliff side silhouette */}
       <div 
         className="absolute inset-0 bg-cover bg-bottom opacity-[0.06] saturate-[0.5]"
-        style={{ backgroundImage: "url('/assets/eren-yeager-dark-wind-cliff-anime-realism-live-wallpaper-mobile-hd-4k-8k.jpg')" }}
+        style={{ backgroundImage: `url('${footer.backgroundImage ?? "/assets/eren-yeager-dark-wind-cliff-anime-realism-live-wallpaper-mobile-hd-4k-8k.jpg"}')` }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-dark-color via-transparent to-transparent" />
 

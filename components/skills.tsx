@@ -47,7 +47,7 @@ const categoryArsenalLabels: Record<string, { label: string; desc: string }> = {
     label: "Gas Propulsion",
     desc: "High-velocity backend pipelines and transactional microservices."
   },
-  Database: {
+  Databases: {
     label: "Reinforced Hooks",
     desc: "Secure storage anchors and optimized indexing pipelines."
   },
@@ -60,7 +60,7 @@ const categoryArsenalLabels: Record<string, { label: string; desc: string }> = {
 export default function Skills({ skills }: SkillsProps) {
   const skillsData = skills || defaultPortfolioContent.skills
   const categories = skillsData?.categories || []
-  const items = skillsData?.items || []
+  const items = skillsData?.cards || []
 
   const [activeCategory, setActiveCategory] = useState(categories[0] ?? "Languages")
   const [hoveredCardOrder, setHoveredCardOrder] = useState<number | null>(null)

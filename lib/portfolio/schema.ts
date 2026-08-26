@@ -49,6 +49,21 @@ export const heroSchema = z.object({
   buildingLabel: z.string().min(1),
   buildingText: z.string().min(1),
   stats: z.array(statItemSchema).min(1),
+  lightWallpaper: z.string().optional(),
+  darkWallpaper: z.string().optional(),
+  lightCutout: z.string().optional(),
+  darkCutout: z.string().optional(),
+  lightIntroQuote: z.string().optional(),
+  darkIntroQuote: z.string().optional(),
+})
+
+export const chronicleItemSchema = z.object({
+  title: z.string().min(1),
+  subtitle: z.string().min(1),
+  date: z.string().min(1),
+  badge: z.string().min(1),
+  desc: z.string().min(1),
+  iconName: z.string().min(1),
 })
 
 export const aboutSchema = z.object({
@@ -60,6 +75,7 @@ export const aboutSchema = z.object({
   storyPoints: z.array(z.string().min(1)).min(1),
   stats: z.array(statItemSchema).min(1),
   ctaLabel: z.string().min(1),
+  chronicles: z.array(chronicleItemSchema).optional(),
 })
 
 export const educationItemSchema = z.object({
@@ -82,6 +98,7 @@ export const skillCardSchema = z.object({
   iconName: z.string().min(1),
   name: z.string().min(1),
   order: z.string().min(1),
+  level: z.number().min(0).max(100),
 })
 
 export const skillsSchema = z.object({
@@ -175,6 +192,7 @@ export const contactSchema = z.object({
 export const footerSchema = z.object({
   description: z.string().min(1),
   copyrightLabel: z.string().min(1),
+  backgroundImage: z.string().optional(),
 })
 
 export const assistantSchema = z.object({

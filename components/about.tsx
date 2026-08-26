@@ -12,44 +12,12 @@ type AboutProps = {
   about?: AboutContent
 }
 
-const CHRONICLES = [
-  {
-    title: "Eldian Awakening",
-    subtitle: "B.Tech Entry (CSE) @ PSIT Kanpur",
-    date: "2023 - Present",
-    badge: "Academics",
-    desc: "Began training in computational systems. Immersed in computer science foundations, algorithms, and modular design. Achieving a current GPA of 8.4/10.",
-    icon: GraduationCap,
-    gradient: "from-[#0c0d10] to-[#07080a]"
-  },
-  {
-    title: "ODM Gear Training",
-    subtitle: "550+ Algorithmic Trials",
-    date: "2024",
-    badge: "Combat Prep",
-    desc: "Trained daily on LeetCode and GeeksforGeeks. Solved 550+ complex algorithms, mastering tree traversals, dynamic programming recursion, and optimal space complexity.",
-    icon: Code2,
-    gradient: "from-[#07080a] to-[#0c0d10]"
-  },
-  {
-    title: "The Eclipse",
-    subtitle: "Smart India Hackathon Finalist",
-    date: "Late 2024",
-    badge: "Alliance",
-    desc: "Led a combat unit to construct a real-time tracking network. Handled full stack routing under pressure, qualifying as national finalists in Smart India Hackathon.",
-    icon: Rocket,
-    gradient: "from-[#0c0d10] to-[#07080a]"
-  },
-  {
-    title: "Dragonslayer Forged",
-    subtitle: "AI Systems Engineering",
-    date: "2025",
-    badge: "Ascent",
-    desc: "Forged fully autonomous AI agents using frameworks (Next.js, LangChain, vector stores). Deploying scalable microservices capable of navigating complex data streams.",
-    icon: BrainCircuit,
-    gradient: "from-[#07080a] to-[#0c0d10]"
-  }
-]
+const ICON_MAP: Record<string, React.ElementType> = {
+  graduationCap: GraduationCap,
+  code2: Code2,
+  rocket: Rocket,
+  brainCircuit: BrainCircuit,
+}
 
 export default function About({ about }: AboutProps) {
   const aboutData = about || defaultPortfolioContent.about
@@ -117,9 +85,9 @@ export default function About({ about }: AboutProps) {
 
         {/* Timeline Core */}
         <div className="relative space-y-16">
-          {CHRONICLES.map((item, index) => {
+          {(aboutData.chronicles || []).map((item, index) => {
             const isEven = index % 2 === 0
-            const Icon = item.icon
+            const Icon = ICON_MAP[item.iconName] || Code2
 
             return (
               <div key={item.title} className="relative flex flex-col md:grid md:grid-cols-2 md:gap-16 items-center">

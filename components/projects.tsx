@@ -10,17 +10,7 @@ import { defaultPortfolioContent } from "@/lib/portfolio/default-content"
 import type { ProjectItem, ProjectsContent } from "@/lib/portfolio/schema"
 import { cn } from "@/lib/utils"
 
-const projectWallpapers: Record<string, string> = {
-  "PrintMyPagePSIT": "/assets/guts-illustration-5120x2880-26034.jpg",
-  "JusticeAlly": "/assets/eren-yeager-dark-wind-cliff-anime-realism-live-wallpaper-mobile-hd-4k-8k.jpg",
-  "Civic Intelligence Platform": "/assets/berserk-knight-guts-5120x2880-18713.jpg",
-  "Image Encryption Tool": "/assets/guts-neon-iconic-5120x2880-21415.png",
-  "MapMyPSIT": "/assets/wallpapersden.com_eren-yeager-cool-attack-on-titan_4808x3858.jpg",
-  "Tic Tac Toe": "/assets/be48f2bbee4c7b0ff38c85a86feca549.jpg",
-  "Travel AI": "/assets/guts-battle-dragon-5120x2880-26066.jpg",
-  "A Silent Voice": "/assets/eren-eren-yeager.gif",
-  "Portfolio Experience": "/assets/berserker-armor-5120x2880-13643.jpg",
-}
+
 
 function getCategoryLabel(category: string) {
   switch (category) {
@@ -79,7 +69,7 @@ export default function Projects({ projects }: ProjectsProps) {
   )
 
   const activeBg = useMemo(() => {
-    return activeProject ? (projectWallpapers[activeProject.title] ?? "/assets/berserk-knight-guts-5120x2880-18713.jpg") : "/assets/berserk-knight-guts-5120x2880-18713.jpg"
+    return activeProject ? activeProject.image : "/assets/berserk-knight-guts-5120x2880-18713.jpg"
   }, [activeProject])
 
   useEffect(() => {
@@ -302,7 +292,7 @@ export default function Projects({ projects }: ProjectsProps) {
           <div className="grid gap-4 sm:grid-cols-2">
             {filteredProjects.map((project, index) => {
               const isSelected = activeProject?.title === project.title
-              const wallpaper = projectWallpapers[project.title] ?? "/assets/berserk-knight-guts-5120x2880-18713.jpg"
+              const wallpaper = project.image
 
               return (
                 <article
